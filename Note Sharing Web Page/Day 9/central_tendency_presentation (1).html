@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Measures of Central Tendency</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .presentation-container {
+            width: 90%;
+            max-width: 1000px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+        }
+
+        .slide {
+            display: none;
+            padding: 60px 50px;
+            min-height: 700px;
+            animation: slideIn 0.5s ease-in-out;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 3em;
+            text-align: center;
+            margin-bottom: 30px;
+            background: linear-gradient(45deg, #3498db, #9b59b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h2 {
+            color: #34495e;
+            font-size: 2.5em;
+            margin-bottom: 25px;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            color: #2980b9;
+            font-size: 1.8em;
+            margin: 25px 0 15px 0;
+        }
+
+        p {
+            font-size: 1.2em;
+            line-height: 1.6;
+            color: #34495e;
+            margin-bottom: 20px;
+        }
+
+        .formula {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.3em;
+            text-align: center;
+            margin: 20px 0;
+            border-left: 5px solid #3498db;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .example {
+            background: linear-gradient(135deg, #e8f8f5, #d5f4e6);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            border-left: 5px solid #27ae60;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .example h4 {
+            color: #27ae60;
+            font-size: 1.4em;
+            margin-bottom: 15px;
+        }
+
+        .data-set {
+            background: #34495e;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.2em;
+            text-align: center;
+            margin: 15px 0;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .comparison-table th {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 15px;
+            font-size: 1.1em;
+        }
+
+        .comparison-table td {
+            padding: 15px;
+            border-bottom: 1px solid #ecf0f1;
+            font-size: 1em;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .comparison-table tr:hover {
+            background-color: #e3f2fd;
+            transform: scale(1.01);
+            transition: all 0.3s ease;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 50px;
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+        }
+
+        .nav-button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .slide-counter {
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #f39c12 0%, #f1c40f 100%);
+            padding: 3px 8px;
+            border-radius: 5px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .key-points {
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            border-left: 5px solid #f39c12;
+        }
+
+        .key-points ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .key-points li {
+            margin: 10px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .key-points li:before {
+            content: "★";
+            color: #f39c12;
+            font-size: 1.2em;
+            position: absolute;
+            left: 0;
+        }
+
+        .visual-demo {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .measure-box {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 10px;
+            min-width: 200px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            transform: translateY(0);
+            transition: all 0.3s ease;
+        }
+
+        .measure-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .measure-box h4 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .measure-box .value {
+            font-size: 2em;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <!-- Slide 1: Title Slide -->
+        <div class="slide active">
+            <h1>Measures of Central Tendency</h1>
+            <div style="text-align: center; margin-top: 50px;">
+                <div class="visual-demo">
+                    <div class="measure-box">
+                        <h4>Mean</h4>
+                        <div class="value">μ</div>
+                    </div>
+                    <div class="measure-box">
+                        <h4>Median</h4>
+                        <div class="value">M</div>
+                    </div>
+                    <div class="measure-box">
+                        <h4>Mode</h4>
+                        <div class="value">Mo</div>
+                    </div>
+                </div>
+            </div>
+            <p style="text-align: center; font-size: 1.4em; margin-top: 40px; color: #7f8c8d;">Understanding the center of your data distribution</p>
+        </div>
+
+        <!-- Slide 2: Introduction -->
+        <div class="slide">
+            <h2>What are Measures of Central Tendency?</h2>
+            <p>Measures of central tendency are statistical measures that describe the center or typical value of a dataset. They help us understand where most of the data points cluster around.</p>
+            
+            <div class="key-points">
+                <h3>Why are they important?</h3>
+                <ul>
+                    <li>Provide a single representative value for the entire dataset</li>
+                    <li>Make it easier to compare different datasets</li>
+                    <li>Help identify patterns and trends in data</li>
+                    <li>Form the foundation for more advanced statistical analysis</li>
+                </ul>
+            </div>
+
+            <p>The three main measures of central tendency are:</p>
+            <div style="display: flex; justify-content: space-around; margin-top: 30px;">
+                <div style="text-align: center;">
+                    <h3 style="color: #e74c3c;">Mean</h3>
+                    <p>Average value</p>
+                </div>
+                <div style="text-align: center;">
+                    <h3 style="color: #27ae60;">Median</h3>
+                    <p>Middle value</p>
+                </div>
+                <div style="text-align: center;">
+                    <h3 style="color: #f39c12;">Mode</h3>
+                    <p>Most frequent value</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Mean -->
+        <div class="slide">
+            <h2>The Mean (Average)</h2>
+            <p>The mean is the <span class="highlight">arithmetic average</span> of all values in a dataset. It's calculated by adding all values and dividing by the number of values.</p>
+
+            <div class="formula">
+                Mean (x̄) = (Σx) / n
+                <br><br>
+                Where: Σx = sum of all values, n = number of values
+            </div>
+
+            <div class="example">
+                <h4>Example: Test Scores</h4>
+                <div class="data-set">Data: 85, 92, 78, 96, 89, 87, 94</div>
+                <p><strong>Step 1:</strong> Add all values: 85 + 92 + 78 + 96 + 89 + 87 + 94 = 621</p>
+                <p><strong>Step 2:</strong> Divide by number of values: 621 ÷ 7 = 88.7</p>
+                <p><strong>Mean = 88.7</strong></p>
+            </div>
+
+            <div class="key-points">
+                <h3>Key Characteristics of Mean:</h3>
+                <ul>
+                    <li>Uses all data points in calculation</li>
+                    <li>Sensitive to extreme values (outliers)</li>
+                    <li>Most commonly used measure</li>
+                    <li>Can be non-integer even when all data points are integers</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 4: Median -->
+        <div class="slide">
+            <h2>The Median (Middle Value)</h2>
+            <p>The median is the <span class="highlight">middle value</span> when data is arranged in ascending or descending order. It divides the dataset into two equal halves.</p>
+
+            <div class="formula">
+                For odd n: Median = middle value
+                <br>
+                For even n: Median = (n/2 + (n/2 + 1)) / 2
+            </div>
+
+            <div class="example">
+                <h4>Example 1: Odd number of values</h4>
+                <div class="data-set">Data: 12, 15, 18, 22, 25, 28, 35</div>
+                <p><strong>Ordered data:</strong> 12, 15, 18, <strong style="color: #27ae60;">22</strong>, 25, 28, 35</p>
+                <p><strong>Median = 22</strong> (4th position out of 7 values)</p>
+            </div>
+
+            <div class="example">
+                <h4>Example 2: Even number of values</h4>
+                <div class="data-set">Data: 10, 15, 20, 25, 30, 35</div>
+                <p><strong>Ordered data:</strong> 10, 15, <strong style="color: #27ae60;">20, 25</strong>, 30, 35</p>
+                <p><strong>Median = (20 + 25) ÷ 2 = 22.5</strong></p>
+            </div>
+
+            <div class="key-points">
+                <h3>Key Characteristics of Median:</h3>
+                <ul>
+                    <li>Not affected by extreme values (robust)</li>
+                    <li>Represents the 50th percentile</li>
+                    <li>Best for skewed distributions</li>
+                    <li>Always a value that could exist in the dataset</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 5: Mode -->
+        <div class="slide">
+            <h2>The Mode (Most Frequent)</h2>
+            <p>The mode is the <span class="highlight">most frequently occurring value</span> in a dataset. A dataset can have one mode, multiple modes, or no mode.</p>
+
+            <div class="example">
+                <h4>Example 1: Single Mode (Unimodal)</h4>
+                <div class="data-set">Data: 3, 5, 7, 7, 7, 9, 11, 13</div>
+                <p><strong>Mode = 7</strong> (appears 3 times)</p>
+            </div>
+
+            <div class="example">
+                <h4>Example 2: Multiple Modes (Bimodal)</h4>
+                <div class="data-set">Data: 2, 4, 4, 6, 8, 8, 10</div>
+                <p><strong>Modes = 4 and 8</strong> (both appear twice)</p>
+            </div>
+
+            <div class="example">
+                <h4>Example 3: No Mode</h4>
+                <div class="data-set">Data: 1, 3, 5, 7, 9, 11</div>
+                <p><strong>No mode</strong> (all values appear only once)</p>
+            </div>
+
+            <div class="key-points">
+                <h3>Key Characteristics of Mode:</h3>
+                <ul>
+                    <li>Can be used with categorical data</li>
+                    <li>Not affected by extreme values</li>
+                    <li>May not exist or may not be unique</li>
+                    <li>Useful for identifying most common category</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 6: Comparison -->
+        <div class="slide">
+            <h2>Comparison of Mean, Median, and Mode</h2>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Aspect</th>
+                        <th>Mean</th>
+                        <th>Median</th>
+                        <th>Mode</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Definition</strong></td>
+                        <td>Arithmetic average</td>
+                        <td>Middle value</td>
+                        <td>Most frequent value</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Calculation</strong></td>
+                        <td>Sum ÷ Count</td>
+                        <td>Middle position</td>
+                        <td>Highest frequency</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Outlier Sensitivity</strong></td>
+                        <td>High</td>
+                        <td>Low</td>
+                        <td>None</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Data Type</strong></td>
+                        <td>Numerical only</td>
+                        <td>Numerical/Ordinal</td>
+                        <td>All types</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Uniqueness</strong></td>
+                        <td>Always unique</td>
+                        <td>Always unique</td>
+                        <td>May not be unique</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Best Use</strong></td>
+                        <td>Normal distribution</td>
+                        <td>Skewed distribution</td>
+                        <td>Categorical data</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Slide 7: When to Use Each Measure -->
+        <div class="slide">
+            <h2>When to Use Each Measure</h2>
+
+            <div class="example">
+                <h4>Use MEAN when:</h4>
+                <ul style="font-size: 1.1em; line-height: 1.8;">
+                    <li>Data is normally distributed (bell-shaped)</li>
+                    <li>No significant outliers present</li>
+                    <li>You want to use all data points</li>
+                    <li>Further statistical analysis is planned</li>
+                </ul>
+            </div>
+
+            <div class="example">
+                <h4>Use MEDIAN when:</h4>
+                <ul style="font-size: 1.1em; line-height: 1.8;">
+                    <li>Data is skewed (not normally distributed)</li>
+                    <li>Outliers are present</li>
+                    <li>You want a robust measure</li>
+                    <li>Dealing with income, house prices, etc.</li>
+                </ul>
+            </div>
+
+            <div class="example">
+                <h4>Use MODE when:</h4>
+                <ul style="font-size: 1.1em; line-height: 1.8;">
+                    <li>Working with categorical data</li>
+                    <li>Need to identify the most common item</li>
+                    <li>Data has clear peaks or clusters</li>
+                    <li>Describing typical characteristics</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 8: Real-World Example -->
+        <div class="slide">
+            <h2>Real-World Example: House Prices</h2>
+            <p>Let's analyze house prices in a neighborhood (in thousands of dollars):</p>
+
+            <div class="data-set">
+                Data: 150, 175, 180, 185, 190, 200, 210, 220, 850
+            </div>
+
+            <div class="visual-demo">
+                <div class="measure-box" style="background: linear-gradient(135deg, #e74c3c, #c0392b);">
+                    <h4>Mean</h4>
+                    <div class="value">$251k</div>
+                    <p style="font-size: 0.9em;">Affected by the $850k outlier</p>
+                </div>
+                <div class="measure-box" style="background: linear-gradient(135deg, #27ae60, #229954);">
+                    <h4>Median</h4>
+                    <div class="value">$190k</div>
+                    <p style="font-size: 0.9em;">Not affected by outlier</p>
+                </div>
+                <div class="measure-box" style="background: linear-gradient(135deg, #f39c12, #e67e22);">
+                    <h4>Mode</h4>
+                    <div class="value">No mode</div>
+                    <p style="font-size: 0.9em;">All values appear once</p>
+                </div>
+            </div>
+
+            <div class="key-points">
+                <h3>Analysis:</h3>
+                <ul>
+                    <li>The mean ($251k) is misleading due to one expensive house</li>
+                    <li>The median ($190k) better represents typical house prices</li>
+                    <li>This demonstrates why median is preferred for skewed data</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 9: Summary -->
+        <div class="slide">
+            <h2>Summary</h2>
+            
+            <div class="key-points">
+                <h3>Key Takeaways:</h3>
+                <ul>
+                    <li><strong>Mean:</strong> Best for symmetric, normal distributions without outliers</li>
+                    <li><strong>Median:</strong> Best for skewed distributions or when outliers are present</li>
+                    <li><strong>Mode:</strong> Best for categorical data or finding most common values</li>
+                    <li>Consider your data's distribution and purpose when choosing</li>
+                    <li>Sometimes using multiple measures provides better insights</li>
+                </ul>
+            </div>
+
+            <div style="text-align: center; margin-top: 40px;">
+                <h3 style="color: #2c3e50; font-size: 1.8em;">Remember:</h3>
+                <p style="font-size: 1.3em; color: #34495e; font-style: italic;">
+                    "The best measure of central tendency depends on your data and your purpose!"
+                </p>
+            </div>
+
+            <div class="visual-demo" style="margin-top: 40px;">
+                <div class="measure-box">
+                    <h4>Practice</h4>
+                    <p>Try calculating all three measures for your own datasets!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="navigation">
+            <button class="nav-button" id="prevBtn" onclick="changeSlide(-1)">← Previous</button>
+            <span class="slide-counter">
+                <span id="currentSlide">1</span> / <span id="totalSlides">9</span>
+            </span>
+            <button class="nav-button" id="nextBtn" onclick="changeSlide(1)">Next →</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlideIndex = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function showSlide(index) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[index].classList.add('active');
+            
+            document.getElementById('currentSlide').textContent = index + 1;
+            
+            // Update navigation buttons
+            document.getElementById('prevBtn').disabled = index === 0;
+            document.getElementById('nextBtn').disabled = index === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            currentSlideIndex += direction;
+            
+            if (currentSlideIndex < 0) currentSlideIndex = 0;
+            if (currentSlideIndex >= totalSlides) currentSlideIndex = totalSlides - 1;
+            
+            showSlide(currentSlideIndex);
+        }
+
+        // Initialize
+        showSlide(0);
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowLeft') changeSlide(-1);
+            if (event.key === 'ArrowRight') changeSlide(1);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plot Customization: Labels, Titles, Legends, Annotations</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .presentation-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .slide {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .slide:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        }
+        
+        .slide-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        .slide-number {
+            display: inline-block;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        h2 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        h3 {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            color: #555;
+            border-left: 4px solid #667eea;
+            padding-left: 15px;
+        }
+        
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+            margin: 20px 0;
+            border-left: 4px solid #667eea;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .code-block .keyword {
+            color: #f56565;
+        }
+        
+        .code-block .string {
+            color: #68d391;
+        }
+        
+        .code-block .comment {
+            color: #a0aec0;
+            font-style: italic;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .feature-card {
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .feature-card h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+        
+        .output-example {
+            background: linear-gradient(135deg, #f0fff4 0%, #e6fffa 100%);
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #38a169;
+            margin: 15px 0;
+            font-style: italic;
+            color: #2d3748;
+        }
+        
+        .tip-box {
+            background: linear-gradient(135deg, #fffaf0 0%, #fef5e7 100%);
+            border: 1px solid #f6ad55;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .tip-box::before {
+            content: "💡 ";
+            font-size: 1.2em;
+        }
+        
+        .navigation {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            padding: 10px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .nav-btn {
+            background: rgba(102, 126, 234, 0.8);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-btn:hover {
+            background: rgba(102, 126, 234, 1);
+            transform: scale(1.05);
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        th {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            font-weight: bold;
+        }
+        
+        tr:hover {
+            background: #f7fafc;
+        }
+    </style>
+</head>
+<body>
+    <div class="navigation">
+        <button class="nav-btn" onclick="scrollToSlide(0)">Intro</button>
+        <button class="nav-btn" onclick="scrollToSlide(1)">Labels</button>
+        <button class="nav-btn" onclick="scrollToSlide(2)">Titles</button>
+        <button class="nav-btn" onclick="scrollToSlide(3)">Legends</button>
+        <button class="nav-btn" onclick="scrollToSlide(4)">Annotations</button>
+    </div>
+
+    <div class="presentation-container">
+        <!-- Slide 1: Title Slide -->
+        <div class="slide" id="slide-0">
+            <div class="slide-header">
+                <div class="slide-number">Slide 1</div>
+                <h1>Plot Customization</h1>
+                <h2>Labels, Titles, Legends & Annotations</h2>
+            </div>
+            <div style="text-align: center; font-size: 1.2em; color: #666;">
+                <p>Master the art of creating professional, informative visualizations</p>
+                <br>
+                <p><strong>Topics Covered:</strong></p>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>🏷️ Axis Labels</h4>
+                        <p>Customize X and Y axis labels with formatting options</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>📋 Titles</h4>
+                        <p>Add main titles, subtitles, and multi-line headers</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>🔍 Legends</h4>
+                        <p>Position, style, and customize plot legends</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>📝 Annotations</h4>
+                        <p>Add text, arrows, and callouts to highlight data points</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: Axis Labels -->
+        <div class="slide" id="slide-1">
+            <div class="slide-header">
+                <div class="slide-number">Slide 2</div>
+                <h2>Axis Labels Customization</h2>
+            </div>
+            
+            <h3>Basic Label Setup</h3>
+            <div class="code-block">
+<span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt
+<span class="keyword">import</span> numpy <span class="keyword">as</span> np
+
+<span class="comment"># Create sample data</span>
+x = np.linspace(0, 10, 100)
+y = np.sin(x)
+
+<span class="comment"># Create plot with basic labels</span>
+plt.figure(figsize=(10, 6))
+plt.plot(x, y, linewidth=2, color='blue')
+
+<span class="comment"># Set axis labels</span>
+plt.xlabel(<span class="string">'Time (seconds)'</span>, fontsize=12, fontweight='bold')
+plt.ylabel(<span class="string">'Amplitude'</span>, fontsize=12, fontweight='bold')
+
+plt.show()
+            </div>
+
+            <h3>Advanced Label Formatting</h3>
+            <div class="code-block">
+<span class="comment"># Advanced label customization</span>
+plt.xlabel(<span class="string">'Time (seconds)'</span>, 
+          fontsize=14, 
+          fontweight='bold',
+          color='darkblue',
+          fontfamily='serif')
+
+plt.ylabel(<span class="string">'Amplitude'</span>, 
+          fontsize=14,
+          fontweight='bold', 
+          color='darkred',
+          rotation=90,  <span class="comment"># Rotate label</span>
+          labelpad=20)  <span class="comment"># Add padding</span>
+
+<span class="comment"># Customize tick labels</span>
+plt.xticks(fontsize=10, rotation=45)
+plt.yticks(fontsize=10)
+            </div>
+
+            <div class="tip-box">
+                <strong>Pro Tip:</strong> Use <code>labelpad</code> to add space between the axis and label, and <code>rotation</code> to rotate labels for better readability.
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Description</th>
+                            <th>Example Values</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>fontsize</td>
+                            <td>Size of the label text</td>
+                            <td>8, 10, 12, 14, 'small', 'large'</td>
+                        </tr>
+                        <tr>
+                            <td>fontweight</td>
+                            <td>Weight of the font</td>
+                            <td>'normal', 'bold', 'light'</td>
+                        </tr>
+                        <tr>
+                            <td>color</td>
+                            <td>Color of the label</td>
+                            <td>'red', '#FF5733', (0.5, 0.5, 0.5)</td>
+                        </tr>
+                        <tr>
+                            <td>rotation</td>
+                            <td>Rotation angle in degrees</td>
+                            <td>0, 45, 90, 180</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Slide 3: Titles -->
+        <div class="slide" id="slide-2">
+            <div class="slide-header">
+                <div class="slide-number">Slide 3</div>
+                <h2>Title Customization</h2>
+            </div>
+
+            <h3>Basic Title Setup</h3>
+            <div class="code-block">
+<span class="comment"># Basic title</span>
+plt.title(<span class="string">'Sine Wave Analysis'</span>, fontsize=16, fontweight='bold')
+
+<span class="comment"># Main title with subtitle</span>
+plt.suptitle(<span class="string">'Mathematical Functions'</span>, fontsize=18, fontweight='bold')
+plt.title(<span class="string">'Sine Wave Over Time'</span>, fontsize=14, pad=20)
+            </div>
+
+            <h3>Advanced Title Formatting</h3>
+            <div class="code-block">
+<span class="comment"># Multi-line title with formatting</span>
+plt.title(<span class="string">'Sine Wave Analysis\nAmplitude vs Time'</span>, 
+          fontsize=16, 
+          fontweight='bold',
+          color='darkblue',
+          pad=20,
+          backgroundcolor='lightgray',
+          bbox=dict(boxstyle='round,pad=0.5', facecolor='lightyellow'))
+
+<span class="comment"># Position title</span>
+plt.title(<span class="string">'Custom Positioned Title'</span>, 
+          x=0.3,  <span class="comment"># Horizontal position (0-1)</span>
+          y=0.98, <span class="comment"># Vertical position (0-1)</span>
+          horizontalalignment='left')
+            </div>
+
+            <h3>Multiple Titles Example</h3>
+            <div class="code-block">
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
+
+<span class="comment"># Main title for entire figure</span>
+fig.suptitle(<span class="string">'Trigonometric Functions Comparison'</span>, 
+             fontsize=16, fontweight='bold')
+
+<span class="comment"># Individual subplot titles</span>
+ax1.plot(x, np.sin(x))
+ax1.set_title(<span class="string">'Sine Function'</span>, fontsize=12, color='blue')
+
+ax2.plot(x, np.cos(x))
+ax2.set_title(<span class="string">'Cosine Function'</span>, fontsize=12, color='red')
+
+plt.tight_layout()
+            </div>
+
+            <div class="output-example">
+                <strong>Output:</strong> Creates a figure with a main title spanning both subplots and individual titles for each subplot.
+            </div>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>plt.title()</h4>
+                    <p>Sets title for current axes</p>
+                </div>
+                <div class="feature-card">
+                    <h4>plt.suptitle()</h4>
+                    <p>Sets title for entire figure</p>
+                </div>
+                <div class="feature-card">
+                    <h4>ax.set_title()</h4>
+                    <p>Sets title for specific subplot</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Legends -->
+        <div class="slide" id="slide-3">
+            <div class="slide-header">
+                <div class="slide-number">Slide 4</div>
+                <h2>Legend Customization</h2>
+            </div>
+
+            <h3>Basic Legend</h3>
+            <div class="code-block">
+<span class="comment"># Plot multiple lines with labels</span>
+plt.figure(figsize=(10, 6))
+plt.plot(x, np.sin(x), label='sin(x)', linewidth=2)
+plt.plot(x, np.cos(x), label='cos(x)', linewidth=2)
+plt.plot(x, np.tan(x), label='tan(x)', linewidth=2)
+
+<span class="comment"># Add basic legend</span>
+plt.legend()
+
+<span class="comment"># Legend with custom location</span>
+plt.legend(loc='upper right')  <span class="comment"># or 'best', 'upper left', etc.</span>
+            </div>
+
+            <h3>Advanced Legend Customization</h3>
+            <div class="code-block">
+<span class="comment"># Highly customized legend</span>
+plt.legend(loc='upper right',
+          fontsize=12,
+          frameon=True,           <span class="comment"># Show frame</span>
+          fancybox=True,          <span class="comment"># Rounded corners</span>
+          shadow=True,            <span class="comment"># Drop shadow</span>
+          ncol=2,                 <span class="comment"># Number of columns</span>
+          facecolor='lightgray',  <span class="comment"># Background color</span>
+          edgecolor='black',      <span class="comment"># Border color</span>
+          title='Functions',      <span class="comment"># Legend title</span>
+          title_fontsize=14)
+
+<span class="comment"># Position legend outside plot area</span>
+plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+            </div>
+
+            <h3>Custom Legend Entries</h3>
+            <div class="code-block">
+<span class="keyword">from</span> matplotlib.lines <span class="keyword">import</span> Line2D
+
+<span class="comment"># Create custom legend elements</span>
+custom_lines = [Line2D([0], [0], color='blue', lw=2),
+                Line2D([0], [0], color='red', lw=2),
+                Line2D([0], [0], color='green', lw=2)]
+
+plt.legend(custom_lines, ['Sine', 'Cosine', 'Tangent'])
+
+<span class="comment"># Or use handles and labels separately</span>
+handles, labels = plt.gca().get_legend_handles_labels()
+plt.legend(handles[:2], labels[:2])  <span class="comment"># Show only first 2 items</span>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Location Parameter</th>
+                            <th>Description</th>
+                            <th>Alternative</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>'best'</td>
+                            <td>Automatically choose best location</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td>'upper right'</td>
+                            <td>Top right corner</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>'upper left'</td>
+                            <td>Top left corner</td>
+                            <td>2</td>
+                        </tr>
+                        <tr>
+                            <td>'lower left'</td>
+                            <td>Bottom left corner</td>
+                            <td>3</td>
+                        </tr>
+                        <tr>
+                            <td>'lower right'</td>
+                            <td>Bottom right corner</td>
+                            <td>4</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Slide 5: Annotations -->
+        <div class="slide" id="slide-4">
+            <div class="slide-header">
+                <div class="slide-number">Slide 5</div>
+                <h2>Annotations and Text</h2>
+            </div>
+
+            <h3>Basic Text Annotation</h3>
+            <div class="code-block">
+<span class="comment"># Add simple text</span>
+plt.text(5, 0.5, <span class="string">'Peak Value'</span>, fontsize=12, color='red')
+
+<span class="comment"># Text with background box</span>
+plt.text(3, -0.8, <span class="string">'Minimum Point'</span>, 
+         fontsize=12, 
+         bbox=dict(boxstyle='round,pad=0.3', facecolor='yellow'))
+            </div>
+
+            <h3>Arrow Annotations</h3>
+            <div class="code-block">
+<span class="comment"># Annotate with arrow pointing to data point</span>
+plt.annotate(<span class="string">'Maximum'</span>, 
+            xy=(1.57, 1),           <span class="comment"># Point to annotate</span>
+            xytext=(3, 1.2),        <span class="comment"># Text location</span>
+            arrowprops=dict(arrowstyle='->', 
+                           connectionstyle='arc3,rad=0.2',
+                           color='red'),
+            fontsize=12,
+            color='red')
+
+<span class="comment"># Multiple annotation styles</span>
+plt.annotate(<span class="string">'Zero Crossing'</span>,
+            xy=(3.14, 0),
+            xytext=(4, 0.5),
+            arrowprops=dict(arrowstyle='-|>',
+                           shrinkA=5, shrinkB=5,
+                           mutation_scale=20,
+                           fc='blue'),
+            bbox=dict(boxstyle='round4,pad=0.3', 
+                     facecolor='lightblue'))
+            </div>
+
+            <h3>Advanced Annotation Features</h3>
+            <div class="code-block">
+<span class="comment"># Annotation with multiple styling options</span>
+plt.annotate(<span class="string">'Important Point\n(π/2, 1)'</span>,
+            xy=(np.pi/2, 1),
+            xytext=(0.3, 0.7),
+            textcoords='axes fraction',  <span class="comment"># Text coords relative to axes</span>
+            arrowprops=dict(
+                arrowstyle='fancy',
+                connectionstyle='arc3,rad=0.3',
+                facecolor='orange',
+                edgecolor='red',
+                shrinkA=5, shrinkB=5
+            ),
+            fontsize=10,
+            horizontalalignment='center',
+            verticalalignment='center',
+            bbox=dict(boxstyle='round,pad=0.5',
+                     facecolor='lightyellow',
+                     edgecolor='orange',
+                     linewidth=2))
+
+<span class="comment"># Add a callout box</span>
+plt.text(0.02, 0.98, <span class="string">'Formula: y = sin(x)'</span>,
+         transform=plt.gca().transAxes,  <span class="comment"># Use axes coordinates</span>
+         fontsize=12,
+         verticalalignment='top',
+         bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.8))
+            </div>
+
+            <div class="tip-box">
+                <strong>Coordinate Systems:</strong> Use <code>textcoords='axes fraction'</code> for positioning relative to plot area (0-1), or <code>transform=ax.transAxes</code> for axes coordinates.
+            </div>
+
+            <h3>Complete Example</h3>
+            <div class="code-block">
+<span class="comment"># Complete customized plot</span>
+fig, ax = plt.subplots(figsize=(12, 8))
+
+<span class="comment"># Plot data</span>
+x = np.linspace(0, 4*np.pi, 1000)
+y = np.sin(x)
+ax.plot(x, y, 'b-', linewidth=2, label='sin(x)')
+
+<span class="comment"># Customize labels and title</span>
+ax.set_xlabel(<span class="string">'Angle (radians)'</span>, fontsize=14, fontweight='bold')
+ax.set_ylabel(<span class="string">'Amplitude'</span>, fontsize=14, fontweight='bold')
+ax.set_title(<span class="string">'Sine Wave with Annotations'</span>, fontsize=16, fontweight='bold', pad=20)
+
+<span class="comment"># Add annotations</span>
+ax.annotate(<span class="string">'First Peak'</span>, xy=(np.pi/2, 1), xytext=(2, 1.3),
+           arrowprops=dict(arrowstyle='->', color='red'),
+           fontsize=12, color='red')
+
+ax.annotate(<span class="string">'Zero Crossing'</span>, xy=(np.pi, 0), xytext=(4, 0.5),
+           arrowprops=dict(arrowstyle='->', color='green'),
+           fontsize=12, color='green')
+
+<span class="comment"># Add legend and grid</span>
+ax.legend(loc='upper right', fontsize=12)
+ax.grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.show()
+            </div>
+
+            <div class="output-example">
+                <strong>Result:</strong> A professional-looking plot with properly labeled axes, title, annotations pointing to key features, and a clean legend.
+            </div>
+        </div>
+
+        <!-- Slide 6: Summary -->
+        <div class="slide" id="slide-5">
+            <div class="slide-header">
+                <div class="slide-number">Slide 6</div>
+                <h2>Summary & Best Practices</h2>
+            </div>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>🎯 Key Takeaways</h4>
+                    <ul>
+                        <li>Always label your axes clearly</li>
+                        <li>Use descriptive titles</li>
+                        <li>Position legends appropriately</li>
+                        <li>Annotate important data points</li>
+                        <li>Maintain consistent styling</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h4>📋 Quick Reference</h4>
+                    <ul>
+                        <li><code>plt.xlabel()</code> - X-axis label</li>
+                        <li><code>plt.ylabel()</code> - Y-axis label</li>
+                        <li><code>plt.title()</code> - Plot title</li>
+                        <li><code>plt.legend()</code> - Add legend</li>
+                        <li><code>plt.annotate()</code> - Add annotations</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h4>✨ Pro Tips</h4>
+                    <ul>
+                        <li>Use <code>plt.tight_layout()</code> for better spacing</li>
+                        <li>Set consistent font sizes across elements</li>
+                        <li>Use color coding for related elements</li>
+                        <li>Test readability at different sizes</li>
+                        <li>Keep annotations concise and relevant</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h4>🔧 Common Parameters</h4>
+                    <ul>
+                        <li><code>fontsize</code> - Text size</li>
+                        <li><code>fontweight</code> - Text weight</li>
+                        <li><code>color</code> - Text/line color</li>
+                        <li><code>bbox</code> - Background box</li>
+                        <li><code>pad</code> - Spacing/padding</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 40px; padding: 30px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border-radius: 15px;">
+                <h3>Ready to Create Beautiful Plots!</h3>
+                <p style="font-size: 1.1em; margin-top: 10px;">
+                    Apply these techniques to make your data visualizations more informative and professional.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function scrollToSlide(slideNumber) {
+            const slide = document.getElementById(`slide-${slideNumber}`);
+            slide.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // Add smooth scrolling and highlighting
+        document.querySelectorAll('.code-block').forEach(block => {
+            block.addEventListener('click', function() {
+                // Copy to clipboard functionality could be added here
+                this.style.backgroundColor = '#4a5568';
+                setTimeout(() => {
+                    this.style.backgroundColor = '#2d3748';
+                }, 200);
+            });
+        });
+
+        // Add interactive hover effects
+        document.querySelectorAll('.feature-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>

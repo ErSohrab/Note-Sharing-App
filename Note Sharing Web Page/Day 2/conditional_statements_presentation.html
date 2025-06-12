@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conditional Statements: if, else, elif</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .presentation {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .slide {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .slide:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        }
+
+        .slide h1 {
+            color: #4a5568;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-align: center;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .slide h2 {
+            color: #2d3748;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .slide h3 {
+            color: #4a5568;
+            font-size: 1.5rem;
+            margin: 20px 0 15px 0;
+        }
+
+        .slide p {
+            line-height: 1.8;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .code-block {
+            background: #1a202c;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            overflow-x: auto;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .code-block .keyword {
+            color: #e53e3e;
+            font-weight: bold;
+        }
+
+        .code-block .string {
+            color: #38a169;
+        }
+
+        .code-block .number {
+            color: #3182ce;
+        }
+
+        .code-block .comment {
+            color: #718096;
+            font-style: italic;
+        }
+
+        .output {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            color: #2d3748;
+        }
+
+        .output::before {
+            content: "Output:";
+            font-weight: bold;
+            color: #667eea;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .flowchart {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .flowchart-box {
+            display: inline-block;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            margin: 10px;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .arrow {
+            font-size: 2rem;
+            color: #667eea;
+            margin: 0 10px;
+        }
+
+        .syntax-box {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            font-weight: bold;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .best-practices {
+            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            color: #1a202c;
+        }
+
+        .best-practices h3 {
+            color: #1a202c;
+            margin-bottom: 15px;
+        }
+
+        .best-practices ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .best-practices li {
+            margin: 10px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .best-practices li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #2d3748;
+            font-weight: bold;
+        }
+
+        .interactive-demo {
+            background: #f7fafc;
+            border: 2px solid #667eea;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+
+        .demo-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            margin: 10px 0;
+        }
+
+        .demo-button {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: transform 0.2s ease;
+        }
+
+        .demo-button:hover {
+            transform: scale(1.05);
+        }
+
+        .demo-result {
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .slide {
+                padding: 20px;
+            }
+            
+            .slide h1 {
+                font-size: 2rem;
+            }
+            
+            .slide h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation">
+        <!-- Title Slide -->
+        <div class="slide">
+            <h1>Conditional Statements in Python</h1>
+            <p style="text-align: center; font-size: 1.3rem; color: #667eea; margin-top: 30px;">
+                Master the Art of Decision Making in Code
+            </p>
+            <div class="flowchart">
+                <div class="flowchart-box">if</div>
+                <span class="arrow">→</span>
+                <div class="flowchart-box">elif</div>
+                <span class="arrow">→</span>
+                <div class="flowchart-box">else</div>
+            </div>
+        </div>
+
+        <!-- What are Conditional Statements -->
+        <div class="slide">
+            <h2>What are Conditional Statements?</h2>
+            <p>Conditional statements allow your program to make decisions based on certain conditions. They enable your code to execute different blocks of code depending on whether specific conditions are true or false.</p>
+            
+            <p><strong>Think of it like this:</strong> Just like you make decisions in real life ("If it's raining, I'll take an umbrella"), your program can make decisions too!</p>
+            
+            <div class="flowchart">
+                <div class="flowchart-box">Condition?</div>
+                <br>
+                <span class="arrow">↓</span>
+                <br>
+                <div class="flowchart-box">True: Execute Code A</div>
+                <div class="flowchart-box">False: Execute Code B</div>
+            </div>
+        </div>
+
+        <!-- The if Statement -->
+        <div class="slide">
+            <h2>The if Statement</h2>
+            <p>The <code>if</code> statement is the most basic conditional statement. It executes a block of code only if a specified condition is true.</p>
+            
+            <div class="syntax-box">
+                if condition:<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;# code to execute if condition is true
+            </div>
+
+            <h3>Basic Example:</h3>
+            <div class="code-block">
+<span class="comment"># Check if a number is positive</span>
+number = <span class="number">10</span>
+
+<span class="keyword">if</span> number > <span class="number">0</span>:
+    <span class="keyword">print</span>(<span class="string">"The number is positive!"</span>)
+    <span class="keyword">print</span>(<span class="string">f"The number is {number}"</span>)
+            </div>
+            <div class="output">The number is positive!<br>The number is 10</div>
+
+            <h3>Real-world Example:</h3>
+            <div class="code-block">
+<span class="comment"># Check if someone can vote</span>
+age = <span class="number">18</span>
+
+<span class="keyword">if</span> age >= <span class="number">18</span>:
+    <span class="keyword">print</span>(<span class="string">"You are eligible to vote!"</span>)
+    <span class="keyword">print</span>(<span class="string">"Please register if you haven't already."</span>)
+            </div>
+            <div class="output">You are eligible to vote!<br>Please register if you haven't already.</div>
+        </div>
+
+        <!-- The else Statement -->
+        <div class="slide">
+            <h2>The else Statement</h2>
+            <p>The <code>else</code> statement provides an alternative path when the <code>if</code> condition is false. It's like saying "otherwise, do this instead."</p>
+            
+            <div class="syntax-box">
+                if condition:<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;# code if condition is true<br>
+                else:<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;# code if condition is false
+            </div>
+
+            <h3>Basic Example:</h3>
+            <div class="code-block">
+<span class="comment"># Check if a number is even or odd</span>
+number = <span class="number">7</span>
+
+<span class="keyword">if</span> number % <span class="number">2</span> == <span class="number">0</span>:
+    <span class="keyword">print</span>(<span class="string">f"{number} is even"</span>)
+<span class="keyword">else</span>:
+    <span class="keyword">print</span>(<span class="string">f"{number} is odd"</span>)
+            </div>
+            <div class="output">7 is odd</div>
+
+            <h3>Password Checker Example:</h3>
+            <div class="code-block">
+<span class="comment"># Simple password checker</span>
+password = <span class="string">"python123"</span>
+correct_password = <span class="string">"python123"</span>
+
+<span class="keyword">if</span> password == correct_password:
+    <span class="keyword">print</span>(<span class="string">"Access granted! Welcome!"</span>)
+<span class="keyword">else</span>:
+    <span class="keyword">print</span>(<span class="string">"Access denied! Incorrect password."</span>)
+            </div>
+            <div class="output">Access granted! Welcome!</div>
+        </div>
+
+        <!-- The elif Statement -->
+        <div class="slide">
+            <h2>The elif Statement</h2>
+            <p>The <code>elif</code> (else if) statement allows you to check multiple conditions in sequence. It's perfect when you have more than two possible outcomes.</p>
+            
+            <div class="syntax-box">
+                if condition1:<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;# code if condition1 is true<br>
+                elif condition2:<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;# code if condition2 is true<br>
+                else:<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;# code if all conditions are false
+            </div>
+
+            <h3>Grade Calculator Example:</h3>
+            <div class="code-block">
+<span class="comment"># Grade calculator based on score</span>
+score = <span class="number">85</span>
+
+<span class="keyword">if</span> score >= <span class="number">90</span>:
+    grade = <span class="string">"A"</span>
+    <span class="keyword">print</span>(<span class="string">f"Excellent! Your grade is {grade}"</span>)
+<span class="keyword">elif</span> score >= <span class="number">80</span>:
+    grade = <span class="string">"B"</span>
+    <span class="keyword">print</span>(<span class="string">f"Good job! Your grade is {grade}"</span>)
+<span class="keyword">elif</span> score >= <span class="number">70</span>:
+    grade = <span class="string">"C"</span>
+    <span class="keyword">print</span>(<span class="string">f"Average. Your grade is {grade}"</span>)
+<span class="keyword">elif</span> score >= <span class="number">60</span>:
+    grade = <span class="string">"D"</span>
+    <span class="keyword">print</span>(<span class="string">f"Below average. Your grade is {grade}"</span>)
+<span class="keyword">else</span>:
+    grade = <span class="string">"F"</span>
+    <span class="keyword">print</span>(<span class="string">f"Failed. Your grade is {grade}"</span>)
+            </div>
+            <div class="output">Good job! Your grade is B</div>
+        </div>
+
+        <!-- Complex Examples -->
+        <div class="slide">
+            <h2>Complex Examples</h2>
+            
+            <h3>Weather Advisory System:</h3>
+            <div class="code-block">
+<span class="comment"># Weather advisory based on temperature</span>
+temperature = <span class="number">35</span>
+humidity = <span class="number">80</span>
+
+<span class="keyword">if</span> temperature > <span class="number">40</span>:
+    <span class="keyword">print</span>(<span class="string">"🔥 Extreme heat warning! Stay indoors."</span>)
+<span class="keyword">elif</span> temperature > <span class="number">30</span>:
+    <span class="keyword">if</span> humidity > <span class="number">70</span>:
+        <span class="keyword">print</span>(<span class="string">"🌡️ Hot and humid! Stay hydrated."</span>)
+    <span class="keyword">else</span>:
+        <span class="keyword">print</span>(<span class="string">"☀️ Hot day! Perfect for swimming."</span>)
+<span class="keyword">elif</span> temperature > <span class="number">20</span>:
+    <span class="keyword">print</span>(<span class="string">"🌤️ Pleasant weather! Great for outdoor activities."</span>)
+<span class="keyword">elif</span> temperature > <span class="number">10</span>:
+    <span class="keyword">print</span>(<span class="string">"🧥 Cool weather. Consider wearing a jacket."</span>)
+<span class="keyword">else</span>:
+    <span class="keyword">print</span>(<span class="string">"🥶 Cold weather! Bundle up warm."</span>)
+            </div>
+            <div class="output">🌡️ Hot and humid! Stay hydrated.</div>
+
+            <h3>Login System with Multiple Checks:</h3>
+            <div class="code-block">
+<span class="comment"># Advanced login system</span>
+username = <span class="string">"admin"</span>
+password = <span class="string">"secret123"</span>
+attempts = <span class="number">2</span>
+
+<span class="keyword">if</span> attempts >= <span class="number">3</span>:
+    <span class="keyword">print</span>(<span class="string">"❌ Account locked due to too many failed attempts."</span>)
+<span class="keyword">elif</span> username == <span class="string">"admin"</span> <span class="keyword">and</span> password == <span class="string">"secret123"</span>:
+    <span class="keyword">print</span>(<span class="string">"✅ Admin access granted! Welcome, administrator."</span>)
+<span class="keyword">elif</span> username == <span class="string">"user"</span> <span class="keyword">and</span> password == <span class="string">"pass123"</span>:
+    <span class="keyword">print</span>(<span class="string">"✅ User access granted! Welcome, user."</span>)
+<span class="keyword">elif</span> username <span class="keyword">in</span> [<span class="string">"admin"</span>, <span class="string">"user"</span>]:
+    <span class="keyword">print</span>(<span class="string">"❌ Incorrect password. Please try again."</span>)
+<span class="keyword">else</span>:
+    <span class="keyword">print</span>(<span class="string">"❌ Username not found. Please check your credentials."</span>)
+            </div>
+            <div class="output">✅ Admin access granted! Welcome, administrator.</div>
+        </div>
+
+        <!-- Nested Conditionals -->
+        <div class="slide">
+            <h2>Nested Conditional Statements</h2>
+            <p>You can place conditional statements inside other conditional statements. This is called nesting and allows for more complex decision-making logic.</p>
+
+            <h3>Student Performance Analyzer:</h3>
+            <div class="code-block">
+<span class="comment"># Analyze student performance with multiple criteria</span>
+math_score = <span class="number">85</span>
+english_score = <span class="number">78</span>
+attendance = <span class="number">95</span>
+
+<span class="keyword">if</span> attendance >= <span class="number">90</span>:
+    <span class="keyword">print</span>(<span class="string">"✅ Good attendance!"</span>)
+    
+    <span class="keyword">if</span> math_score >= <span class="number">80</span> <span class="keyword">and</span> english_score >= <span class="number">80</span>:
+        <span class="keyword">print</span>(<span class="string">"🏆 Excellent performance in both subjects!"</span>)
+        <span class="keyword">print</span>(<span class="string">"🎓 Eligible for honor roll."</span>)
+    <span class="keyword">elif</span> math_score >= <span class="number">80</span> <span class="keyword">or</span> english_score >= <span class="number">80</span>:
+        <span class="keyword">print</span>(<span class="string">"👍 Good performance in at least one subject."</span>)
+        <span class="keyword">if</span> math_score > english_score:
+            <span class="keyword">print</span>(<span class="string">"💪 Stronger in Mathematics."</span>)
+        <span class="keyword">else</span>:
+            <span class="keyword">print</span>(<span class="string">"📚 Stronger in English."</span>)
+    <span class="keyword">else</span>:
+        <span class="keyword">print</span>(<span class="string">"⚠️ Needs improvement in both subjects."</span>)
+<span class="keyword">else</span>:
+    <span class="keyword">print</span>(<span class="string">"❌ Poor attendance. Focus on attending classes regularly."</span>)
+            </div>
+            <div class="output">✅ Good attendance!<br>👍 Good performance in at least one subject.<br>💪 Stronger in Mathematics.</div>
+        </div>
+
+        <!-- Logical Operators -->
+        <div class="slide">
+            <h2>Using Logical Operators</h2>
+            <p>Logical operators help you combine multiple conditions in a single if statement:</p>
+            
+            <div style="display: flex; justify-content: space-around; margin: 20px 0;">
+                <div class="flowchart-box">and - Both conditions must be true</div>
+                <div class="flowchart-box">or - At least one condition must be true</div>
+                <div class="flowchart-box">not - Reverses the condition</div>
+            </div>
+
+            <h3>Examples with Logical Operators:</h3>
+            <div class="code-block">
+<span class="comment"># Online shopping discount calculator</span>
+age = <span class="number">25</span>
+is_student = <span class="keyword">True</span>
+order_amount = <span class="number">150</span>
+is_first_time = <span class="keyword">False</span>
+
+<span class="comment"># Using 'and' operator</span>
+<span class="keyword">if</span> age < <span class="number">30</span> <span class="keyword">and</span> is_student:
+    <span class="keyword">print</span>(<span class="string">"🎓 Student discount: 20% off!"</span>)
+    discount = <span class="number">0.20</span>
+
+<span class="comment"># Using 'or' operator</span>
+<span class="keyword">elif</span> order_amount > <span class="number">100</span> <span class="keyword">or</span> is_first_time:
+    <span class="keyword">print</span>(<span class="string">"🛍️ Special discount: 10% off!"</span>)
+    discount = <span class="number">0.10</span>
+
+<span class="comment"># Using 'not' operator</span>
+<span class="keyword">elif</span> <span class="keyword">not</span> is_first_time <span class="keyword">and</span> age >= <span class="number">65</span>:
+    <span class="keyword">print</span>(<span class="string">"👴 Senior citizen discount: 15% off!"</span>)
+    discount = <span class="number">0.15</span>
+
+<span class="keyword">else</span>:
+    <span class="keyword">print</span>(<span class="string">"💰 Regular price applies."</span>)
+    discount = <span class="number">0.00</span>
+
+final_amount = order_amount * (<span class="number">1</span> - discount)
+<span class="keyword">print</span>(<span class="string">f"Final amount: ${final_amount:.2f}"</span>)
+            </div>
+            <div class="output">🎓 Student discount: 20% off!<br>Final amount: $120.00</div>
+        </div>
+
+        <!-- Interactive Demo -->
+        <div class="slide">
+            <h2>Interactive Demo</h2>
+            <p>Try this interactive age classifier! Enter an age and see how conditional statements work:</p>
+            
+            <div class="interactive-demo">
+                <h3>Age Classifier</h3>
+                <input type="number" id="ageInput" class="demo-input" placeholder="Enter your age" min="0" max="150">
+                <button class="demo-button" onclick="classifyAge()">Classify Age</button>
+                <div id="ageResult" class="demo-result" style="display: none;"></div>
+            </div>
+
+            <div class="code-block">
+<span class="comment"># The code behind the demo</span>
+<span class="keyword">def</span> classify_age(age):
+    <span class="keyword">if</span> age < <span class="number">0</span>:
+        <span class="keyword">return</span> <span class="string">"Invalid age!"</span>
+    <span class="keyword">elif</span> age < <span class="number">13</span>:
+        <span class="keyword">return</span> <span class="string">"👶 Child"</span>
+    <span class="keyword">elif</span> age < <span class="number">20</span>:
+        <span class="keyword">return</span> <span class="string">"🧒 Teenager"</span>
+    <span class="keyword">elif</span> age < <span class="number">60</span>:
+        <span class="keyword">return</span> <span class="string">"👨 Adult"</span>
+    <span class="keyword">elif</span> age < <span class="number">120</span>:
+        <span class="keyword">return</span> <span class="string">"👴 Senior"</span>
+    <span class="keyword">else</span>:
+        <span class="keyword">return</span> <span class="string">"🎂 Wow, that's really old!"</span>
+            </div>
+        </div>
+
+        <!-- Best Practices -->
+        <div class="slide">
+            <h2>Best Practices</h2>
+            
+            <div class="best-practices">
+                <h3>🏆 Tips for Writing Great Conditional Statements</h3>
+                <ul>
+                    <li><strong>Use clear, descriptive conditions:</strong> Make your conditions easy to understand</li>
+                    <li><strong>Keep it simple:</strong> Avoid overly complex nested conditions when possible</li>
+                    <li><strong>Use logical operators wisely:</strong> Combine conditions efficiently with and, or, not</li>
+                    <li><strong>Consider the order:</strong> Put most likely conditions first for better performance</li>
+                    <li><strong>Handle edge cases:</strong> Think about unusual inputs and handle them gracefully</li>
+                    <li><strong>Use consistent indentation:</strong> Python requires proper indentation (4 spaces is standard)</li>
+                    <li><strong>Add comments:</strong> Explain complex conditions for future reference</li>
+                    <li><strong>Test thoroughly:</strong> Test all possible paths through your conditional statements</li>
+                </ul>
+            </div>
+
+            <h3>Common Mistakes to Avoid:</h3>
+            <div class="code-block">
+<span class="comment"># ❌ Wrong: Using = instead of == for comparison</span>
+<span class="comment"># if age = 18:  # This assigns, doesn't compare!</span>
+
+<span class="comment"># ✅ Correct: Use == for comparison</span>
+<span class="keyword">if</span> age == <span class="number">18</span>:
+    <span class="keyword">print</span>(<span class="string">"Just turned 18!"</span>)
+
+<span class="comment"># ❌ Wrong: Forgetting the colon</span>
+<span class="comment"># if age >= 18</span>
+<span class="comment">#     print("Adult")</span>
+
+<span class="comment"># ✅ Correct: Always include the colon</span>
+<span class="keyword">if</span> age >= <span class="number">18</span>:
+    <span class="keyword">print</span>(<span class="string">"Adult"</span>)
+            </div>
+        </div>
+
+        <!-- Summary -->
+        <div class="slide">
+            <h2>Summary</h2>
+            <p>Conditional statements are fundamental building blocks that make your programs intelligent and responsive. Here's what we've learned:</p>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin: 30px 0;">
+                <div class="flowchart-box" style="padding: 20px;">
+                    <strong>if Statement</strong><br>
+                    Executes code when condition is true
+                </div>
+                <div class="flowchart-box" style="padding: 20px;">
+                    <strong>else Statement</strong><br>
+                    Provides alternative when if is false
+                </div>
+                <div class="flowchart-box" style="padding: 20px;">
+                    <strong>elif Statement</strong><br>
+                    Handles multiple conditions efficiently
+                </div>
+            </div>
+
+            <h3>Key Takeaways:</h3>
+            <div class="best-practices">
+                <ul>
+                    <li>Conditional statements control program flow based on conditions</li>
+                    <li>Use if for single conditions, if-else for two outcomes, if-elif-else for multiple outcomes</li>
+                    <li>Logical operators (and, or, not) help combine conditions</li>
+                    <li>Proper indentation is crucial in Python</li>
+                    <li>Always test your conditions thoroughly</li>
+                    <li>Keep conditions simple and readable</li>
+                </ul>
+            </div>
+
+            <p style="text-align: center; font-size: 1.2rem; color: #667eea; margin-top: 30px;">
+                <strong>🎉 Congratulations! You now understand conditional statements in Python!</strong>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        function classifyAge() {
+            const age = parseInt(document.getElementById('ageInput').value);
+            const resultDiv = document.getElementById('ageResult');
+            
+            let result;
+            if (isNaN(age) || age < 0) {
+                result = "⚠️ Please enter a valid age!";
+            } else if (age < 13) {
+                result = "👶 Child - Full of wonder and curiosity!";
+            } else if (age < 20) {
+                result = "🧒 Teenager - Growing and learning!";
+            } else if (age < 60) {
+                result = "👨 Adult - In the prime of life!";
+            } else if (age < 120) {
+                result = "👴

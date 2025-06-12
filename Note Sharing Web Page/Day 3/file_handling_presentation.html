@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python File Handling</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .presentation-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .slide {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease;
+        }
+        
+        .slide:hover {
+            transform: translateY(-5px);
+        }
+        
+        .slide h1 {
+            color: #4a5568;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-align: center;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .slide h2 {
+            color: #2d3748;
+            font-size: 2em;
+            margin-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .slide h3 {
+            color: #4a5568;
+            font-size: 1.5em;
+            margin: 20px 0 10px 0;
+        }
+        
+        .code-block {
+            background: #1a202c;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            border-left: 4px solid #667eea;
+            position: relative;
+        }
+        
+        .code-block::before {
+            content: 'Python';
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            background: #667eea;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        
+        .keyword {
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+        
+        .string {
+            color: #4ecdc4;
+        }
+        
+        .comment {
+            color: #718096;
+            font-style: italic;
+        }
+        
+        .method {
+            color: #feca57;
+        }
+        
+        .output-block {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            color: #2d3748;
+        }
+        
+        .mode-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .mode-table th,
+        .mode-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .mode-table th {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            font-weight: bold;
+        }
+        
+        .mode-table tr:hover {
+            background: #f7fafc;
+        }
+        
+        .highlight {
+            background: linear-gradient(45deg, #ffeaa7, #fab1a0);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        
+        .best-practices {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .best-practices h3 {
+            color: white;
+            margin-bottom: 15px;
+        }
+        
+        .best-practices ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        
+        .best-practices li {
+            margin: 10px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+        
+        .best-practices li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #00b894;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .navigation {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .nav-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            margin: 0 5px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-btn:hover {
+            background: #764ba2;
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <!-- Title Slide -->
+        <div class="slide">
+            <h1>🐍 Python File Handling</h1>
+            <div style="text-align: center; margin-top: 30px;">
+                <h3>Master the Art of File Operations</h3>
+                <p style="font-size: 1.2em; color: #666; margin-top: 20px;">
+                    open() • read() • write() • close() • File Modes
+                </p>
+            </div>
+        </div>
+
+        <!-- Introduction -->
+        <div class="slide">
+            <h2>📁 What is File Handling?</h2>
+            <p>File handling is the process of working with files stored on your computer's storage system. In Python, we can:</p>
+            <ul style="margin: 20px 0; padding-left: 30px;">
+                <li><strong>Create</strong> new files</li>
+                <li><strong>Read</strong> data from existing files</li>
+                <li><strong>Write</strong> data to files</li>
+                <li><strong>Modify</strong> existing file content</li>
+                <li><strong>Delete</strong> files when needed</li>
+            </ul>
+            <p>Python provides built-in functions and methods to perform these operations efficiently and safely.</p>
+        </div>
+
+        <!-- The open() Function -->
+        <div class="slide">
+            <h2>🔓 The open() Function</h2>
+            <p>The <span class="highlight">open()</span> function is your gateway to file operations. It creates a file object that you can use to read from or write to a file.</p>
+            
+            <h3>Syntax:</h3>
+            <div class="code-block">
+<span class="method">file_object</span> = <span class="keyword">open</span>(<span class="string">"filename"</span>, <span class="string">"mode"</span>)
+            </div>
+
+            <h3>Example:</h3>
+            <div class="code-block">
+<span class="comment"># Opening a file in read mode</span>
+<span class="method">file</span> = <span class="keyword">open</span>(<span class="string">"example.txt"</span>, <span class="string">"r"</span>)
+
+<span class="comment"># Opening a file in write mode</span>
+<span class="method">file</span> = <span class="keyword">open</span>(<span class="string">"output.txt"</span>, <span class="string">"w"</span>)
+            </div>
+        </div>
+
+        <!-- File Modes -->
+        <div class="slide">
+            <h2>🎛️ File Modes</h2>
+            <p>File modes determine how you can interact with the file. Here are the most common modes:</p>
+            
+            <table class="mode-table">
+                <thead>
+                    <tr>
+                        <th>Mode</th>
+                        <th>Description</th>
+                        <th>File Pointer</th>
+                        <th>Creates File?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>r</strong></td>
+                        <td>Read only (default)</td>
+                        <td>Beginning</td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td><strong>w</strong></td>
+                        <td>Write only (overwrites existing)</td>
+                        <td>Beginning</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td><strong>a</strong></td>
+                        <td>Append only</td>
+                        <td>End</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td><strong>r+</strong></td>
+                        <td>Read and Write</td>
+                        <td>Beginning</td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td><strong>w+</strong></td>
+                        <td>Write and Read (overwrites existing)</td>
+                        <td>Beginning</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td><strong>a+</strong></td>
+                        <td>Append and Read</td>
+                        <td>End</td>
+                        <td>Yes</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Reading Files -->
+        <div class="slide">
+            <h2>📖 Reading Files</h2>
+            <p>Python provides several methods to read file content:</p>
+
+            <h3>1. read() - Read entire file</h3>
+            <div class="code-block">
+<span class="comment"># Read entire file content</span>
+<span class="method">file</span> = <span class="keyword">open</span>(<span class="string">"sample.txt"</span>, <span class="string">"r"</span>)
+<span class="method">content</span> = <span class="method">file</span>.<span class="method">read</span>()
+<span class="keyword">print</span>(<span class="method">content</span>)
+<span class="method">file</span>.<span class="method">close</span>()
+            </div>
+
+            <h3>2. readline() - Read one line</h3>
+            <div class="code-block">
+<span class="comment"># Read one line at a time</span>
+<span class="method">file</span> = <span class="keyword">open</span>(<span class="string">"sample.txt"</span>, <span class="string">"r"</span>)
+<span class="method">first_line</span> = <span class="method">file</span>.<span class="method">readline</span>()
+<span class="keyword">print</span>(<span class="method">first_line</span>)
+<span class="method">file</span>.<span class="method">close</span>()
+            </div>
+
+            <h3>3. readlines() - Read all lines into a list</h3>
+            <div class="code-block">
+<span class="comment"># Read all lines into a list</span>
+<span class="method">file</span> = <span class="keyword">open</span>(<span class="string">"sample.txt"</span>, <span class="string">"r"</span>)
+<span class="method">lines</span> = <span class="method">file</span>.<span class="method">readlines</span>()
+<span class="keyword">for</span> <span class="method">line</span> <span class="keyword">in</span> <span class="method">lines</span>:
+    <span class="keyword">print</span>(<span class="method">line</span>.<span class="method">strip</span>())  <span class="comment"># strip() removes newline characters</span>
+<span class="method">file</span>.<span class="method">close</span>()
+            </div>
+        </div>
+
+        <!-- Writing Files -->
+        <div class="slide">
+            <h2>✍️ Writing Files</h2>
+            <p>Use the <span class="highlight">write()</span> method to add content to files:</p>
+
+            <h3>1. Basic Writing</h3>
+            <div class="code-block">
+<span class="comment"># Write to a file (overwrites existing content)</span>
+<span class="method">file</span> = <span class="keyword">open</span>(<span class="string">"output.txt"</span>, <span class="string">"w"</span>)
+<span class="method">file</span>.<span class="method">write</span>(<span class="string">"Hello, World!\n"</span>)
+<span class="method">file</span>.<span class="method">write</span>(<span class="string">"This is a new line."</span>)
+<span class="method">file</span>.<span class="method">close</span>()
+            </div>
+
+            <h3>2. Appending to Files</h3>
+            <div class="code-block">
+<span class="comment"># Append to existing file</span>
+<span class="method">file</span> = <span class="keyword">open</span>(<span class="string">"output.txt"</span>, <span class="string">"a"</span>)
+<span class="method">file</span>.<span class="method">write</span>(<span class="string">"\nThis line is appended."</span>)
+<span class="method">file</span>.<span class="method">close</span>()
+            </div>
+
+            <h3>3. Writing Multiple Lines</h3>
+            <div class="code-block">
+<span class="comment"># Write list of lines</span>
+<span class="method">lines</span> = [<span class="string">"Line 1\n"</span>, <span class="string">"Line 2\n"</span>, <span class="string">"Line 3\n"</span>]
+<span class="method">file</span> = <span class="keyword">open</span>(<span class="string">"multi_line.txt"</span>, <span class="string">"w"</span>)
+<span class="method">file</span>.<span class="method">writelines</span>(<span class="method">lines</span>)
+<span class="method">file</span>.<span class="method">close</span>()
+            </div>
+        </div>
+
+        <!-- Closing Files -->
+        <div class="slide">
+            <h2>🔒 Closing Files with close()</h2>
+            <p>Always close files after use to free up system resources and ensure data is properly saved.</p>
+
+            <div class="code-block">
+<span class="comment"># Manual closing</span>
+<span class="method">file</span> = <span class="keyword">open</span>(<span class="string">"example.txt"</span>, <span class="string">"r"</span>)
+<span class="method">content</span> = <span class="method">file</span>.<span class="method">read</span>()
+<span class="method">file</span>.<span class="method">close</span>()  <span class="comment"># Important: Always close the file!</span>
+            </div>
+
+            <div class="best-practices">
+                <h3>⚠️ Why Closing Files is Important:</h3>
+                <ul>
+                    <li>Frees up system memory and resources</li>
+                    <li>Ensures all data is written to the file</li>
+                    <li>Prevents file corruption</li>
+                    <li>Allows other programs to access the file</li>
+                    <li>Avoids "too many open files" errors</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- With Statement -->
+        <div class="slide">
+            <h2>🛡️ The 'with' Statement (Best Practice)</h2>
+            <p>The <span class="highlight">with</span> statement automatically handles file closing, even if an error occurs:</p>
+
+            <h3>Reading with 'with':</h3>
+            <div class="code-block">
+<span class="comment"># Automatic file closing with 'with' statement</span>
+<span class="keyword">with</span> <span class="keyword">open</span>(<span class="string">"example.txt"</span>, <span class="string">"r"</span>) <span class="keyword">as</span> <span class="method">file</span>:
+    <span class="method">content</span> = <span class="method">file</span>.<span class="method">read</span>()
+    <span class="keyword">print</span>(<span class="method">content</span>)
+<span class="comment"># File is automatically closed here!</span>
+            </div>
+
+            <h3>Writing with 'with':</h3>
+            <div class="code-block">
+<span class="comment"># Writing with automatic file management</span>
+<span class="keyword">with</span> <span class="keyword">open</span>(<span class="string">"output.txt"</span>, <span class="string">"w"</span>) <span class="keyword">as</span> <span class="method">file</span>:
+    <span class="method">file</span>.<span class="method">write</span>(<span class="string">"Hello, World!"</span>)
+    <span class="method">file</span>.<span class="method">write</span>(<span class="string">"\nPython File Handling"</span>)
+<span class="comment"># File is automatically closed and saved!</span>
+            </div>
+        </div>
+
+        <!-- Complete Example -->
+        <div class="slide">
+            <h2>🔥 Complete Example: Student Grade Manager</h2>
+            <p>Let's create a practical example that demonstrates all file handling concepts:</p>
+
+            <div class="code-block">
+<span class="comment"># Student Grade Manager</span>
+<span class="keyword">def</span> <span class="method">write_grades</span>():
+    <span class="comment"># Writing student grades to file</span>
+    <span class="method">grades</span> = [
+        <span class="string">"Alice: 95\n"</span>,
+        <span class="string">"Bob: 87\n"</span>,
+        <span class="string">"Charlie: 92\n"</span>,
+        <span class="string">"Diana: 88\n"</span>
+    ]
+    
+    <span class="keyword">with</span> <span class="keyword">open</span>(<span class="string">"grades.txt"</span>, <span class="string">"w"</span>) <span class="keyword">as</span> <span class="method">file</span>:
+        <span class="method">file</span>.<span class="method">writelines</span>(<span class="method">grades</span>)
+    <span class="keyword">print</span>(<span class="string">"Grades written successfully!"</span>)
+
+<span class="keyword">def</span> <span class="method">read_and_display_grades</span>():
+    <span class="comment"># Reading and displaying grades</span>
+    <span class="keyword">try</span>:
+        <span class="keyword">with</span> <span class="keyword">open</span>(<span class="string">"grades.txt"</span>, <span class="string">"r"</span>) <span class="keyword">as</span> <span class="method">file</span>:
+            <span class="keyword">print</span>(<span class="string">"Student Grades:"</span>)
+            <span class="keyword">print</span>(<span class="string">"-" * 20</span>)
+            <span class="keyword">for</span> <span class="method">line</span> <span class="keyword">in</span> <span class="method">file</span>:
+                <span class="keyword">print</span>(<span class="method">line</span>.<span class="method">strip</span>())
+    <span class="keyword">except</span> <span class="method">FileNotFoundError</span>:
+        <span class="keyword">print</span>(<span class="string">"Grades file not found!"</span>)
+
+<span class="keyword">def</span> <span class="method">add_new_grade</span>(<span class="method">student_name</span>, <span class="method">grade</span>):
+    <span class="comment"># Appending new grade to file</span>
+    <span class="keyword">with</span> <span class="keyword">open</span>(<span class="string">"grades.txt"</span>, <span class="string">"a"</span>) <span class="keyword">as</span> <span class="method">file</span>:
+        <span class="method">file</span>.<span class="method">write</span>(<span class="method">f</span><span class="string">"{student_name}: {grade}\n"</span>)
+    <span class="keyword">print</span>(<span class="method">f</span><span class="string">"Added {student_name}'s grade: {grade}"</span>)
+
+<span class="comment"># Using the functions</span>
+<span class="method">write_grades</span>()
+<span class="method">read_and_display_grades</span>()
+<span class="method">add_new_grade</span>(<span class="string">"Eve"</span>, <span class="string">"94"</span>)
+<span class="method">read_and_display_grades</span>()
+            </div>
+
+            <div class="output-block">
+<strong>Output:</strong>
+Grades written successfully!
+Student Grades:
+--------------------
+Alice: 95
+Bob: 87
+Charlie: 92
+Diana: 88
+Added Eve's grade: 94
+Student Grades:
+--------------------
+Alice: 95
+Bob: 87
+Charlie: 92
+Diana: 88
+Eve: 94
+            </div>
+        </div>
+
+        <!-- Error Handling -->
+        <div class="slide">
+            <h2>⚠️ Error Handling in File Operations</h2>
+            <p>Always handle potential errors when working with files:</p>
+
+            <div class="code-block">
+<span class="comment"># Robust file handling with error management</span>
+<span class="keyword">def</span> <span class="method">safe_file_read</span>(<span class="method">filename</span>):
+    <span class="keyword">try</span>:
+        <span class="keyword">with</span> <span class="keyword">open</span>(<span class="method">filename</span>, <span class="string">"r"</span>) <span class="keyword">as</span> <span class="method">file</span>:
+            <span class="method">content</span> = <span class="method">file</span>.<span class="method">read</span>()
+            <span class="keyword">return</span> <span class="method">content</span>
+    <span class="keyword">except</span> <span class="method">FileNotFoundError</span>:
+        <span class="keyword">print</span>(<span class="method">f</span><span class="string">"Error: File '{filename}' not found."</span>)
+    <span class="keyword">except</span> <span class="method">PermissionError</span>:
+        <span class="keyword">print</span>(<span class="method">f</span><span class="string">"Error: Permission denied to read '{filename}'."</span>)
+    <span class="keyword">except</span> <span class="method">Exception</span> <span class="keyword">as</span> <span class="method">e</span>:
+        <span class="keyword">print</span>(<span class="method">f</span><span class="string">"Unexpected error: {e}"</span>)
+    <span class="keyword">return</span> <span class="keyword">None</span>
+
+<span class="comment"># Usage</span>
+<span class="method">result</span> = <span class="method">safe_file_read</span>(<span class="string">"nonexistent.txt"</span>)
+<span class="keyword">if</span> <span class="method">result</span>:
+    <span class="keyword">print</span>(<span class="method">result</span>)
+            </div>
+        </div>
+
+        <!-- Best Practices -->
+        <div class="slide">
+            <h2>💡 Best Practices Summary</h2>
+            
+            <div class="best-practices">
+                <h3>🌟 Follow These Guidelines:</h3>
+                <ul>
+                    <li>Always use the 'with' statement for automatic file management</li>
+                    <li>Handle exceptions with try-except blocks</li>
+                    <li>Use appropriate file modes for your needs</li>
+                    <li>Close files explicitly if not using 'with' statement</li>
+                    <li>Use strip() to remove unwanted whitespace when reading</li>
+                    <li>Check if files exist before performing operations</li>
+                    <li>Use meaningful variable names for file objects</li>
+                    <li>Be mindful of file paths and working directories</li>
+                </ul>
+            </div>
+
+            <h3>🎯 Quick Reference:</h3>
+            <div class="code-block">
+<span class="comment"># Template for file operations</span>
+<span class="keyword">try</span>:
+    <span class="keyword">with</span> <span class="keyword">open</span>(<span class="string">"filename.txt"</span>, <span class="string">"mode"</span>) <span class="keyword">as</span> <span class="method">file</span>:
+        <span class="comment"># Perform file operations here</span>
+        <span class="keyword">pass</span>
+<span class="keyword">except</span> <span class="method">FileNotFoundError</span>:
+    <span class="keyword">print</span>(<span class="string">"File not found!"</span>)
+<span class="keyword">except</span> <span class="method">Exception</span> <span class="keyword">as</span> <span class="method">e</span>:
+    <span class="keyword">print</span>(<span class="method">f</span><span class="string">"Error: {e}"</span>)
+            </div>
+        </div>
+
+        <!-- Conclusion -->
+        <div class="slide">
+            <h1>🎉 Congratulations!</h1>
+            <div style="text-align: center; margin-top: 30px;">
+                <h3>You've mastered Python File Handling!</h3>
+                <p style="font-size: 1.2em; color: #666; margin: 20px 0;">
+                    You now know how to:
+                </p>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin: 30px 0;">
+                    <div style="background: linear-gradient(45deg, #667eea, #764ba2); color: white; padding: 20px; border-radius: 10px;">
+                        <strong>📂 Open Files</strong><br>
+                        Using open() with different modes
+                    </div>
+                    <div style="background: linear-gradient(45deg, #f093fb, #f5576c); color: white; padding: 20px; border-radius: 10px;">
+                        <strong>📖 Read Content</strong><br>
+                        read(), readline(), readlines()
+                    </div>
+                    <div style="background: linear-gradient(45deg, #4facfe, #00f2fe); color: white; padding: 20px; border-radius: 10px;">
+                        <strong>✍️ Write Data</strong><br>
+                        write(), writelines(), append
+                    </div>
+                    <div style="background: linear-gradient(45deg, #43e97b, #38f9d7); color: white; padding: 20px; border-radius: 10px;">
+                        <strong>🔒 Manage Files</strong><br>
+                        close(), with statement, error handling
+                    </div>
+                </div>
+                <p style="font-size: 1.1em; color: #555; margin-top: 30px;">
+                    Happy coding! 🐍✨
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" onclick="scrollToTop()">🔝 Top</button>
+        <button class="nav-btn" onclick="printPresentation()">🖨️ Print</button>
+    </div>
+
+    <script>
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+        
+        function printPresentation() {
+            window.print();
+        }
+        
+        // Add smooth scrolling for better navigation
+        document.addEventListener('DOMContentLoaded', function() {
+            const slides = document.querySelectorAll('.slide');
+            slides.forEach((slide, index) => {
+                slide.style.animationDelay = `${index * 0.1}s`;
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GroupBy Operations in Python</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .presentation-container {
+            width: 90%;
+            max-width: 1000px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+        
+        .slide {
+            display: none;
+            padding: 40px;
+            min-height: 600px;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        .slide.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-align: center;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        h2 {
+            color: #34495e;
+            font-size: 2em;
+            margin-bottom: 25px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        h3 {
+            color: #2c3e50;
+            font-size: 1.5em;
+            margin: 20px 0 15px 0;
+        }
+        
+        p, li {
+            font-size: 1.1em;
+            line-height: 1.6;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        ul {
+            margin-left: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            margin: 20px 0;
+            overflow-x: auto;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .code-block .comment {
+            color: #95a5a6;
+        }
+        
+        .code-block .keyword {
+            color: #3498db;
+        }
+        
+        .code-block .string {
+            color: #e67e22;
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: rgba(44, 62, 80, 0.1);
+            border-top: 1px solid rgba(44, 62, 80, 0.2);
+        }
+        
+        .nav-button {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .nav-button:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .slide-counter {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 1.1em;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, #a8e6cf 0%, #dcedc1 100%);
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #27ae60;
+            margin: 20px 0;
+        }
+        
+        .example-box {
+            background: linear-gradient(120deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #e67e22;
+        }
+        
+        .title-slide {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+        
+        .title-slide h1 {
+            font-size: 3.5em;
+            margin-bottom: 30px;
+        }
+        
+        .subtitle {
+            font-size: 1.5em;
+            color: #7f8c8d;
+            margin-bottom: 40px;
+        }
+        
+        .python-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <!-- Slide 1: Title -->
+        <div class="slide active title-slide">
+            <div class="python-icon">🐍</div>
+            <h1>GroupBy Operations in Python</h1>
+            <p class="subtitle">Mastering Data Aggregation with Pandas</p>
+            <div class="highlight">
+                <p><strong>Split-Apply-Combine Strategy for Data Analysis</strong></p>
+            </div>
+        </div>
+        
+        <!-- Slide 2: What is GroupBy? -->
+        <div class="slide">
+            <h2>What is GroupBy?</h2>
+            <p>GroupBy is a powerful operation that allows you to:</p>
+            <ul>
+                <li><strong>Split</strong> data into groups based on certain criteria</li>
+                <li><strong>Apply</strong> functions to each group independently</li>
+                <li><strong>Combine</strong> results back into a data structure</li>
+            </ul>
+            
+            <div class="highlight">
+                <p><strong>Think of it like organizing a deck of cards by suit, then counting cards in each suit!</strong></p>
+            </div>
+            
+            <h3>Common Use Cases:</h3>
+            <ul>
+                <li>Sales analysis by region or product category</li>
+                <li>Customer behavior analysis by demographics</li>
+                <li>Time series analysis by periods</li>
+                <li>Statistical summaries by groups</li>
+            </ul>
+        </div>
+        
+        <!-- Slide 3: Basic Syntax -->
+        <div class="slide">
+            <h2>Basic GroupBy Syntax</h2>
+            
+            <div class="code-block">
+<span class="comment"># Basic groupby syntax</span>
+df.groupby(<span class="string">'column_name'</span>).agg_function()
+
+<span class="comment"># Multiple columns</span>
+df.groupby([<span class="string">'col1'</span>, <span class="string">'col2'</span>]).agg_function()
+
+<span class="comment"># Common aggregation functions</span>
+df.groupby(<span class="string">'category'</span>).sum()
+df.groupby(<span class="string">'category'</span>).mean()
+df.groupby(<span class="string">'category'</span>).count()
+df.groupby(<span class="string">'category'</span>).max()
+df.groupby(<span class="string">'category'</span>).min()
+            </div>
+            
+            <div class="example-box">
+                <h3>Key Components:</h3>
+                <ul>
+                    <li><strong>Grouping Column(s):</strong> What to group by</li>
+                    <li><strong>Aggregation Function:</strong> What to calculate</li>
+                    <li><strong>Target Column(s):</strong> What to aggregate (optional)</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Slide 4: Simple Example -->
+        <div class="slide">
+            <h2>Simple Example: Sales Data</h2>
+            
+            <div class="code-block">
+<span class="keyword">import</span> pandas <span class="keyword">as</span> pd
+
+<span class="comment"># Sample sales data</span>
+data = {
+    <span class="string">'product'</span>: [<span class="string">'A'</span>, <span class="string">'B'</span>, <span class="string">'A'</span>, <span class="string">'C'</span>, <span class="string">'B'</span>, <span class="string">'A'</span>],
+    <span class="string">'region'</span>: [<span class="string">'North'</span>, <span class="string">'South'</span>, <span class="string">'North'</span>, <span class="string">'East'</span>, <span class="string">'South'</span>, <span class="string">'West'</span>],
+    <span class="string">'sales'</span>: [100, 150, 120, 80, 200, 90],
+    <span class="string">'quantity'</span>: [10, 15, 12, 8, 20, 9]
+}
+df = pd.DataFrame(data)
+
+<span class="comment"># Group by product and sum sales</span>
+product_sales = df.groupby(<span class="string">'product'</span>)[<span class="string">'sales'</span>].sum()
+<span class="keyword">print</span>(product_sales)
+
+<span class="comment"># Output:</span>
+<span class="comment"># product</span>
+<span class="comment"># A    310</span>
+<span class="comment"># B    350</span>
+<span class="comment"># C     80</span>
+            </div>
+        </div>
+        
+        <!-- Slide 5: Multiple Aggregations -->
+        <div class="slide">
+            <h2>Multiple Aggregation Functions</h2>
+            
+            <div class="code-block">
+<span class="comment"># Using agg() for multiple functions</span>
+result = df.groupby(<span class="string">'product'</span>).agg({
+    <span class="string">'sales'</span>: [<span class="string">'sum'</span>, <span class="string">'mean'</span>, <span class="string">'count'</span>],
+    <span class="string">'quantity'</span>: [<span class="string">'sum'</span>, <span class="string">'max'</span>]
+})
+
+<span class="comment"># Alternative syntax with multiple columns</span>
+result = df.groupby(<span class="string">'product'</span>).agg(
+    total_sales=(<span class="string">'sales'</span>, <span class="string">'sum'</span>),
+    avg_sales=(<span class="string">'sales'</span>, <span class="string">'mean'</span>),
+    total_quantity=(<span class="string">'quantity'</span>, <span class="string">'sum'</span>)
+)
+
+<span class="comment"># Using describe() for comprehensive stats</span>
+df.groupby(<span class="string">'product'</span>)[<span class="string">'sales'</span>].describe()
+            </div>
+            
+            <div class="highlight">
+                <p><strong>Pro Tip:</strong> Use named aggregations for cleaner column names!</p>
+            </div>
+        </div>
+        
+        <!-- Slide 6: Grouping by Multiple Columns -->
+        <div class="slide">
+            <h2>Multi-level Grouping</h2>
+            
+            <div class="code-block">
+<span class="comment"># Group by multiple columns</span>
+multi_group = df.groupby([<span class="string">'product'</span>, <span class="string">'region'</span>])[<span class="string">'sales'</span>].sum()
+<span class="keyword">print</span>(multi_group)
+
+<span class="comment"># Output (MultiIndex):</span>
+<span class="comment"># product  region</span>
+<span class="comment"># A        North     220</span>
+<span class="comment">#          West       90</span>
+<span class="comment"># B        South     350</span>
+<span class="comment"># C        East       80</span>
+
+<span class="comment"># Reset index to flatten</span>
+flat_result = multi_group.reset_index()
+
+<span class="comment"># Unstack for pivot-like result</span>
+pivot_result = multi_group.unstack(fill_value=0)
+            </div>
+            
+            <div class="example-box">
+                <h3>Handling MultiIndex Results:</h3>
+                <ul>
+                    <li><strong>reset_index():</strong> Convert to regular DataFrame</li>
+                    <li><strong>unstack():</strong> Pivot one level to columns</li>
+                    <li><strong>stack():</strong> Pivot columns to index</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Slide 7: Custom Aggregation Functions -->
+        <div class="slide">
+            <h2>Custom Aggregation Functions</h2>
+            
+            <div class="code-block">
+<span class="comment"># Define custom aggregation function</span>
+<span class="keyword">def</span> sales_range(series):
+    <span class="keyword">return</span> series.max() - series.min()
+
+<span class="comment"># Apply custom function</span>
+df.groupby(<span class="string">'product'</span>)[<span class="string">'sales'</span>].agg(sales_range)
+
+<span class="comment"># Multiple custom functions</span>
+<span class="keyword">def</span> coefficient_of_variation(series):
+    <span class="keyword">return</span> series.std() / series.mean()
+
+result = df.groupby(<span class="string">'product'</span>)[<span class="string">'sales'</span>].agg([
+    <span class="string">'mean'</span>,
+    <span class="string">'std'</span>,
+    sales_range,
+    coefficient_of_variation
+])
+
+<span class="comment"># Lambda functions for simple operations</span>
+df.groupby(<span class="string">'product'</span>)[<span class="string">'sales'</span>].agg(<span class="keyword">lambda</span> x: x.quantile(0.75))
+            </div>
+        </div>
+        
+        <!-- Slide 8: Transform and Apply -->
+        <div class="slide">
+            <h2>Transform vs Apply vs Agg</h2>
+            
+            <div class="code-block">
+<span class="comment"># AGG: Returns aggregated result (reduces data)</span>
+agg_result = df.groupby(<span class="string">'product'</span>)[<span class="string">'sales'</span>].agg(<span class="string">'mean'</span>)
+<span class="comment"># Shape: (3,) - one value per group</span>
+
+<span class="comment"># TRANSFORM: Returns same shape as original</span>
+transform_result = df.groupby(<span class="string">'product'</span>)[<span class="string">'sales'</span>].transform(<span class="string">'mean'</span>)
+<span class="comment"># Shape: (6,) - broadcasts group means to all rows</span>
+
+<span class="comment"># APPLY: Most flexible, can return any shape</span>
+apply_result = df.groupby(<span class="string">'product'</span>).apply(<span class="keyword">lambda</span> x: x.nlargest(2, <span class="string">'sales'</span>))
+
+<span class="comment"># Common transform use case: normalize within groups</span>
+df[<span class="string">'sales_normalized'</span>] = df.groupby(<span class="string">'product'</span>)[<span class="string">'sales'</span>].transform(
+    <span class="keyword">lambda</span> x: (x - x.mean()) / x.std()
+)
+            </div>
+            
+            <div class="highlight">
+                <p><strong>Remember:</strong> Transform maintains original DataFrame shape, while agg reduces it!</p>
+            </div>
+        </div>
+        
+        <!-- Slide 9: Filtering Groups -->
+        <div class="slide">
+            <h2>Filtering Groups</h2>
+            
+            <div class="code-block">
+<span class="comment"># Filter groups based on group properties</span>
+<span class="comment"># Keep only products with total sales > 200</span>
+high_sales = df.groupby(<span class="string">'product'</span>).filter(<span class="keyword">lambda</span> x: x[<span class="string">'sales'</span>].sum() > 200)
+
+<span class="comment"># Keep groups with more than 1 record</span>
+multi_records = df.groupby(<span class="string">'product'</span>).filter(<span class="keyword">lambda</span> x: len(x) > 1)
+
+<span class="comment"># Combine with other conditions</span>
+complex_filter = df.groupby(<span class="string">'region'</span>).filter(
+    <span class="keyword">lambda</span> x: (x[<span class="string">'sales'</span>].mean() > 100) & (len(x) >= 2)
+)
+
+<span class="comment"># Get group sizes</span>
+group_sizes = df.groupby(<span class="string">'product'</span>).size()
+<span class="keyword">print</span>(group_sizes)
+            </div>
+            
+            <div class="example-box">
+                <h3>Filter vs Boolean Indexing:</h3>
+                <ul>
+                    <li><strong>filter():</strong> Keeps/removes entire groups</li>
+                    <li><strong>Boolean indexing:</strong> Keeps/removes individual rows</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Slide 10: Performance Tips -->
+        <div class="slide">
+            <h2>Performance Tips & Best Practices</h2>
+            
+            <div class="code-block">
+<span class="comment"># 1. Use categorical data for grouping columns</span>
+df[<span class="string">'product'</span>] = df[<span class="string">'product'</span>].astype(<span class="string">'category'</span>)
+
+<span class="comment"># 2. Select columns before grouping</span>
+<span class="comment"># Good</span>
+result = df[[<span class="string">'product'</span>, <span class="string">'sales'</span>]].groupby(<span class="string">'product'</span>).sum()
+<span class="comment"># Avoid</span>
+result = df.groupby(<span class="string">'product'</span>).sum()  <span class="comment"># processes all columns</span>
+
+<span class="comment"># 3. Use observed=True for categorical grouping</span>
+result = df.groupby(<span class="string">'product'</span>, observed=<span class="keyword">True</span>).sum()
+
+<span class="comment"># 4. Chain operations efficiently</span>
+result = (df
+    .groupby(<span class="string">'product'</span>)
+    .agg({<span class="string">'sales'</span>: <span class="string">'sum'</span>, <span class="string">'quantity'</span>: <span class="string">'mean'</span>})
+    .round(2)
+    .sort_values(<span class="string">'sales'</span>, ascending=<span class="keyword">False</span>)
+)
+            </div>
+            
+            <div class="highlight">
+                <p><strong>Pro Tip:</strong> Always profile your groupby operations on large datasets!</p>
+            </div>
+        </div>
+        
+        <!-- Slide 11: Common Pitfalls -->
+        <div class="slide">
+            <h2>Common Pitfalls & Solutions</h2>
+            
+            <div class="code-block">
+<span class="comment"># Pitfall 1: Forgetting to handle NaN values</span>
+<span class="comment"># Solution: Use skipna parameter</span>
+df.groupby(<span class="string">'product'</span>)[<span class="string">'sales'</span>].sum(skipna=<span class="keyword">False</span>)
+
+<span class="comment"># Pitfall 2: MultiIndex confusion</span>
+<span class="comment"># Solution: Use as_index=False or reset_index()</span>
+df.groupby(<span class="string">'product'</span>, as_index=<span class="keyword">False</span>)[<span class="string">'sales'</span>].sum()
+
+<span class="comment"># Pitfall 3: Incorrect aggregation on non-numeric data</span>
+<span class="comment"># Solution: Select numeric columns explicitly</span>
+numeric_cols = df.select_dtypes(include=[<span class="string">'number'</span>]).columns
+df.groupby(<span class="string">'product'</span>)[numeric_cols].sum()
+
+<span class="comment"># Pitfall 4: Not considering empty groups</span>
+<span class="comment"># Solution: Use observed=True for categorical data</span>
+df.groupby(<span class="string">'product'</span>, observed=<span class="keyword">True</span>).sum()
+            </div>
+        </div>
+        
+        <!-- Slide 12: Advanced Example -->
+        <div class="slide">
+            <h2>Advanced Example: Sales Analysis</h2>
+            
+            <div class="code-block">
+<span class="comment"># Comprehensive sales analysis</span>
+analysis = (df
+    .groupby([<span class="string">'product'</span>, <span class="string">'region'</span>])
+    .agg(
+        total_sales=(<span class="string">'sales'</span>, <span class="string">'sum'</span>),
+        avg_sales=(<span class="string">'sales'</span>, <span class="string">'mean'</span>),
+        sales_std=(<span class="string">'sales'</span>, <span class="string">'std'</span>),
+        total_quantity=(<span class="string">'quantity'</span>, <span class="string">'sum'</span>),
+        transaction_count=(<span class="string">'sales'</span>, <span class="string">'count'</span>)
+    )
+    .round(2)
+    .sort_values(<span class="string">'total_sales'</span>, ascending=<span class="keyword">False</span>)
+)
+
+<span class="comment"># Add calculated columns</span>
+analysis[<span class="string">'avg_price'</span>] = analysis[<span class="string">'total_sales'</span>] / analysis[<span class="string">'total_quantity'</span>]
+analysis[<span class="string">'cv'</span>] = analysis[<span class="string">'sales_std'</span>] / analysis[<span class="string">'avg_sales'</span>]
+
+<span class="keyword">print</span>(analysis.head())
+            </div>
+        </div>
+        
+        <!-- Slide 13: Summary -->
+        <div class="slide">
+            <h2>Key Takeaways</h2>
+            
+            <div class="highlight">
+                <h3>🎯 GroupBy Workflow:</h3>
+                <p><strong>Split → Apply → Combine</strong></p>
+            </div>
+            
+            <h3>Essential Functions:</h3>
+            <ul>
+                <li><strong>agg():</strong> Single or multiple aggregations</li>
+                <li><strong>transform():</strong> Maintain original shape</li>
+                <li><strong>apply():</strong> Maximum flexibility</li>
+                <li><strong>filter():</strong> Group-level filtering</li>
+            </ul>
+            
+            <h3>Best Practices:</h3>
+            <ul>
+                <li>Use categorical data types for grouping columns</li>
+                <li>Select specific columns before grouping</li>
+                <li>Handle NaN values appropriately</li>
+                <li>Use named aggregations for clarity</li>
+                <li>Consider performance with large datasets</li>
+            </ul>
+            
+            <div class="example-box">
+                <p><strong>Remember:</strong> GroupBy is one of the most powerful tools in pandas for data analysis!</p>
+            </div>
+        </div>
+        
+        <div class="navigation">
+            <button class="nav-button" id="prevBtn" onclick="changeSlide(-1)">← Previous</button>
+            <span class="slide-counter">
+                <span id="currentSlide">1</span> / <span id="totalSlides">13</span>
+            </span>
+            <button class="nav-button" id="nextBtn" onclick="changeSlide(1)">Next →</button>
+        </div>
+    </div>
+    
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('totalSlides').textContent = totalSlides;
+        
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            
+            document.getElementById('currentSlide').textContent = currentSlide + 1;
+            
+            // Update navigation buttons
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+        }
+        
+        function changeSlide(direction) {
+            if (direction === 1 && currentSlide < totalSlides - 1) {
+                showSlide(currentSlide + 1);
+            } else if (direction === -1 && currentSlide > 0) {
+                showSlide(currentSlide - 1);
+            }
+        }
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowRight') {
+                changeSlide(1);
+            } else if (event.key === 'ArrowLeft') {
+                changeSlide(-1);
+            }
+        });
+        
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+</html>

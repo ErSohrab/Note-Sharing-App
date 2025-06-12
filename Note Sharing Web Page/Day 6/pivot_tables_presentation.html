@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pivot Tables and Cross-tabulations in Python</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .presentation-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .slide {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .slide:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        }
+
+        .slide h1 {
+            color: #4a5568;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-align: center;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .slide h2 {
+            color: #2d3748;
+            font-size: 2em;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .slide h3 {
+            color: #4a5568;
+            font-size: 1.5em;
+            margin: 20px 0 15px 0;
+        }
+
+        .slide p {
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            color: #4a5568;
+        }
+
+        .slide ul, .slide ol {
+            margin: 15px 0 15px 30px;
+        }
+
+        .slide li {
+            margin-bottom: 8px;
+            color: #4a5568;
+        }
+
+        .code-block {
+            background: #1a202c;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow-x: auto;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            line-height: 1.5;
+            border-left: 4px solid #667eea;
+        }
+
+        .output-block {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-family: monospace;
+            font-size: 0.9em;
+            color: #2d3748;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #38b2ac;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .comparison-table th {
+            background: #667eea;
+            color: white;
+            padding: 15px;
+            text-align: left;
+        }
+
+        .comparison-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .comparison-table tr:hover {
+            background: #f7fafc;
+        }
+
+        .key-points {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .example-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 1px solid #dee2e6;
+        }
+
+        .navigation {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .navigation a {
+            display: block;
+            color: #667eea;
+            text-decoration: none;
+            padding: 5px 0;
+            font-size: 0.9em;
+            transition: color 0.3s ease;
+        }
+
+        .navigation a:hover {
+            color: #764ba2;
+        }
+
+        @media (max-width: 768px) {
+            .presentation-container {
+                padding: 10px;
+            }
+            
+            .slide {
+                padding: 20px;
+            }
+            
+            .slide h1 {
+                font-size: 2em;
+            }
+            
+            .slide h2 {
+                font-size: 1.5em;
+            }
+            
+            .navigation {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navigation">
+        <a href="#slide1">Introduction</a>
+        <a href="#slide2">Pivot Tables</a>
+        <a href="#slide3">Cross-tabulations</a>
+        <a href="#slide4">Pandas Examples</a>
+        <a href="#slide5">Advanced Features</a>
+        <a href="#slide6">Best Practices</a>
+    </div>
+
+    <div class="presentation-container">
+        <!-- Slide 1: Title -->
+        <div class="slide" id="slide1">
+            <h1>🐍 Pivot Tables and Cross-tabulations in Python</h1>
+            <div class="highlight">
+                <h3>Master Data Analysis with Pandas</h3>
+                <p>Learn to transform, aggregate, and analyze data efficiently using Python's most powerful data manipulation tools.</p>
+            </div>
+            <div style="text-align: center; margin-top: 30px;">
+                <p><strong>Topics Covered:</strong></p>
+                <ul style="list-style: none; text-align: left; display: inline-block;">
+                    <li>📊 Understanding Pivot Tables</li>
+                    <li>🔄 Cross-tabulation Techniques</li>
+                    <li>🛠️ Practical Examples</li>
+                    <li>⚡ Advanced Features</li>
+                    <li>💡 Best Practices</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 2: What are Pivot Tables? -->
+        <div class="slide" id="slide2">
+            <h2>📊 What are Pivot Tables?</h2>
+            <p>Pivot tables are powerful data summarization tools that allow you to reshape and aggregate data from a detailed dataset into a concise, cross-tabulated format.</p>
+            
+            <div class="key-points">
+                <h3>Key Benefits:</h3>
+                <ul>
+                    <li><strong>Data Aggregation:</strong> Summarize large datasets quickly</li>
+                    <li><strong>Flexible Analysis:</strong> Group by multiple dimensions</li>
+                    <li><strong>Easy Comparison:</strong> Compare values across categories</li>
+                    <li><strong>Trend Identification:</strong> Spot patterns in your data</li>
+                </ul>
+            </div>
+
+            <h3>Basic Syntax in Pandas:</h3>
+            <div class="code-block">
+df.pivot_table(
+    values='column_to_aggregate',
+    index='row_grouping_column',
+    columns='column_grouping_column',
+    aggfunc='aggregation_function',
+    fill_value=0
+)
+            </div>
+        </div>
+
+        <!-- Slide 3: Cross-tabulations -->
+        <div class="slide" id="slide3">
+            <h2>🔄 Cross-tabulations (Crosstabs)</h2>
+            <p>Cross-tabulations show the frequency distribution of observations across two or more categorical variables, creating a contingency table.</p>
+
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Pivot Table</th>
+                        <th>Cross-tabulation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Primary Use</strong></td>
+                        <td>Data aggregation & summarization</td>
+                        <td>Frequency analysis & relationships</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Data Types</strong></td>
+                        <td>Numerical & categorical</td>
+                        <td>Primarily categorical</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Default Function</strong></td>
+                        <td>mean()</td>
+                        <td>count()</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Output</strong></td>
+                        <td>Aggregated values</td>
+                        <td>Frequency counts</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Basic Crosstab Syntax:</h3>
+            <div class="code-block">
+pd.crosstab(
+    index=df['row_variable'],
+    columns=df['column_variable'],
+    normalize=False,  # Set to True for proportions
+    margins=True      # Add row/column totals
+)
+            </div>
+        </div>
+
+        <!-- Slide 4: Practical Examples -->
+        <div class="slide" id="slide4">
+            <h2>🛠️ Hands-on Examples</h2>
+            
+            <div class="example-section">
+                <h3>Example 1: Sales Data Analysis</h3>
+                <div class="code-block">
+import pandas as pd
+import numpy as np
+
+# Create sample sales data
+np.random.seed(42)
+data = {
+    'Date': pd.date_range('2023-01-01', periods=1000, freq='D'),
+    'Product': np.random.choice(['Laptop', 'Phone', 'Tablet'], 1000),
+    'Region': np.random.choice(['North', 'South', 'East', 'West'], 1000),
+    'Salesperson': np.random.choice(['Alice', 'Bob', 'Charlie', 'Diana'], 1000),
+    'Sales': np.random.randint(100, 1000, 1000),
+    'Quantity': np.random.randint(1, 10, 1000)
+}
+
+df = pd.DataFrame(data)
+df['Month'] = df['Date'].dt.to_period('M')
+
+# Pivot table: Sales by Product and Region
+pivot_sales = df.pivot_table(
+    values='Sales',
+    index='Product',
+    columns='Region',
+    aggfunc='sum',
+    fill_value=0
+)
+
+print("Sales by Product and Region:")
+print(pivot_sales)
+                </div>
+                
+                <div class="output-block">
+Region    East   North   South    West
+Product                           
+Laptop   45328   44891   45102   44536
+Phone    45234   44654   45891   44327
+Tablet   44187   45332   44509   44901
+                </div>
+            </div>
+
+            <div class="example-section">
+                <h3>Example 2: Cross-tabulation Analysis</h3>
+                <div class="code-block">
+# Cross-tabulation: Product vs Region frequency
+crosstab_freq = pd.crosstab(
+    df['Product'], 
+    df['Region'],
+    margins=True,
+    margins_name="Total"
+)
+
+print("Product vs Region Frequency:")
+print(crosstab_freq)
+
+# Normalized cross-tabulation (percentages)
+crosstab_pct = pd.crosstab(
+    df['Product'], 
+    df['Region'],
+    normalize='index'  # Normalize by rows
+) * 100
+
+print("\nProduct vs Region (Row Percentages):")
+print(crosstab_pct.round(1))
+                </div>
+                
+                <div class="output-block">
+Product vs Region Frequency:
+Region   East  North  South  West  Total
+Product                               
+Laptop     83     82     85    83    333
+Phone      84     79     88    79    330
+Tablet     82     86     83    86    337
+Total     249    247    256   248   1000
+
+Product vs Region (Row Percentages):
+Region   East  North  South   West
+Product                          
+Laptop   24.9   24.6   25.5   24.9
+Phone    25.5   23.9   26.7   23.9
+Tablet   24.3   25.5   24.6   25.5
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Advanced Features -->
+        <div class="slide" id="slide5">
+            <h2>⚡ Advanced Features</h2>
+            
+            <div class="example-section">
+                <h3>Multiple Aggregation Functions</h3>
+                <div class="code-block">
+# Multiple aggregation functions in one pivot table
+multi_agg = df.pivot_table(
+    values='Sales',
+    index='Product',
+    columns='Region',
+    aggfunc=['sum', 'mean', 'count'],
+    fill_value=0
+)
+
+print("Multiple Aggregations:")
+print(multi_agg)
+                </div>
+            </div>
+
+            <div class="example-section">
+                <h3>Hierarchical Indices</h3>
+                <div class="code-block">
+# Multi-level pivot table
+hierarchical = df.pivot_table(
+    values='Sales',
+    index=['Product', 'Salesperson'],
+    columns='Region',
+    aggfunc='mean',
+    fill_value=0
+)
+
+print("Hierarchical Pivot Table:")
+print(hierarchical.head(10))
+                </div>
+            </div>
+
+            <div class="example-section">
+                <h3>Time Series Analysis</h3>
+                <div class="code-block">
+# Monthly sales trend by product
+monthly_trend = df.pivot_table(
+    values='Sales',
+    index='Month',
+    columns='Product',
+    aggfunc='sum',
+    fill_value=0
+)
+
+print("Monthly Sales Trend:")
+print(monthly_trend.head())
+
+# Calculate month-over-month growth
+growth = monthly_trend.pct_change() * 100
+print("\nMonth-over-Month Growth (%):")
+print(growth.head())
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Statistical Analysis -->
+        <div class="slide">
+            <h2>📈 Statistical Analysis with Crosstabs</h2>
+            
+            <div class="example-section">
+                <h3>Chi-Square Test</h3>
+                <div class="code-block">
+from scipy.stats import chi2_contingency
+
+# Create a crosstab for statistical testing
+observed = pd.crosstab(df['Product'], df['Region'])
+
+# Perform chi-square test
+chi2, p_value, dof, expected = chi2_contingency(observed)
+
+print(f"Chi-square statistic: {chi2:.4f}")
+print(f"P-value: {p_value:.4f}")
+print(f"Degrees of freedom: {dof}")
+
+if p_value < 0.05:
+    print("There is a significant association between Product and Region")
+else:
+    print("No significant association between Product and Region")
+                </div>
+            </div>
+
+            <div class="example-section">
+                <h3>Advanced Crosstab Options</h3>
+                <div class="code-block">
+# Crosstab with custom aggregation
+custom_crosstab = pd.crosstab(
+    df['Product'],
+    df['Region'],
+    values=df['Sales'],
+    aggfunc='mean'
+)
+
+print("Average Sales by Product and Region:")
+print(custom_crosstab.round(2))
+
+# Multiple variables crosstab
+multi_crosstab = pd.crosstab(
+    [df['Product'], df['Month'].astype(str)],
+    df['Region']
+)
+
+print("\nProduct and Month vs Region:")
+print(multi_crosstab.head(10))
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Best Practices -->
+        <div class="slide" id="slide6">
+            <h2>💡 Best Practices & Tips</h2>
+            
+            <div class="key-points">
+                <h3>Performance Optimization:</h3>
+                <ul>
+                    <li><strong>Use categorical data types</strong> for string columns to save memory</li>
+                    <li><strong>Consider data size</strong> before creating large pivot tables</li>
+                    <li><strong>Filter data first</strong> to reduce processing time</li>
+                    <li><strong>Use appropriate aggregation functions</strong> for your data type</li>
+                </ul>
+            </div>
+
+            <div class="example-section">
+                <h3>Memory Optimization Example</h3>
+                <div class="code-block">
+# Convert to categorical for better performance
+df['Product'] = df['Product'].astype('category')
+df['Region'] = df['Region'].astype('category')
+df['Salesperson'] = df['Salesperson'].astype('category')
+
+# Check memory usage
+print("Memory usage after optimization:")
+print(df.memory_usage(deep=True))
+                </div>
+            </div>
+
+            <div class="highlight">
+                <h3>When to Use Which:</h3>
+                <ul>
+                    <li><strong>Use Pivot Tables when:</strong> You need to aggregate numerical data across categories</li>
+                    <li><strong>Use Cross-tabs when:</strong> You want to analyze relationships between categorical variables</li>
+                    <li><strong>Use both together:</strong> For comprehensive exploratory data analysis</li>
+                </ul>
+            </div>
+
+            <div class="example-section">
+                <h3>Common Pitfalls to Avoid</h3>
+                <ul>
+                    <li>🚫 <strong>Don't ignore missing values</strong> - handle them explicitly with fill_value</li>
+                    <li>🚫 <strong>Don't create overly complex hierarchies</strong> - keep it readable</li>
+                    <li>🚫 <strong>Don't forget to validate results</strong> - check totals and logic</li>
+                    <li>🚫 <strong>Don't use inappropriate aggregations</strong> - mean for categorical data doesn't make sense</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 8: Conclusion -->
+        <div class="slide">
+            <h2>🎯 Summary & Next Steps</h2>
+            
+            <div class="highlight">
+                <h3>Key Takeaways:</h3>
+                <ul>
+                    <li>📊 <strong>Pivot tables</strong> are perfect for numerical data aggregation and summarization</li>
+                    <li>🔄 <strong>Cross-tabulations</strong> excel at analyzing categorical relationships</li>
+                    <li>🛠️ <strong>Pandas provides powerful tools</strong> for both techniques with flexible syntax</li>
+                    <li>⚡ <strong>Advanced features</strong> enable complex multi-dimensional analysis</li>
+                    <li>💡 <strong>Best practices</strong> ensure efficient and accurate analysis</li>
+                </ul>
+            </div>
+
+            <div class="example-section">
+                <h3>Practice Exercises:</h3>
+                <ol>
+                    <li>Create a pivot table showing quarterly sales by product category</li>
+                    <li>Use cross-tabulation to analyze customer demographics</li>
+                    <li>Build a hierarchical pivot table with multiple grouping levels</li>
+                    <li>Perform statistical tests on your cross-tabulation results</li>
+                    <li>Optimize a large dataset for pivot table operations</li>
+                </ol>
+            </div>
+
+            <div style="text-align: center; margin-top: 30px; padding: 20px; background: linear-gradient(45deg, #667eea, #764ba2); color: white; border-radius: 10px;">
+                <h3>Ready to Transform Your Data Analysis! 🚀</h3>
+                <p>Start applying these techniques to your own datasets and discover powerful insights hidden in your data.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add smooth scrolling for navigation
+        document.querySelectorAll('.navigation a').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add hover effects to code blocks
+        document.querySelectorAll('.code-block').forEach(block => {
+            block.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.02)';
+                this.style.transition = 'transform 0.3s ease';
+            });
+            
+            block.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1)';
+            });
+        });
+
+        // Add copy functionality to code blocks
+        document.querySelectorAll('.code-block').forEach(block => {
+            block.style.position = 'relative';
+            block.style.cursor = 'pointer';
+            
+            const copyButton = document.createElement('div');
+            copyButton.innerHTML = '📋 Click to copy';
+            copyButton.style.position = 'absolute';
+            copyButton.style.top = '10px';
+            copyButton.style.right = '10px';
+            copyButton.style.background = 'rgba(255,255,255,0.2)';
+            copyButton.style.padding = '5px 10px';
+            copyButton.style.borderRadius = '5px';
+            copyButton.style.fontSize = '0.8em';
+            copyButton.style.display = 'none';
+            
+            block.appendChild(copyButton);
+            
+            block.addEventListener('mouseenter', () => {
+                copyButton.style.display = 'block';
+            });
+            
+            block.addEventListener('mouseleave', () => {
+                copyButton.style.display = 'none';
+            });
+            
+            block.addEventListener('click', () => {
+                navigator.clipboard.writeText(block.textContent.replace('📋 Click to copy', ''));
+                copyButton.innerHTML = '✅ Copied!';
+                setTimeout(() => {
+                    copyButton.innerHTML = '📋 Click to copy';
+                }, 2000);
+            });
+        });
+    </script>
+</body>
+</html>

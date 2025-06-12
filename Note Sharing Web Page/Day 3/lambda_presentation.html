@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lambda Functions: Syntax and Use Cases</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .presentation-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .slide {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 30px 0;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            opacity: 0;
+            transform: translateY(50px);
+            animation: slideIn 0.8s ease-out forwards;
+        }
+
+        .slide:nth-child(2) { animation-delay: 0.2s; }
+        .slide:nth-child(3) { animation-delay: 0.4s; }
+        .slide:nth-child(4) { animation-delay: 0.6s; }
+        .slide:nth-child(5) { animation-delay: 0.8s; }
+        .slide:nth-child(6) { animation-delay: 1.0s; }
+        .slide:nth-child(7) { animation-delay: 1.2s; }
+
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .slide h1 {
+            font-size: 2.8em;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.5)); }
+            to { filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8)); }
+        }
+
+        .slide h2 {
+            font-size: 2.2em;
+            margin-bottom: 25px;
+            color: #FFD700;
+            border-bottom: 3px solid #FFD700;
+            padding-bottom: 10px;
+        }
+
+        .slide h3 {
+            font-size: 1.6em;
+            margin: 25px 0 15px 0;
+            color: #87CEEB;
+        }
+
+        .slide p {
+            font-size: 1.2em;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .code-block {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+            border-left: 5px solid #FFD700;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.3);
+            overflow-x: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .code-block:hover {
+            transform: scale(1.02);
+        }
+
+        .python { color: #87CEEB; }
+        .comment { color: #90EE90; font-style: italic; }
+        .string { color: #FFB6C1; }
+        .keyword { color: #FFD700; font-weight: bold; }
+
+        .example-box {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .example-box::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 215, 0, 0.1), transparent);
+            animation: shine 3s linear infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .use-case {
+            background: rgba(135, 206, 235, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid #87CEEB;
+            transition: all 0.3s ease;
+        }
+
+        .use-case:hover {
+            background: rgba(135, 206, 235, 0.2);
+            transform: translateX(10px);
+        }
+
+        .highlight {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+        }
+
+        .interactive-demo {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .demo-button {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #000;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .demo-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.5);
+        }
+
+        .output {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            font-family: monospace;
+            color: #90EE90;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .comparison-table th {
+            background: rgba(255, 215, 0, 0.2);
+            color: #FFD700;
+            font-weight: bold;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 30px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+        }
+
+        .floating-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .shape {
+            position: absolute;
+            opacity: 0.1;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .shape:nth-child(1) {
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .shape:nth-child(2) {
+            top: 20%;
+            right: 10%;
+            animation-delay: 2s;
+        }
+
+        .shape:nth-child(3) {
+            bottom: 10%;
+            left: 20%;
+            animation-delay: 4s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-shapes">
+        <div class="shape" style="width: 100px; height: 100px; background: linear-gradient(45deg, #FFD700, #FFA500); border-radius: 50%;"></div>
+        <div class="shape" style="width: 80px; height: 80px; background: linear-gradient(45deg, #87CEEB, #4682B4); border-radius: 20px;"></div>
+        <div class="shape" style="width: 120px; height: 120px; background: linear-gradient(45deg, #98FB98, #32CD32); clip-path: polygon(50% 0%, 0% 100%, 100% 100%);"></div>
+    </div>
+
+    <div class="presentation-container">
+        <!-- Title Slide -->
+        <div class="slide">
+            <h1>Lambda Functions</h1>
+            <p style="text-align: center; font-size: 1.4em; margin-top: 30px;">
+                Mastering <span class="highlight">Anonymous Functions</span> in Python
+            </p>
+            <p style="text-align: center; font-size: 1.1em; margin-top: 20px; opacity: 0.8;">
+                Syntax, Use Cases, and Practical Examples
+            </p>
+        </div>
+
+        <!-- What are Lambda Functions -->
+        <div class="slide">
+            <h2>What are Lambda Functions?</h2>
+            <p>Lambda functions are <strong>anonymous functions</strong> in Python that can have any number of arguments but can only have <strong>one expression</strong>.</p>
+            
+            <div class="example-box">
+                <h3>Key Characteristics:</h3>
+                <ul style="font-size: 1.1em; line-height: 1.8;">
+                    <li>🔹 <strong>Anonymous:</strong> No function name required</li>
+                    <li>🔹 <strong>Concise:</strong> Written in a single line</li>
+                    <li>🔹 <strong>Functional:</strong> Can be used wherever function objects are required</li>
+                    <li>🔹 <strong>Limited:</strong> Only one expression, no statements</li>
+                </ul>
+            </div>
+
+            <div class="code-block">
+<span class="comment"># Regular function</span>
+<span class="keyword">def</span> <span class="python">square(x):</span>
+    <span class="keyword">return</span> <span class="python">x ** 2</span>
+
+<span class="comment"># Equivalent lambda function</span>
+<span class="python">square_lambda = </span><span class="keyword">lambda</span> <span class="python">x: x ** 2</span>
+            </div>
+        </div>
+
+        <!-- Syntax -->
+        <div class="slide">
+            <h2>Lambda Function Syntax</h2>
+            
+            <div class="code-block">
+<span class="keyword">lambda</span> <span class="python">arguments: expression</span>
+            </div>
+
+            <div class="example-box">
+                <h3>Breaking it down:</h3>
+                <ul style="font-size: 1.1em; line-height: 1.8;">
+                    <li><strong>lambda:</strong> The keyword that defines a lambda function</li>
+                    <li><strong>arguments:</strong> Input parameters (can be multiple, separated by commas)</li>
+                    <li><strong>expression:</strong> Single expression that gets evaluated and returned</li>
+                </ul>
+            </div>
+
+            <h3>Examples with Different Argument Patterns:</h3>
+            
+            <div class="code-block">
+<span class="comment"># No arguments</span>
+<span class="python">greeting = </span><span class="keyword">lambda</span><span class="python">: </span><span class="string">"Hello, World!"</span>
+
+<span class="comment"># Single argument</span>
+<span class="python">double = </span><span class="keyword">lambda</span> <span class="python">x: x * 2</span>
+
+<span class="comment"># Multiple arguments</span>
+<span class="python">add = </span><span class="keyword">lambda</span> <span class="python">x, y: x + y</span>
+
+<span class="comment"># Default arguments</span>
+<span class="python">power = </span><span class="keyword">lambda</span> <span class="python">x, n=2: x ** n</span>
+
+<span class="comment"># Variable arguments</span>
+<span class="python">sum_all = </span><span class="keyword">lambda</span> <span class="python">*args: sum(args)</span>
+            </div>
+        </div>
+
+        <!-- Use Cases -->
+        <div class="slide">
+            <h2>Common Use Cases</h2>
+
+            <div class="use-case">
+                <h3>1. With Higher-Order Functions</h3>
+                <p>Lambda functions shine when used with functions like <code>map()</code>, <code>filter()</code>, and <code>reduce()</code>.</p>
+                
+                <div class="code-block">
+<span class="comment"># Using map() to apply lambda to each element</span>
+<span class="python">numbers = [1, 2, 3, 4, 5]</span>
+<span class="python">squared = list(map(</span><span class="keyword">lambda</span> <span class="python">x: x**2, numbers))</span>
+<span class="comment"># Result: [1, 4, 9, 16, 25]</span>
+
+<span class="comment"># Using filter() to select elements</span>
+<span class="python">evens = list(filter(</span><span class="keyword">lambda</span> <span class="python">x: x % 2 == 0, numbers))</span>
+<span class="comment"># Result: [2, 4]</span>
+                </div>
+            </div>
+
+            <div class="use-case">
+                <h3>2. Sorting with Custom Key Functions</h3>
+                <p>Lambda functions are perfect for defining custom sorting criteria.</p>
+                
+                <div class="code-block">
+<span class="comment"># Sort list of tuples by second element</span>
+<span class="python">students = [('Alice', 85), ('Bob', 90), ('Charlie', 78)]</span>
+<span class="python">sorted_by_grade = sorted(students, key=</span><span class="keyword">lambda</span> <span class="python">x: x[1])</span>
+<span class="comment"># Result: [('Charlie', 78), ('Alice', 85), ('Bob', 90)]</span>
+
+<span class="comment"># Sort strings by length</span>
+<span class="python">words = ['python', 'java', 'c', 'javascript']</span>
+<span class="python">by_length = sorted(words, key=</span><span class="keyword">lambda</span> <span class="python">x: len(x))</span>
+<span class="comment"># Result: ['c', 'java', 'python', 'javascript']</span>
+                </div>
+            </div>
+
+            <div class="use-case">
+                <h3>3. Event Handling and Callbacks</h3>
+                <p>Lambda functions are useful for simple event handlers and callback functions.</p>
+                
+                <div class="code-block">
+<span class="comment"># Simple callback example</span>
+<span class="keyword">def</span> <span class="python">process_data(data, callback):</span>
+    <span class="python">result = data * 2</span>
+    <span class="python">callback(result)</span>
+
+<span class="python">process_data(5, </span><span class="keyword">lambda</span> <span class="python">x: print(f</span><span class="string">"Result: {x}"</span><span class="python">))</span>
+<span class="comment"># Output: Result: 10</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Practical Examples -->
+        <div class="slide">
+            <h2>Practical Examples</h2>
+
+            <div class="example-box">
+                <h3>Data Processing Pipeline</h3>
+                <div class="code-block">
+<span class="comment"># Processing a list of temperatures (Celsius to Fahrenheit)</span>
+<span class="python">celsius_temps = [0, 20, 30, 40, 100]</span>
+
+<span class="comment"># Convert to Fahrenheit and filter > 80°F</span>
+<span class="python">hot_fahrenheit = list(filter(</span>
+    <span class="keyword">lambda</span> <span class="python">f: f > 80,</span>
+    <span class="python">map(</span><span class="keyword">lambda</span> <span class="python">c: c * 9/5 + 32, celsius_temps)</span>
+<span class="python">))</span>
+
+<span class="python">print(hot_fahrenheit)</span>  <span class="comment"># [86.0, 104.0, 212.0]</span>
+                </div>
+            </div>
+
+            <div class="example-box">
+                <h3>Working with Dictionaries</h3>
+                <div class="code-block">
+<span class="comment"># Sort dictionary by values</span>
+<span class="python">scores = {'Alice': 85, 'Bob': 90, 'Charlie': 78, 'Diana': 92}</span>
+
+<span class="comment"># Get top 2 students</span>
+<span class="python">top_students = sorted(scores.items(), </span>
+                      <span class="python">key=</span><span class="keyword">lambda</span> <span class="python">item: item[1], </span>
+                      <span class="python">reverse=True)[:2]</span>
+
+<span class="python">print(top_students)</span>  <span class="comment"># [('Diana', 92), ('Bob', 90)]</span>
+                </div>
+            </div>
+
+            <div class="example-box">
+                <h3>String Manipulation</h3>
+                <div class="code-block">
+<span class="comment"># Process list of names</span>
+<span class="python">names = ['alice johnson', 'bob smith', 'charlie brown']</span>
+
+<span class="comment"># Capitalize and get initials</span>
+<span class="python">initials = list(map(</span>
+    <span class="keyword">lambda</span> <span class="python">name: ''.join([word[0].upper() </span>
+                           <span class="keyword">for</span> <span class="python">word in name.split()]),</span>
+    <span class="python">names</span>
+<span class="python">))</span>
+
+<span class="python">print(initials)</span>  <span class="comment"># ['AJ', 'BS', 'CB']</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interactive Demo -->
+        <div class="slide">
+            <h2>Interactive Demo</h2>
+            <p>Try these lambda functions yourself!</p>
+
+            <div class="interactive-demo">
+                <button class="demo-button" onclick="demoMap()">Map Demo</button>
+                <button class="demo-button" onclick="demoFilter()">Filter Demo</button>
+                <button class="demo-button" onclick="demoSort()">Sort Demo</button>
+                <button class="demo-button" onclick="demoReduce()">Reduce Demo</button>
+                
+                <div class="output" id="demo-output">
+                    Click a button to see lambda functions in action!
+                </div>
+            </div>
+
+            <div class="code-block">
+<span class="comment"># The code behind these demos:</span>
+
+<span class="comment"># Map: Square each number</span>
+<span class="python">numbers = [1, 2, 3, 4, 5]</span>
+<span class="python">squared = list(map(</span><span class="keyword">lambda</span> <span class="python">x: x**2, numbers))</span>
+
+<span class="comment"># Filter: Get even numbers</span>
+<span class="python">evens = list(filter(</span><span class="keyword">lambda</span> <span class="python">x: x % 2 == 0, numbers))</span>
+
+<span class="comment"># Sort: Sort words by length</span>
+<span class="python">words = ['Python', 'is', 'awesome', 'language']</span>
+<span class="python">by_length = sorted(words, key=</span><span class="keyword">lambda</span> <span class="python">w: len(w))</span>
+
+<span class="comment"># Reduce: Calculate product</span>
+<span class="keyword">from</span> <span class="python">functools </span><span class="keyword">import</span> <span class="python">reduce</span>
+<span class="python">product = reduce(</span><span class="keyword">lambda</span> <span class="python">x, y: x * y, [1, 2, 3, 4])</span>
+            </div>
+        </div>
+
+        <!-- Lambda vs Regular Functions -->
+        <div class="slide">
+            <h2>Lambda vs Regular Functions</h2>
+
+            <table class="comparison-table">
+                <tr>
+                    <th>Aspect</th>
+                    <th>Lambda Functions</th>
+                    <th>Regular Functions</th>
+                </tr>
+                <tr>
+                    <td><strong>Definition</strong></td>
+                    <td>Single line, inline</td>
+                    <td>Multi-line with def keyword</td>
+                </tr>
+                <tr>
+                    <td><strong>Name</strong></td>
+                    <td>Anonymous (no name)</td>
+                    <td>Named</td>
+                </tr>
+                <tr>
+                    <td><strong>Complexity</strong></td>
+                    <td>Single expression only</td>
+                    <td>Multiple statements allowed</td>
+                </tr>
+                <tr>
+                    <td><strong>Documentation</strong></td>
+                    <td>No docstrings</td>
+                    <td>Can have docstrings</td>
+                </tr>
+                <tr>
+                    <td><strong>Use Case</strong></td>
+                    <td>Short, simple operations</td>
+                    <td>Complex logic and reusability</td>
+                </tr>
+            </table>
+
+            <div class="example-box">
+                <h3>When to Use Lambda:</h3>
+                <ul style="font-size: 1.1em; line-height: 1.8;">
+                    <li>✅ Short, simple operations</li>
+                    <li>✅ One-time use functions</li>
+                    <li>✅ With higher-order functions (map, filter, sort)</li>
+                    <li>✅ Functional programming patterns</li>
+                </ul>
+
+                <h3>When to Use Regular Functions:</h3>
+                <ul style="font-size: 1.1em; line-height: 1.8;">
+                    <li>✅ Complex logic</li>
+                    <li>✅ Multiple statements</li>
+                    <li>✅ Reusable code</li>
+                    <li>✅ Need documentation</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Best Practices -->
+        <div class="slide">
+            <h2>Best Practices & Tips</h2>
+
+            <div class="use-case">
+                <h3>✅ Do's</h3>
+                <ul style="font-size: 1.1em; line-height: 1.8;">
+                    <li>Keep lambda functions simple and readable</li>
+                    <li>Use them for short, one-time operations</li>
+                    <li>Combine with map(), filter(), sorted(), etc.</li>
+                    <li>Use meaningful variable names even in lambdas</li>
+                </ul>
+            </div>
+
+            <div class="use-case">
+                <h3>❌ Don'ts</h3>
+                <ul style="font-size: 1.1em; line-height: 1.8;">
+                    <li>Don't make complex lambda functions</li>
+                    <li>Avoid assigning lambdas to variables (use def instead)</li>
+                    <li>Don't use for multiple statements</li>
+                    <li>Avoid if readability is compromised</li>
+                </ul>
+            </div>
+
+            <div class="code-block">
+<span class="comment"># Good: Simple and clear</span>
+<span class="python">evens = filter(</span><span class="keyword">lambda</span> <span class="python">x: x % 2 == 0, numbers)</span>
+
+<span class="comment"># Bad: Too complex for lambda</span>
+<span class="python">complex_func = </span><span class="keyword">lambda</span> <span class="python">x: x**2 if x > 0 else -x**2 if x < 0 else 0</span>
+
+<span class="comment"># Better: Use regular function for complex logic</span>
+<span class="keyword">def</span> <span class="python">complex_func(x):</span>
+    <span class="keyword">if</span> <span class="python">x > 0:</span>
+        <span class="keyword">return</span> <span class="python">x**2</span>
+    <span class="keyword">elif</span> <span class="python">x < 0:</span>
+        <span class="keyword">return</span> <span class="python">-x**2</span>
+    <span class="keyword">else</span><span class="python">:</span>
+        <span class="keyword">return</span> <span class="python">0</span>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <h2>Thank You!</h2>
+            <p>Lambda functions are a powerful tool in Python's functional programming toolkit.</p>
+            <p><strong>Remember:</strong> Use them wisely for simple, readable code!</p>
+        </div>
+    </div>
+
+    <script>
+        function demoMap() {
+            const numbers = [1, 2, 3, 4, 5];
+            const squared = numbers.map(x => x**2);
+            document.getElementById('demo-output').innerHTML = 
+                `<strong>Map Demo:</strong><br>Original: [${numbers.join(', ')}]<br>Squared: [${squared.join(', ')}]`;
+        }
+
+        function demoFilter() {
+            const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+            const evens = numbers.filter(x => x % 2 === 0);
+            document.getElementById('demo-output').innerHTML = 
+                `<strong>Filter Demo:</strong><br>Original: [${numbers.join(', ')}]<br>Even numbers: [${evens.join(', ')}]`;
+        }
+
+        function demoSort() {
+            const words = ['Python', 'is', 'awesome', 'programming', 'language'];
+            const byLength = [...words].sort((a, b) => a.length - b.length);
+            document.getElementById('demo-output').innerHTML = 
+                `<strong>Sort Demo:</strong><br>Original: [${words.join(', ')}]<br>By length: [${byLength.join(', ')}]`;
+        }
+
+        function demoReduce() {
+            const numbers = [1, 2, 3, 4, 5];
+            const sum = numbers.reduce((acc, x) => acc + x, 0);
+            const product = numbers.reduce((acc, x) => acc * x, 1);
+            document.getElementById('demo-output').innerHTML = 
+                `<strong>Reduce Demo:</strong><br>Numbers: [${numbers.join(', ')}]<br>Sum: ${sum}<br>Product: ${product}`;
+        }
+    </script>
+</body>
+</html>

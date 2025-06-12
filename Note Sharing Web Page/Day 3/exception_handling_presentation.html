@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exception Handling: try, except, finally</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .presentation-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .slide {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 40px;
+            margin: 30px 0;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .slide:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        }
+
+        .slide h1 {
+            color: #4a5568;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 15px;
+        }
+
+        .slide h2 {
+            color: #2d3748;
+            font-size: 2em;
+            margin-bottom: 15px;
+            border-left: 5px solid #667eea;
+            padding-left: 15px;
+        }
+
+        .slide h3 {
+            color: #4a5568;
+            font-size: 1.5em;
+            margin: 20px 0 10px 0;
+        }
+
+        .slide p {
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .slide ul {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+
+        .slide li {
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.4;
+            border-left: 5px solid #667eea;
+            position: relative;
+        }
+
+        .code-block::before {
+            content: "Python";
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            background: #667eea;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+
+        .keyword {
+            color: #ff7a85;
+            font-weight: bold;
+        }
+
+        .string {
+            color: #90cdf4;
+        }
+
+        .comment {
+            color: #68d391;
+            font-style: italic;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #ffeaa7, #fdcb6e);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #e17055;
+        }
+
+        .syntax-box {
+            background: linear-gradient(135deg, #a8edea, #fed6e3);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #00b894;
+        }
+
+        .example-output {
+            background: #1a202c;
+            color: #4ade80;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-family: monospace;
+            border: 2px solid #4ade80;
+        }
+
+        .navigation {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .nav-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            margin: 0 10px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .current-slide {
+            display: block;
+        }
+
+        .hidden-slide {
+            display: none;
+        }
+
+        .slide-number {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            background: rgba(102, 126, 234, 0.8);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        .title-slide {
+            text-align: center;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+        }
+
+        .title-slide h1 {
+            font-size: 3.5em;
+            color: #2d3748;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .interactive-demo {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 2px dashed #667eea;
+        }
+
+        .demo-input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #667eea;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-size: 16px;
+        }
+
+        .demo-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s ease;
+        }
+
+        .demo-btn:hover {
+            background: #5a67d8;
+        }
+
+        .demo-output {
+            background: #1a202c;
+            color: #90cdf4;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: monospace;
+            min-height: 50px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <!-- Slide 1: Title -->
+        <div class="slide current-slide title-slide" id="slide-1">
+            <div class="slide-number">1/8</div>
+            <h1>Exception Handling in Python</h1>
+            <h2 style="border: none; padding: 0; color: #667eea;">try, except, finally</h2>
+            <p style="font-size: 1.3em; margin-top: 30px; color: #4a5568;">
+                Master the art of handling errors gracefully in your Python programs
+            </p>
+        </div>
+
+        <!-- Slide 2: What are Exceptions? -->
+        <div class="slide hidden-slide" id="slide-2">
+            <div class="slide-number">2/8</div>
+            <h2>What are Exceptions?</h2>
+            <p>Exceptions are events that occur during program execution that disrupt the normal flow of instructions.</p>
+            
+            <div class="highlight-box">
+                <h3>Common Types of Exceptions:</h3>
+                <ul>
+                    <li><strong>ZeroDivisionError:</strong> Division by zero</li>
+                    <li><strong>ValueError:</strong> Invalid value for operation</li>
+                    <li><strong>TypeError:</strong> Wrong data type</li>
+                    <li><strong>FileNotFoundError:</strong> File doesn't exist</li>
+                    <li><strong>IndexError:</strong> List index out of range</li>
+                </ul>
+            </div>
+
+            <div class="code-block">
+<span class="comment"># Example of an unhandled exception</span>
+<span class="keyword">print</span>(<span class="string">"Starting program..."</span>)
+result = 10 / 0  <span class="comment"># This will raise ZeroDivisionError</span>
+<span class="keyword">print</span>(<span class="string">"This line will never execute"</span>)
+            </div>
+        </div>
+
+        <!-- Slide 3: Basic try-except Syntax -->
+        <div class="slide hidden-slide" id="slide-3">
+            <div class="slide-number">3/8</div>
+            <h2>Basic try-except Syntax</h2>
+            
+            <div class="syntax-box">
+                <h3>Syntax:</h3>
+                <div class="code-block">
+<span class="keyword">try</span>:
+    <span class="comment"># Code that might raise an exception</span>
+    risky_code()
+<span class="keyword">except</span> ExceptionType:
+    <span class="comment"># Code to handle the exception</span>
+    handle_error()
+                </div>
+            </div>
+
+            <h3>Simple Example:</h3>
+            <div class="code-block">
+<span class="keyword">try</span>:
+    number = <span class="keyword">int</span>(<span class="keyword">input</span>(<span class="string">"Enter a number: "</span>))
+    result = 100 / number
+    <span class="keyword">print</span>(<span class="string">f"Result: {result}"</span>)
+<span class="keyword">except</span> ZeroDivisionError:
+    <span class="keyword">print</span>(<span class="string">"Error: Cannot divide by zero!"</span>)
+<span class="keyword">except</span> ValueError:
+    <span class="keyword">print</span>(<span class="string">"Error: Please enter a valid number!"</span>)
+            </div>
+
+            <div class="example-output">
+Output (if user enters 0): Error: Cannot divide by zero!
+Output (if user enters 'abc'): Error: Please enter a valid number!
+            </div>
+        </div>
+
+        <!-- Slide 4: Multiple Exception Handling -->
+        <div class="slide hidden-slide" id="slide-4">
+            <div class="slide-number">4/8</div>
+            <h2>Multiple Exception Handling</h2>
+            
+            <h3>Method 1: Multiple except blocks</h3>
+            <div class="code-block">
+<span class="keyword">def</span> process_data(data):
+    <span class="keyword">try</span>:
+        <span class="comment"># Convert to integer</span>
+        num = <span class="keyword">int</span>(data)
+        <span class="comment"># Access list element</span>
+        my_list = [1, 2, 3]
+        value = my_list[num]
+        <span class="comment"># Perform division</span>
+        result = 100 / value
+        <span class="keyword">return</span> result
+    
+    <span class="keyword">except</span> ValueError:
+        <span class="keyword">print</span>(<span class="string">"Invalid input: Cannot convert to integer"</span>)
+    <span class="keyword">except</span> IndexError:
+        <span class="keyword">print</span>(<span class="string">"Index out of range"</span>)
+    <span class="keyword">except</span> ZeroDivisionError:
+        <span class="keyword">print</span>(<span class="string">"Cannot divide by zero"</span>)
+            </div>
+
+            <h3>Method 2: Tuple of exceptions</h3>
+            <div class="code-block">
+<span class="keyword">try</span>:
+    <span class="comment"># Risky operations</span>
+    risky_operation()
+<span class="keyword">except</span> (ValueError, TypeError, IndexError) <span class="keyword">as</span> e:
+    <span class="keyword">print</span>(<span class="string">f"An error occurred: {e}"</span>)
+            </div>
+        </div>
+
+        <!-- Slide 5: The finally Block -->
+        <div class="slide hidden-slide" id="slide-5">
+            <div class="slide-number">5/8</div>
+            <h2>The finally Block</h2>
+            
+            <p>The <code>finally</code> block executes regardless of whether an exception occurs or not.</p>
+            
+            <div class="highlight-box">
+                <h3>When to use finally:</h3>
+                <ul>
+                    <li>Cleanup operations (closing files, database connections)</li>
+                    <li>Resource management</li>
+                    <li>Logging operations</li>
+                    <li>Code that must run no matter what</li>
+                </ul>
+            </div>
+
+            <div class="code-block">
+<span class="keyword">def</span> read_file(filename):
+    file = <span class="keyword">None</span>
+    <span class="keyword">try</span>:
+        <span class="keyword">print</span>(<span class="string">"Opening file..."</span>)
+        file = <span class="keyword">open</span>(filename, <span class="string">'r'</span>)
+        content = file.read()
+        <span class="keyword">print</span>(<span class="string">f"File content: {content}"</span>)
+        <span class="keyword">return</span> content
+    
+    <span class="keyword">except</span> FileNotFoundError:
+        <span class="keyword">print</span>(<span class="string">f"Error: File '{filename}' not found"</span>)
+        <span class="keyword">return</span> <span class="keyword">None</span>
+    
+    <span class="keyword">except</span> PermissionError:
+        <span class="keyword">print</span>(<span class="string">"Error: Permission denied"</span>)
+        <span class="keyword">return</span> <span class="keyword">None</span>
+    
+    <span class="keyword">finally</span>:
+        <span class="comment"># This always executes</span>
+        <span class="keyword">if</span> file:
+            file.close()
+            <span class="keyword">print</span>(<span class="string">"File closed successfully"</span>)
+        <span class="keyword">print</span>(<span class="string">"Cleanup completed"</span>)
+            </div>
+        </div>
+
+        <!-- Slide 6: Complete Example -->
+        <div class="slide hidden-slide" id="slide-6">
+            <div class="slide-number">6/8</div>
+            <h2>Complete Example: Calculator</h2>
+            
+            <div class="code-block">
+<span class="keyword">def</span> calculator():
+    <span class="keyword">print</span>(<span class="string">"=== Simple Calculator ==="</span>)
+    
+    <span class="keyword">while</span> <span class="keyword">True</span>:
+        <span class="keyword">try</span>:
+            <span class="comment"># Get input from user</span>
+            num1 = <span class="keyword">float</span>(<span class="keyword">input</span>(<span class="string">"Enter first number (or 'quit' to exit): "</span>))
+            
+            operation = <span class="keyword">input</span>(<span class="string">"Enter operation (+, -, *, /): "</span>)
+            
+            num2 = <span class="keyword">float</span>(<span class="keyword">input</span>(<span class="string">"Enter second number: "</span>))
+            
+            <span class="comment"># Perform calculation</span>
+            <span class="keyword">if</span> operation == <span class="string">'+'</span>:
+                result = num1 + num2
+            <span class="keyword">elif</span> operation == <span class="string">'-'</span>:
+                result = num1 - num2
+            <span class="keyword">elif</span> operation == <span class="string">'*'</span>:
+                result = num1 * num2
+            <span class="keyword">elif</span> operation == <span class="string">'/'</span>:
+                result = num1 / num2
+            <span class="keyword">else</span>:
+                <span class="keyword">raise</span> ValueError(<span class="string">"Invalid operation"</span>)
+            
+            <span class="keyword">print</span>(<span class="string">f"Result: {num1} {operation} {num2} = {result}"</span>)
+        
+        <span class="keyword">except</span> ValueError <span class="keyword">as</span> e:
+            <span class="keyword">if</span> <span class="string">"quit"</span> <span class="keyword">in</span> <span class="keyword">str</span>(e):
+                <span class="keyword">break</span>
+            <span class="keyword">print</span>(<span class="string">f"Invalid input: {e}"</span>)
+        
+        <span class="keyword">except</span> ZeroDivisionError:
+            <span class="keyword">print</span>(<span class="string">"Error: Cannot divide by zero!"</span>)
+        
+        <span class="keyword">except</span> KeyboardInterrupt:
+            <span class="keyword">print</span>(<span class="string">"\nProgram interrupted by user"</span>)
+            <span class="keyword">break</span>
+        
+        <span class="keyword">finally</span>:
+            <span class="keyword">print</span>(<span class="string">"-" * 30</span>)
+    
+    <span class="keyword">print</span>(<span class="string">"Calculator closed. Goodbye!"</span>)
+
+<span class="comment"># Run the calculator</span>
+calculator()
+            </div>
+        </div>
+
+        <!-- Slide 7: Best Practices -->
+        <div class="slide hidden-slide" id="slide-7">
+            <div class="slide-number">7/8</div>
+            <h2>Best Practices</h2>
+            
+            <div class="highlight-box">
+                <h3>✅ Do's:</h3>
+                <ul>
+                    <li>Be specific with exception types</li>
+                    <li>Use finally for cleanup operations</li>
+                    <li>Log exceptions for debugging</li>
+                    <li>Handle exceptions at the appropriate level</li>
+                    <li>Use context managers (with statement) when possible</li>
+                </ul>
+            </div>
+
+            <div class="highlight-box" style="background: linear-gradient(135deg, #ff7675, #fd79a8);">
+                <h3>❌ Don'ts:</h3>
+                <ul>
+                    <li>Don't use bare except: clauses</li>
+                    <li>Don't ignore exceptions silently</li>
+                    <li>Don't use exceptions for control flow</li>
+                    <li>Don't catch exceptions you can't handle</li>
+                </ul>
+            </div>
+
+            <h3>Good vs Bad Examples:</h3>
+            <div class="code-block">
+<span class="comment"># ❌ Bad - Too broad</span>
+<span class="keyword">try</span>:
+    risky_operation()
+<span class="keyword">except</span>:  <span class="comment"># Catches everything!</span>
+    <span class="keyword">pass</span>  <span class="comment"># Silently ignores errors</span>
+
+<span class="comment"># ✅ Good - Specific and informative</span>
+<span class="keyword">try</span>:
+    risky_operation()
+<span class="keyword">except</span> SpecificError <span class="keyword">as</span> e:
+    logger.error(<span class="string">f"Operation failed: {e}"</span>)
+    handle_error_appropriately()
+            </div>
+        </div>
+
+        <!-- Slide 8: Interactive Demo -->
+        <div class="slide hidden-slide" id="slide-8">
+            <div class="slide-number">8/8</div>
+            <h2>Interactive Demo</h2>
+            <p>Try out exception handling with this interactive example:</p>
+            
+            <div class="interactive-demo">
+                <h3>Division Calculator</h3>
+                <input type="number" id="dividend" class="demo-input" placeholder="Enter dividend (number to be divided)">
+                <input type="number" id="divisor" class="demo-input" placeholder="Enter divisor (number to divide by)">
+                <button class="demo-btn" onclick="performDivision()">Calculate Division</button>
+                <div id="demo-result" class="demo-output">Results will appear here...</div>
+            </div>
+
+            <div class="highlight-box">
+                <h3>Key Takeaways:</h3>
+                <ul>
+                    <li><strong>try:</strong> Contains code that might raise exceptions</li>
+                    <li><strong>except:</strong> Handles specific exceptions</li>
+                    <li><strong>finally:</strong> Always executes (cleanup code)</li>
+                    <li><strong>Exception handling</strong> makes your programs robust and user-friendly</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="navigation">
+            <button class="nav-btn" onclick="previousSlide()">← Previous</button>
+            <span id="slide-indicator" style="margin: 0 20px; font-weight: bold; color: #4a5568;">1 / 8</span>
+            <button class="nav-btn" onclick="nextSlide()">Next →</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 1;
+        const totalSlides = 8;
+
+        function showSlide(n) {
+            // Hide all slides
+            for (let i = 1; i <= totalSlides; i++) {
+                document.getElementById(`slide-${i}`).classList.remove('current-slide');
+                document.getElementById(`slide-${i}`).classList.add('hidden-slide');
+            }
+            
+            // Show current slide
+            document.getElementById(`slide-${n}`).classList.remove('hidden-slide');
+            document.getElementById(`slide-${n}`).classList.add('current-slide');
+            
+            // Update indicator
+            document.getElementById('slide-indicator').textContent = `${n} / ${totalSlides}`;
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides) {
+                currentSlide++;
+                showSlide(currentSlide);
+            }
+        }
+
+        function previousSlide() {
+            if (currentSlide > 1) {
+                currentSlide--;
+                showSlide(currentSlide);
+            }
+        }
+
+        function performDivision() {
+            const dividend = document.getElementById('dividend').value;
+            const divisor = document.getElementById('divisor').value;
+            const resultDiv = document.getElementById('demo-result');
+            
+            let output = `try:
+    dividend = ${dividend}
+    divisor = ${divisor}
+    result = dividend / divisor
+    print(f"Result: {dividend} / {divisor} = {result}")
+
+`;
+            
+            try {
+                if (dividend === '' || divisor === '') {
+                    throw new Error('ValueError: Please enter both numbers');
+                }
+                
+                const num1 = parseFloat(dividend);
+                const num2 = parseFloat(divisor);
+                
+                if (isNaN(num1) || isNaN(num2)) {
+                    throw new Error('ValueError: Invalid number format');
+                }
+                
+                if (num2 === 0) {
+                    throw new Error('ZeroDivisionError: Cannot divide by zero');
+                }
+                
+                const result = num1 / num2;
+                output += `✅ Success!
+Result: ${num1} / ${num2} = ${result}
+
+finally:
+    print("Calculation completed")`;
+                
+            } catch (error) {
+                output += `❌ Exception caught!
+except ${error.message.split(':')[0]}:
+    print("${error.message}")
+
+finally:
+    print("Calculation attempted")`;
+            }
+            
+            resultDiv.textContent = output;
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowRight' || event.key === ' ') {
+                nextSlide();
+            } else if (event.key === 'ArrowLeft') {
+                previousSlide();
+            }
+        });
+
+        // Initialize
+        showSlide(1);
+    </script>
+</body>
+</html>

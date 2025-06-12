@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Cleaning Techniques</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+        }
+
+        .presentation-container {
+            width: 95%;
+            max-width: 1200px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .slide {
+            display: none;
+            padding: 60px;
+            min-height: 600px;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .slide h1 {
+            font-size: 2.5em;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .slide h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 2px;
+        }
+
+        .slide h2 {
+            font-size: 2em;
+            color: #34495e;
+            margin-bottom: 25px;
+            border-left: 5px solid #3498db;
+            padding-left: 20px;
+        }
+
+        .slide h3 {
+            font-size: 1.5em;
+            color: #2980b9;
+            margin: 25px 0 15px 0;
+        }
+
+        .slide p, .slide li {
+            font-size: 1.1em;
+            line-height: 1.8;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .slide ul {
+            margin-left: 30px;
+            margin-bottom: 25px;
+        }
+
+        .slide li {
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .slide li::before {
+            content: '▶';
+            color: #3498db;
+            font-weight: bold;
+            position: absolute;
+            left: -20px;
+        }
+
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 25px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            margin: 20px 0;
+            overflow-x: auto;
+            border-left: 5px solid #e74c3c;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .code-block .comment {
+            color: #95a5a6;
+            font-style: italic;
+        }
+
+        .code-block .keyword {
+            color: #3498db;
+            font-weight: bold;
+        }
+
+        .code-block .string {
+            color: #2ecc71;
+        }
+
+        .code-block .number {
+            color: #e67e22;
+        }
+
+        .technique-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            border-left: 6px solid #e74c3c;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .technique-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        .navigation {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.4);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .slide-counter {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            background: rgba(52, 152, 219, 0.1);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            color: #2980b9;
+        }
+
+        .example-table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .example-table th, .example-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .example-table th {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            font-weight: 600;
+        }
+
+        .example-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 2px 8px;
+            border-radius: 5px;
+            font-weight: 600;
+        }
+
+        .intro-slide {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .intro-slide h1 {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .intro-slide .subtitle {
+            font-size: 1.5em;
+            color: #7f8c8d;
+            margin-bottom: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <div class="slide-counter">
+            <span id="current-slide">1</span> / <span id="total-slides">8</span>
+        </div>
+
+        <!-- Slide 1: Title -->
+        <div class="slide active intro-slide">
+            <h1>Data Cleaning Techniques</h1>
+            <p class="subtitle">Mastering dropna, fillna, and replace in pandas</p>
+            <div style="margin-top: 40px; font-size: 1.2em; color: #34495e;">
+                <p>Essential methods for handling missing and inconsistent data</p>
+            </div>
+        </div>
+
+        <!-- Slide 2: Overview -->
+        <div class="slide">
+            <h1>Overview</h1>
+            <div class="technique-card">
+                <h3>Why Data Cleaning Matters</h3>
+                <p>Real-world datasets are rarely perfect. They often contain:</p>
+                <ul>
+                    <li>Missing values (NaN, None, empty strings)</li>
+                    <li>Inconsistent formatting</li>
+                    <li>Outliers and errors</li>
+                    <li>Duplicate entries</li>
+                </ul>
+            </div>
+            <div class="technique-card">
+                <h3>Our Focus: Three Essential Techniques</h3>
+                <ul>
+                    <li><span class="highlight">dropna()</span> - Remove missing data</li>
+                    <li><span class="highlight">fillna()</span> - Fill missing values</li>
+                    <li><span class="highlight">replace()</span> - Replace specific values</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 3: dropna() -->
+        <div class="slide">
+            <h1>dropna() - Removing Missing Data</h1>
+            <h3>Purpose</h3>
+            <p>Remove rows or columns containing missing values (NaN, None, NaT)</p>
+            
+            <h3>Key Parameters</h3>
+            <ul>
+                <li><strong>axis:</strong> 0 (rows) or 1 (columns)</li>
+                <li><strong>how:</strong> 'any' (default) or 'all'</li>
+                <li><strong>thresh:</strong> Minimum number of non-NA values required</li>
+                <li><strong>subset:</strong> Specific columns to consider</li>
+            </ul>
+
+            <div class="code-block">
+<span class="comment"># Basic usage</span>
+df.<span class="keyword">dropna</span>()  <span class="comment"># Remove rows with any NaN</span>
+df.<span class="keyword">dropna</span>(axis=<span class="number">1</span>)  <span class="comment"># Remove columns with any NaN</span>
+df.<span class="keyword">dropna</span>(how=<span class="string">'all'</span>)  <span class="comment"># Remove rows where all values are NaN</span>
+df.<span class="keyword">dropna</span>(thresh=<span class="number">3</span>)  <span class="comment"># Keep rows with at least 3 non-NaN values</span>
+df.<span class="keyword">dropna</span>(subset=[<span class="string">'column1'</span>, <span class="string">'column2'</span>])  <span class="comment"># Consider only specific columns</span>
+            </div>
+        </div>
+
+        <!-- Slide 4: dropna() Examples -->
+        <div class="slide">
+            <h1>dropna() Examples</h1>
+            
+            <div class="code-block">
+<span class="keyword">import</span> pandas <span class="keyword">as</span> pd
+<span class="keyword">import</span> numpy <span class="keyword">as</span> np
+
+<span class="comment"># Sample data with missing values</span>
+data = {
+    <span class="string">'Name'</span>: [<span class="string">'Alice'</span>, <span class="string">'Bob'</span>, <span class="keyword">np.nan</span>, <span class="string">'David'</span>],
+    <span class="string">'Age'</span>: [<span class="number">25</span>, <span class="keyword">np.nan</span>, <span class="number">30</span>, <span class="number">35</span>],
+    <span class="string">'City'</span>: [<span class="string">'NY'</span>, <span class="string">'LA'</span>, <span class="string">'Chicago'</span>, <span class="keyword">np.nan</span>]
+}
+df = pd.DataFrame(data)
+
+<span class="comment"># Different dropna() operations</span>
+df_clean = df.<span class="keyword">dropna</span>()  <span class="comment"># Removes all rows with any NaN</span>
+df_thresh = df.<span class="keyword">dropna</span>(thresh=<span class="number">2</span>)  <span class="comment"># Keep rows with ≥2 non-NaN values</span>
+df_name_only = df.<span class="keyword">dropna</span>(subset=[<span class="string">'Name'</span>])  <span class="comment"># Drop only if Name is NaN</span>
+            </div>
+
+            <table class="example-table">
+                <tr>
+                    <th>Operation</th>
+                    <th>Result</th>
+                    <th>Rows Remaining</th>
+                </tr>
+                <tr>
+                    <td>Original</td>
+                    <td>4 rows with various NaN values</td>
+                    <td>4</td>
+                </tr>
+                <tr>
+                    <td>dropna()</td>
+                    <td>Only completely clean rows</td>
+                    <td>1</td>
+                </tr>
+                <tr>
+                    <td>dropna(thresh=2)</td>
+                    <td>Rows with at least 2 non-NaN values</td>
+                    <td>3</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Slide 5: fillna() -->
+        <div class="slide">
+            <h1>fillna() - Filling Missing Values</h1>
+            <h3>Purpose</h3>
+            <p>Replace missing values with specified values or using various strategies</p>
+            
+            <h3>Common Fill Strategies</h3>
+            <ul>
+                <li><strong>Scalar value:</strong> Fill with a constant</li>
+                <li><strong>Forward fill (ffill):</strong> Use previous valid value</li>
+                <li><strong>Backward fill (bfill):</strong> Use next valid value</li>
+                <li><strong>Statistical methods:</strong> Mean, median, mode</li>
+                <li><strong>Dictionary:</strong> Different values for different columns</li>
+            </ul>
+
+            <div class="code-block">
+<span class="comment"># Various fillna() methods</span>
+df.<span class="keyword">fillna</span>(<span class="number">0</span>)  <span class="comment"># Fill with constant value</span>
+df.<span class="keyword">fillna</span>(method=<span class="string">'ffill'</span>)  <span class="comment"># Forward fill</span>
+df.<span class="keyword">fillna</span>(method=<span class="string">'bfill'</span>)  <span class="comment"># Backward fill</span>
+df.<span class="keyword">fillna</span>(df.mean())  <span class="comment"># Fill with column means</span>
+df.<span class="keyword">fillna</span>({<span class="string">'Age'</span>: <span class="number">30</span>, <span class="string">'City'</span>: <span class="string">'Unknown'</span>})  <span class="comment"># Column-specific fills</span>
+            </div>
+        </div>
+
+        <!-- Slide 6: fillna() Examples -->
+        <div class="slide">
+            <h1>fillna() Practical Examples</h1>
+            
+            <div class="code-block">
+<span class="comment"># Sample sales data with missing values</span>
+sales_data = {
+    <span class="string">'Product'</span>: [<span class="string">'A'</span>, <span class="string">'B'</span>, <span class="string">'C'</span>, <span class="string">'D'</span>],
+    <span class="string">'Price'</span>: [<span class="number">10.5</span>, <span class="keyword">np.nan</span>, <span class="number">25.0</span>, <span class="number">15.0</span>],
+    <span class="string">'Quantity'</span>: [<span class="number">100</span>, <span class="number">200</span>, <span class="keyword">np.nan</span>, <span class="number">150</span>],
+    <span class="string">'Category'</span>: [<span class="string">'Electronics'</span>, <span class="keyword">np.nan</span>, <span class="string">'Books'</span>, <span class="string">'Electronics'</span>]
+}
+sales_df = pd.DataFrame(sales_data)
+
+<span class="comment"># Smart filling strategies</span>
+<span class="comment"># Fill Price with median price</span>
+sales_df[<span class="string">'Price'</span>].<span class="keyword">fillna</span>(sales_df[<span class="string">'Price'</span>].median(), inplace=<span class="keyword">True</span>)
+
+<span class="comment"># Fill Quantity with mean quantity</span>
+sales_df[<span class="string">'Quantity'</span>].<span class="keyword">fillna</span>(sales_df[<span class="string">'Quantity'</span>].mean(), inplace=<span class="keyword">True</span>)
+
+<span class="comment"># Fill Category with mode (most frequent)</span>
+sales_df[<span class="string">'Category'</span>].<span class="keyword">fillna</span>(sales_df[<span class="string">'Category'</span>].mode()[<span class="number">0</span>], inplace=<span class="keyword">True</span>)
+            </div>
+
+            <div class="technique-card">
+                <h3>Pro Tips for fillna()</h3>
+                <ul>
+                    <li>Use statistical measures (mean, median) for numerical data</li>
+                    <li>Use mode for categorical data</li>
+                    <li>Consider forward/backward fill for time series data</li>
+                    <li>Use domain knowledge to choose appropriate fill values</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 7: replace() -->
+        <div class="slide">
+            <h1>replace() - Replacing Specific Values</h1>
+            <h3>Purpose</h3>
+            <p>Replace specific values, patterns, or ranges with new values</p>
+            
+            <h3>Key Use Cases</h3>
+            <ul>
+                <li>Standardizing inconsistent entries</li>
+                <li>Fixing data entry errors</li>
+                <li>Converting codes to meaningful values</li>
+                <li>Handling special characters or formatting issues</li>
+            </ul>
+
+            <div class="code-block">
+<span class="comment"># Basic replace operations</span>
+df.<span class="keyword">replace</span>(<span class="string">'old_value'</span>, <span class="string">'new_value'</span>)  <span class="comment"># Simple replacement</span>
+df.<span class="keyword">replace</span>([<span class="string">'val1'</span>, <span class="string">'val2'</span>], <span class="string">'new_val'</span>)  <span class="comment"># Multiple to one</span>
+df.<span class="keyword">replace</span>({<span class="string">'old1'</span>: <span class="string">'new1'</span>, <span class="string">'old2'</span>: <span class="string">'new2'</span>})  <span class="comment"># Dictionary mapping</span>
+
+<span class="comment"># Column-specific replacement</span>
+df.<span class="keyword">replace</span>({<span class="string">'column1'</span>: {<span class="string">'old'</span>: <span class="string">'new'</span>}})
+
+<span class="comment"># Regular expression replacement</span>
+df.<span class="keyword">replace</span>(<span class="string">r'\d+'</span>, <span class="string">'NUMBER'</span>, regex=<span class="keyword">True</span>)  <span class="comment"># Replace digits</span>
+            </div>
+        </div>
+
+        <!-- Slide 8: replace() Examples & Best Practices -->
+        <div class="slide">
+            <h1>replace() Examples & Best Practices</h1>
+            
+            <div class="code-block">
+<span class="comment"># Real-world example: Cleaning survey data</span>
+survey_data = {
+    <span class="string">'Response'</span>: [<span class="string">'Yes'</span>, <span class="string">'Y'</span>, <span class="string">'YES'</span>, <span class="string">'No'</span>, <span class="string">'N'</span>, <span class="string">'NO'</span>],
+    <span class="string">'Rating'</span>: [<span class="string">'Excellent'</span>, <span class="string">'Good'</span>, <span class="string">'Average'</span>, <span class="string">'Poor'</span>, <span class="string">'N/A'</span>, <span class="string">'-'</span>],
+    <span class="string">'Age_Group'</span>: [<span class="string">'18-25'</span>, <span class="string">'26-35'</span>, <span class="string">'36-45'</span>, <span class="string">'unknown'</span>, <span class="string">'?'</span>, <span class="string">''</span>]
+}
+survey_df = pd.DataFrame(survey_data)
+
+<span class="comment"># Standardize responses</span>
+survey_df.<span class="keyword">replace</span>({
+    <span class="string">'Response'</span>: {<span class="string">'Y'</span>: <span class="string">'Yes'</span>, <span class="string">'YES'</span>: <span class="string">'Yes'</span>, <span class="string">'N'</span>: <span class="string">'No'</span>, <span class="string">'NO'</span>: <span class="string">'No'</span>},
+    <span class="string">'Rating'</span>: {<span class="string">'N/A'</span>: <span class="keyword">np.nan</span>, <span class="string">'-'</span>: <span class="keyword">np.nan</span>},
+    <span class="string">'Age_Group'</span>: {<span class="string">'unknown'</span>: <span class="keyword">np.nan</span>, <span class="string">'?'</span>: <span class="keyword">np.nan</span>, <span class="string">''</span>: <span class="keyword">np.nan</span>}
+}, inplace=<span class="keyword">True</span>)
+            </div>
+
+            <div class="technique-card">
+                <h3>Best Practices Summary</h3>
+                <ul>
+                    <li><strong>Assess first:</strong> Use df.info() and df.describe() to understand your data</li>
+                    <li><strong>Choose wisely:</strong> dropna() for small amounts of missing data, fillna() when you can reasonably impute</li>
+                    <li><strong>Document decisions:</strong> Keep track of how you handle missing data</li>
+                    <li><strong>Validate results:</strong> Check data quality after cleaning operations</li>
+                    <li><strong>Consider domain knowledge:</strong> Let business context guide your decisions</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="navigation">
+            <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">← Previous</button>
+            <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Next →</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 1;
+        const totalSlides = document.querySelectorAll('.slide').length;
+        
+        document.getElementById('total-slides').textContent = totalSlides;
+
+        function showSlide(n) {
+            const slides = document.querySelectorAll('.slide');
+            
+            if (n > totalSlides) currentSlide = 1;
+            if (n < 1) currentSlide = totalSlides;
+            
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[currentSlide - 1].classList.add('active');
+            
+            document.getElementById('current-slide').textContent = currentSlide;
+            
+            // Update navigation buttons
+            document.getElementById('prevBtn').disabled = currentSlide === 1;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides;
+        }
+
+        function changeSlide(n) {
+            currentSlide += n;
+            showSlide(currentSlide);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+        });
+
+        // Initialize
+        showSlide(currentSlide);
+    </script>
+</body>
+</html>

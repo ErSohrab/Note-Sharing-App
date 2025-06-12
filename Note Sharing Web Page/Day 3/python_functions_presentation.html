@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Built-in Functions: map, filter, reduce</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .presentation-container {
+            max-width: 1200px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .slide {
+            display: none;
+            padding: 60px;
+            min-height: 80vh;
+            animation: slideIn 0.5s ease-in-out;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 3em;
+            margin-bottom: 30px;
+            text-align: center;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h2 {
+            color: #34495e;
+            font-size: 2.5em;
+            margin-bottom: 25px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            color: #2980b9;
+            font-size: 1.8em;
+            margin: 25px 0 15px 0;
+        }
+
+        p, li {
+            font-size: 1.2em;
+            line-height: 1.6;
+            color: #34495e;
+            margin-bottom: 15px;
+        }
+
+        ul {
+            margin-left: 30px;
+            margin-bottom: 25px;
+        }
+
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 25px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+            margin: 20px 0;
+            overflow-x: auto;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        .code-block::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 10px 10px 0 0;
+        }
+
+        .output {
+            background: #27ae60;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+            margin: 20px 0;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #2c3e50;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .comparison-table th, .comparison-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .comparison-table th {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            font-weight: bold;
+        }
+
+        .comparison-table tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .intro-slide {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .python-logo {
+            font-size: 6em;
+            margin-bottom: 30px;
+            background: linear-gradient(45deg, #3776ab, #ffd43b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <!-- Slide 1: Title -->
+        <div class="slide active intro-slide">
+            <div class="python-logo">🐍</div>
+            <h1>Python Built-in Functions</h1>
+            <h2 style="border: none; color: #667eea;">map(), filter(), reduce()</h2>
+            <p style="font-size: 1.4em; margin-top: 30px; color: #764ba2;">Functional Programming Essentials</p>
+        </div>
+
+        <!-- Slide 2: Overview -->
+        <div class="slide">
+            <h2>What are Higher-Order Functions?</h2>
+            <div class="highlight">
+                <p><strong>Higher-order functions</strong> are functions that can take other functions as arguments or return functions as results.</p>
+            </div>
+            <h3>The Three Pillars:</h3>
+            <ul>
+                <li><strong>map()</strong> - Transform each element in a collection</li>
+                <li><strong>filter()</strong> - Select elements based on a condition</li>
+                <li><strong>reduce()</strong> - Combine elements into a single value</li>
+            </ul>
+            <div class="highlight">
+                <p><strong>Benefits:</strong> Cleaner code, better readability, functional programming paradigm</p>
+            </div>
+        </div>
+
+        <!-- Slide 3: map() Function -->
+        <div class="slide">
+            <h2>map() Function</h2>
+            <p><strong>Purpose:</strong> Apply a function to every item in an iterable</p>
+            <p><strong>Syntax:</strong> <code>map(function, iterable)</code></p>
+            
+            <h3>Basic Example:</h3>
+            <div class="code-block">
+# Square all numbers in a list
+numbers = [1, 2, 3, 4, 5]
+squared = list(map(lambda x: x**2, numbers))
+print(squared)
+            </div>
+            <div class="output">Output: [1, 4, 9, 16, 25]</div>
+
+            <h3>Real-world Example:</h3>
+            <div class="code-block">
+# Convert temperatures from Celsius to Fahrenheit
+celsius_temps = [0, 20, 30, 40]
+fahrenheit = list(map(lambda c: (c * 9/5) + 32, celsius_temps))
+print(fahrenheit)
+            </div>
+            <div class="output">Output: [32.0, 68.0, 86.0, 104.0]</div>
+        </div>
+
+        <!-- Slide 4: map() Advanced Examples -->
+        <div class="slide">
+            <h2>map() Advanced Examples</h2>
+            
+            <h3>With Multiple Iterables:</h3>
+            <div class="code-block">
+# Add corresponding elements from two lists
+list1 = [1, 2, 3, 4]
+list2 = [10, 20, 30, 40]
+sums = list(map(lambda x, y: x + y, list1, list2))
+print(sums)
+            </div>
+            <div class="output">Output: [11, 22, 33, 44]</div>
+
+            <h3>String Operations:</h3>
+            <div class="code-block">
+# Convert list of strings to uppercase
+names = ['alice', 'bob', 'charlie']
+upper_names = list(map(str.upper, names))
+print(upper_names)
+
+# Get length of each string
+lengths = list(map(len, names))
+print(lengths)
+            </div>
+            <div class="output">Output: ['ALICE', 'BOB', 'CHARLIE']<br>Output: [5, 3, 7]</div>
+        </div>
+
+        <!-- Slide 5: filter() Function -->
+        <div class="slide">
+            <h2>filter() Function</h2>
+            <p><strong>Purpose:</strong> Select elements from an iterable based on a condition</p>
+            <p><strong>Syntax:</strong> <code>filter(function, iterable)</code></p>
+            
+            <h3>Basic Example:</h3>
+            <div class="code-block">
+# Filter even numbers
+numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+even_numbers = list(filter(lambda x: x % 2 == 0, numbers))
+print(even_numbers)
+            </div>
+            <div class="output">Output: [2, 4, 6, 8, 10]</div>
+
+            <h3>Filter with None:</h3>
+            <div class="code-block">
+# Remove falsy values (None, 0, '', False, etc.)
+mixed_list = [1, 0, 'hello', '', None, 'world', False, 42]
+truthy_values = list(filter(None, mixed_list))
+print(truthy_values)
+            </div>
+            <div class="output">Output: [1, 'hello', 'world', 42]</div>
+        </div>
+
+        <!-- Slide 6: filter() Advanced Examples -->
+        <div class="slide">
+            <h2>filter() Advanced Examples</h2>
+            
+            <h3>Filter Strings:</h3>
+            <div class="code-block">
+# Filter words with more than 4 characters
+words = ['python', 'is', 'awesome', 'and', 'powerful']
+long_words = list(filter(lambda word: len(word) > 4, words))
+print(long_words)
+            </div>
+            <div class="output">Output: ['python', 'awesome', 'powerful']</div>
+
+            <h3>Filter with Custom Function:</h3>
+            <div class="code-block">
+def is_positive(n):
+    return n > 0
+
+numbers = [-5, -2, 0, 3, 7, -1, 10]
+positive_nums = list(filter(is_positive, numbers))
+print(positive_nums)
+            </div>
+            <div class="output">Output: [3, 7, 10]</div>
+        </div>
+
+        <!-- Slide 7: reduce() Function -->
+        <div class="slide">
+            <h2>reduce() Function</h2>
+            <p><strong>Purpose:</strong> Apply a function cumulatively to reduce sequence to a single value</p>
+            <p><strong>Import:</strong> <code>from functools import reduce</code></p>
+            <p><strong>Syntax:</strong> <code>reduce(function, iterable[, initializer])</code></p>
+            
+            <h3>Basic Example:</h3>
+            <div class="code-block">
+from functools import reduce
+
+# Sum all numbers
+numbers = [1, 2, 3, 4, 5]
+total = reduce(lambda x, y: x + y, numbers)
+print(total)
+            </div>
+            <div class="output">Output: 15</div>
+
+            <h3>Find Maximum:</h3>
+            <div class="code-block">
+# Find the maximum number
+numbers = [3, 1, 4, 1, 5, 9, 2, 6]
+maximum = reduce(lambda x, y: x if x > y else y, numbers)
+print(maximum)
+            </div>
+            <div class="output">Output: 9</div>
+        </div>
+
+        <!-- Slide 8: reduce() Advanced Examples -->
+        <div class="slide">
+            <h2>reduce() Advanced Examples</h2>
+            
+            <h3>String Concatenation:</h3>
+            <div class="code-block">
+from functools import reduce
+
+# Concatenate all strings
+words = ['Python', 'is', 'really', 'cool']
+sentence = reduce(lambda x, y: x + ' ' + y, words)
+print(sentence)
+            </div>
+            <div class="output">Output: Python is really cool</div>
+
+            <h3>Factorial Calculation:</h3>
+            <div class="code-block">
+# Calculate factorial of 5
+import operator
+numbers = range(1, 6)  # [1, 2, 3, 4, 5]
+factorial = reduce(operator.mul, numbers, 1)
+print(f"5! = {factorial}")
+            </div>
+            <div class="output">Output: 5! = 120</div>
+
+            <h3>With Initial Value:</h3>
+            <div class="code-block">
+# Sum with initial value
+numbers = [1, 2, 3, 4, 5]
+total_with_initial = reduce(lambda x, y: x + y, numbers, 100)
+print(total_with_initial)
+            </div>
+            <div class="output">Output: 115</div>
+        </div>
+
+        <!-- Slide 9: Combining All Three -->
+        <div class="slide">
+            <h2>Combining map, filter, and reduce</h2>
+            
+            <h3>Complex Data Processing:</h3>
+            <div class="code-block">
+from functools import reduce
+
+# Process a list of numbers: 
+# 1. Square each number (map)
+# 2. Keep only even squares (filter)  
+# 3. Sum all even squares (reduce)
+
+numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+result = reduce(
+    lambda x, y: x + y,  # Sum
+    filter(
+        lambda x: x % 2 == 0,  # Keep even numbers
+        map(lambda x: x**2, numbers)  # Square each
+    )
+)
+
+print(f"Sum of even squares: {result}")
+            </div>
+            <div class="output">Output: Sum of even squares: 220</div>
+            <p><em>Breakdown: Squares [1,4,9,16,25,36,49,64,81,100] → Even squares [4,16,36,64,100] → Sum = 220</em></p>
+        </div>
+
+        <!-- Slide 10: Comparison Table -->
+        <div class="slide">
+            <h2>Quick Comparison</h2>
+            
+            <table class="comparison-table">
+                <tr>
+                    <th>Function</th>
+                    <th>Purpose</th>
+                    <th>Input</th>
+                    <th>Output</th>
+                    <th>Example Use</th>
+                </tr>
+                <tr>
+                    <td><strong>map()</strong></td>
+                    <td>Transform elements</td>
+                    <td>Iterable</td>
+                    <td>Iterator (same length)</td>
+                    <td>Convert temperatures</td>
+                </tr>
+                <tr>
+                    <td><strong>filter()</strong></td>
+                    <td>Select elements</td>
+                    <td>Iterable</td>
+                    <td>Iterator (≤ original length)</td>
+                    <td>Get even numbers</td>
+                </tr>
+                <tr>
+                    <td><strong>reduce()</strong></td>
+                    <td>Aggregate elements</td>
+                    <td>Iterable</td>
+                    <td>Single value</td>
+                    <td>Calculate sum/product</td>
+                </tr>
+            </table>
+
+            <div class="highlight">
+                <h3>Key Points:</h3>
+                <ul>
+                    <li>All return iterators (except reduce) - use <code>list()</code> to get actual list</li>
+                    <li>Can be chained together for complex operations</li>
+                    <li>More memory efficient than list comprehensions for large datasets</li>
+                    <li>Follow functional programming principles</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 11: Best Practices -->
+        <div class="slide">
+            <h2>Best Practices & Tips</h2>
+            
+            <h3>When to Use Each:</h3>
+            <ul>
+                <li><strong>map()</strong> - When you need to transform every element</li>
+                <li><strong>filter()</strong> - When you need to select specific elements</li>
+                <li><strong>reduce()</strong> - When you need to combine all elements into one result</li>
+            </ul>
+
+            <h3>Performance Tips:</h3>
+            <div class="code-block">
+# Instead of multiple loops:
+results = []
+for x in numbers:
+    if x > 0:
+        results.append(x * 2)
+
+# Use functional approach:
+results = list(map(lambda x: x * 2, filter(lambda x: x > 0, numbers)))
+            </div>
+
+            <div class="highlight">
+                <h3>Remember:</h3>
+                <ul>
+                    <li>Use <code>list()</code> to materialize results when needed</li>
+                    <li>Lambda functions are great for simple operations</li>
+                    <li>Named functions are better for complex logic</li>
+                    <li>Consider list comprehensions for simple cases</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 12: Conclusion -->
+        <div class="slide">
+            <h2>Summary</h2>
+            
+            <div class="highlight">
+                <h3>What We Learned:</h3>
+                <ul>
+                    <li><strong>map()</strong> transforms data element by element</li>
+                    <li><strong>filter()</strong> selects data based on conditions</li>
+                    <li><strong>reduce()</strong> aggregates data into single values</li>
+                    <li>These functions promote functional programming style</li>
+                    <li>They can be combined for powerful data processing</li>
+                </ul>
+            </div>
+
+            <h3>Next Steps:</h3>
+            <ul>
+                <li>Practice with your own datasets</li>
+                <li>Explore itertools module for more advanced functions</li>
+                <li>Learn about generator expressions</li>
+                <li>Study functional programming concepts</li>
+            </ul>
+
+            <div style="text-align: center; margin-top: 40px;">
+                <h2 style="color: #667eea;">Thank You! 🐍</h2>
+                <p style="font-size: 1.3em; color: #764ba2;">Happy Coding with Python!</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide-counter">
+        <span id="current-slide">1</span> / <span id="total-slides">12</span>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" id="prev-btn" onclick="changeSlide(-1)">← Previous</button>
+        <button class="nav-btn" id="next-btn" onclick="changeSlide(1)">Next →</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('total-slides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            
+            document.getElementById('current-slide').textContent = currentSlide + 1;
+            document.getElementById('prev-btn').disabled = currentSlide === 0;
+            document.getElementById('next-btn').disabled = currentSlide === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            if (direction === 1 && currentSlide < totalSlides - 1) {
+                showSlide(currentSlide + 1);
+            } else if (direction === -1 && currentSlide > 0) {
+                showSlide(currentSlide - 1);
+            }
+        }
+
+        // Initialize
+        showSlide(0);
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowRight' || event.key === ' ') {
+                changeSlide(1);
+            } else if (event.key === 'ArrowLeft') {
+                changeSlide(-1);
+            }
+        });
+    </script>
+</body>
+</html>

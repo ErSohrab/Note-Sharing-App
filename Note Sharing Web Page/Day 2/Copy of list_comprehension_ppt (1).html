@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List Comprehension in Python</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .slide {
+            width: 90%;
+            max-width: 1200px;
+            height: 80vh;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 40px;
+            display: none;
+            animation: slideIn 0.5s ease-out;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 30px;
+            text-align: center;
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            margin-bottom: 25px;
+            color: #FFD700;
+            border-bottom: 3px solid #FFD700;
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            font-size: 1.8rem;
+            margin: 20px 0 15px 0;
+            color: #87CEEB;
+        }
+
+        p, li {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        ul {
+            margin-left: 30px;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        .code-block {
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            border-left: 4px solid #FFD700;
+            overflow-x: auto;
+        }
+
+        .code-block code {
+            color: #00FF00;
+        }
+
+        .highlight {
+            background: rgba(255, 215, 0, 0.3);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        .example-box {
+            background: rgba(135, 206, 235, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #87CEEB;
+        }
+
+        .comparison-table {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .comparison-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .comparison-table th, .comparison-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .comparison-table th {
+            background: rgba(255, 215, 0, 0.3);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <div class="slide-counter">
+            <span id="current-slide">1</span> / <span id="total-slides">10</span>
+        </div>
+
+        <!-- Slide 1: Title -->
+        <div class="slide active">
+            <h1>List Comprehension in Python</h1>
+            <div style="text-align: center; margin-top: 50px;">
+                <h3>Elegant and Efficient List Creation</h3>
+                <p style="font-size: 1.5rem; margin-top: 40px;">Topics Covered:</p>
+                <ul style="font-size: 1.3rem; margin-top: 30px; list-style: none; text-align: left; max-width: 600px; margin-left: auto; margin-right: auto;">
+                    <li>✨ Basic Syntax and Structure</li>
+                    <li>🔍 Conditional List Comprehensions</li>
+                    <li>🔄 Nested List Operations</li>
+                    <li>⚡ Performance Benefits</li>
+                    <li>📝 Practical Examples</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 2: What is List Comprehension -->
+        <div class="slide">
+            <h2>What is List Comprehension?</h2>
+            <p>List comprehension is a <span class="highlight">concise and elegant way</span> to create lists in Python.</p>
+            
+            <h3>Traditional Approach vs List Comprehension</h3>
+            <div class="comparison-table">
+                <table>
+                    <tr>
+                        <th>Traditional Loop</th>
+                        <th>List Comprehension</th>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="code-block">
+<code>squares = []
+for x in range(10):
+    squares.append(x**2)</code>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="code-block">
+<code>squares = [x**2 for x in range(10)]</code>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="example-box">
+                <h3>Key Benefits:</h3>
+                <ul>
+                    <li>More readable and concise</li>
+                    <li>Faster execution than traditional loops</li>
+                    <li>Pythonic way of writing code</li>
+                    <li>Memory efficient</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 3: Basic Syntax -->
+        <div class="slide">
+            <h2>Basic Syntax</h2>
+            
+            <div class="code-block">
+<code>[expression for item in iterable]</code>
+            </div>
+
+            <h3>Components Breakdown:</h3>
+            <ul>
+                <li><strong>expression:</strong> What to do with each item</li>
+                <li><strong>item:</strong> Variable representing each element</li>
+                <li><strong>iterable:</strong> The collection to iterate over</li>
+            </ul>
+
+            <h3>Simple Examples:</h3>
+            <div class="code-block">
+<code># Numbers 0 to 9
+numbers = [x for x in range(10)]
+# [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+# Squares of numbers 0 to 9
+squares = [x**2 for x in range(10)]
+# [0, 1, 4, 9, 16, 25, 36, 49, 64, 81]
+
+# Uppercase words
+words = ['hello', 'world', 'python']
+upper_words = [word.upper() for word in words]
+# ['HELLO', 'WORLD', 'PYTHON']</code>
+            </div>
+        </div>
+
+        <!-- Slide 4: List Comprehension with Conditions -->
+        <div class="slide">
+            <h2>List Comprehension with Conditions</h2>
+            
+            <h3>Filtering with IF condition:</h3>
+            <div class="code-block">
+<code>[expression for item in iterable if condition]</code>
+            </div>
+
+            <div class="example-box">
+                <h3>Examples:</h3>
+                <div class="code-block">
+<code># Even numbers only
+evens = [x for x in range(20) if x % 2 == 0]
+# [0, 2, 4, 6, 8, 10, 12, 14, 16, 18]
+
+# Positive numbers only
+numbers = [-2, -1, 0, 1, 2, 3, 4]
+positives = [x for x in numbers if x > 0]
+# [1, 2, 3, 4]
+
+# Words longer than 3 characters
+words = ['cat', 'dog', 'elephant', 'hi', 'python']
+long_words = [word for word in words if len(word) > 3]
+# ['elephant', 'python']</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Conditional Expressions -->
+        <div class="slide">
+            <h2>Conditional Expressions (Ternary)</h2>
+            
+            <h3>IF-ELSE within expression:</h3>
+            <div class="code-block">
+<code>[expression_if_true if condition else expression_if_false for item in iterable]</code>
+            </div>
+
+            <div class="example-box">
+                <h3>Examples:</h3>
+                <div class="code-block">
+<code># Label numbers as even or odd
+labels = ['even' if x % 2 == 0 else 'odd' for x in range(10)]
+# ['even', 'odd', 'even', 'odd', 'even', 'odd', 'even', 'odd', 'even', 'odd']
+
+# Convert negative numbers to positive
+numbers = [-2, 3, -1, 4, -5]
+abs_numbers = [x if x >= 0 else -x for x in numbers]
+# [2, 3, 1, 4, 5]
+
+# Grade classification
+scores = [85, 92, 78, 96, 88]
+grades = ['A' if score >= 90 else 'B' if score >= 80 else 'C' 
+          for score in scores]
+# ['B', 'A', 'C', 'A', 'B']</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Nested List Comprehensions -->
+        <div class="slide">
+            <h2>Nested List Comprehensions</h2>
+            
+            <h3>Creating 2D Lists (Matrices):</h3>
+            <div class="code-block">
+<code># 3x3 matrix of zeros
+matrix = [[0 for j in range(3)] for i in range(3)]
+# [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+
+# Multiplication table
+mult_table = [[i*j for j in range(1, 6)] for i in range(1, 6)]
+# [[1, 2, 3, 4, 5], [2, 4, 6, 8, 10], [3, 6, 9, 12, 15], 
+#  [4, 8, 12, 16, 20], [5, 10, 15, 20, 25]]</code>
+            </div>
+
+            <h3>Flattening Nested Lists:</h3>
+            <div class="code-block">
+<code># Flatten a 2D list
+nested_list = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+flattened = [item for sublist in nested_list for item in sublist]
+# [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+# With condition
+matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+evens_only = [item for row in matrix for item in row if item % 2 == 0]
+# [2, 4, 6, 8]</code>
+            </div>
+        </div>
+
+        <!-- Slide 7: Complex Nested Examples -->
+        <div class="slide">
+            <h2>Complex Nested Examples</h2>
+            
+            <h3>Working with Nested Data Structures:</h3>
+            <div class="code-block">
+<code># List of dictionaries
+students = [
+    {'name': 'Alice', 'grades': [85, 90, 78]},
+    {'name': 'Bob', 'grades': [92, 88, 96]},
+    {'name': 'Charlie', 'grades': [79, 85, 83]}
+]
+
+# Extract all grades
+all_grades = [grade for student in students 
+              for grade in student['grades']]
+# [85, 90, 78, 92, 88, 96, 79, 85, 83]
+
+# Students with average > 85
+high_performers = [student['name'] for student in students 
+                   if sum(student['grades'])/len(student['grades']) > 85]
+# ['Alice', 'Bob']</code>
+            </div>
+
+            <h3>Coordinate Generation:</h3>
+            <div class="code-block">
+<code># Generate coordinates
+coordinates = [(x, y) for x in range(3) for y in range(3)]
+# [(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2), (2, 0), (2, 1), (2, 2)]
+
+# Only diagonal coordinates
+diagonal = [(x, y) for x in range(3) for y in range(3) if x == y]
+# [(0, 0), (1, 1), (2, 2)]</code>
+            </div>
+        </div>
+
+        <!-- Slide 8: Performance Comparison -->
+        <div class="slide">
+            <h2>Performance Benefits</h2>
+            
+            <h3>Speed Comparison:</h3>
+            <div class="comparison-table">
+                <table>
+                    <tr>
+                        <th>Method</th>
+                        <th>Time (relative)</th>
+                        <th>Memory Usage</th>
+                    </tr>
+                    <tr>
+                        <td>List Comprehension</td>
+                        <td>1.0x (fastest)</td>
+                        <td>Most efficient</td>
+                    </tr>
+                    <tr>
+                        <td>Traditional Loop</td>
+                        <td>1.3x slower</td>
+                        <td>More memory overhead</td>
+                    </tr>
+                    <tr>
+                        <td>map() + lambda</td>
+                        <td>1.1x slower</td>
+                        <td>Iterator (lazy)</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="example-box">
+                <h3>Why List Comprehensions are Faster:</h3>
+                <ul>
+                    <li>Optimized C implementation</li>
+                    <li>Reduced function call overhead</li>
+                    <li>Single expression evaluation</li>
+                    <li>Memory pre-allocation</li>
+                </ul>
+            </div>
+
+            <div class="code-block">
+<code># Timing example (conceptual)
+import time
+
+# List comprehension: ~0.015 seconds
+start = time.time()
+squares = [x**2 for x in range(100000)]
+lc_time = time.time() - start
+
+# Traditional loop: ~0.020 seconds  
+start = time.time()
+squares = []
+for x in range(100000):
+    squares.append(x**2)
+loop_time = time.time() - start</code>
+            </div>
+        </div>
+
+        <!-- Slide 9: Best Practices -->
+        <div class="slide">
+            <h2>Best Practices & Guidelines</h2>
+            
+            <h3>✅ Do's:</h3>
+            <ul>
+                <li>Use for simple to moderate complexity operations</li>
+                <li>Keep expressions readable and concise</li>
+                <li>Use meaningful variable names</li>
+                <li>Prefer list comprehensions over map() + lambda for simple cases</li>
+            </ul>
+
+            <h3>❌ Don'ts:</h3>
+            <ul>
+                <li>Don't use for complex logic (use regular loops instead)</li>
+                <li>Avoid deeply nested comprehensions (>2 levels)</li>
+                <li>Don't sacrifice readability for brevity</li>
+                <li>Avoid side effects within comprehensions</li>
+            </ul>
+
+            <div class="example-box">
+                <h3>When NOT to use List Comprehension:</h3>
+                <div class="code-block">
+<code># Too complex - use regular loop instead
+# Bad
+result = [complex_function(x) if condition1(x) else 
+          other_function(x) if condition2(x) else 
+          default_function(x) for x in data 
+          if preliminary_check(x) and secondary_check(x)]
+
+# Better
+result = []
+for x in data:
+    if preliminary_check(x) and secondary_check(x):
+        if condition1(x):
+            result.append(complex_function(x))
+        elif condition2(x):
+            result.append(other_function(x))
+        else:
+            result.append(default_function(x))</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Summary & Practice -->
+        <div class="slide">
+            <h2>Summary & Practice</h2>
+            
+            <h3>Key Takeaways:</h3>
+            <ul>
+                <li><strong>Basic syntax:</strong> [expression for item in iterable]</li>
+                <li><strong>With filtering:</strong> [expression for item in iterable if condition]</li>
+                <li><strong>With conditional expression:</strong> [expr1 if condition else expr2 for item in iterable]</li>
+                <li><strong>Nested:</strong> [expression for outer in iterable for inner in outer]</li>
+            </ul>
+
+            <div class="example-box">
+                <h3>🏃‍♂️ Quick Practice Exercises:</h3>
+                <div class="code-block">
+<code># 1. Create a list of cubes of odd numbers from 1 to 20
+cubes_odd = [x**3 for x in range(1, 21) if x % 2 == 1]
+
+# 2. Convert temperatures from Celsius to Fahrenheit
+celsius = [0, 10, 20, 30, 40]
+fahrenheit = [(c * 9/5) + 32 for c in celsius]
+
+# 3. Extract vowels from a string
+sentence = "Hello World"
+vowels = [char for char in sentence.lower() if char in 'aeiou']
+
+# 4. Create a list of (number, square) tuples for even numbers
+even_squares = [(x, x**2) for x in range(10) if x % 2 == 0]</code>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 40px;">
+                <h3>🎉 Thank You!</h3>
+                <p style="font-size: 1.3rem;">Master list comprehensions to write more Pythonic code!</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">← Previous</button>
+        <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Next →</button>
+    </div>
+
+    <script>
+        let currentSlide = 1;
+        const totalSlides = 10;
+
+        function showSlide(n) {
+            const slides = document.querySelectorAll('.slide');
+            
+            if (n > totalSlides) currentSlide = 1;
+            if (n < 1) currentSlide = totalSlides;
+            
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[currentSlide - 1].classList.add('active');
+            
+            document.getElementById('current-slide').textContent = currentSlide;
+            
+            // Update navigation buttons
+            document.getElementById('prevBtn').disabled = currentSlide === 1;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides;
+        }
+
+        function changeSlide(n) {
+            currentSlide += n;
+            showSlide(currentSlide);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+        });
+
+        // Initialize
+        showSlide(currentSlide);
+    </script>
+</body>
+</html>

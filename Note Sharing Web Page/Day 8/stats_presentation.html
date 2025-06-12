@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Summary Statistics and Distribution Analysis</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .presentation-container {
+            width: 90%;
+            max-width: 1000px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .slide {
+            display: none;
+            padding: 60px;
+            min-height: 700px;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        h2 {
+            color: #34495e;
+            font-size: 2em;
+            margin-bottom: 25px;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            color: #2980b9;
+            font-size: 1.5em;
+            margin: 20px 0 15px 0;
+        }
+
+        p, li {
+            font-size: 1.1em;
+            line-height: 1.6;
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        ul {
+            margin-left: 20px;
+        }
+
+        .formula {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 1.2em;
+            text-align: center;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #a8e6cf 0%, #dcedc1 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #27ae60;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 60px;
+            background: rgba(52, 73, 94, 0.1);
+            border-top: 1px solid #ecf0f1;
+        }
+
+        .nav-btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+        }
+
+        .nav-btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .slide-counter {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 1.1em;
+        }
+
+        .chart-placeholder {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(45deg, #f39c12, #e67e22);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin: 20px 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 20px 0;
+        }
+
+        .stats-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .stats-table th, .stats-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        .stats-table th {
+            background: linear-gradient(135deg, #34495e, #2c3e50);
+            color: white;
+            font-weight: bold;
+        }
+
+        .stats-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .title-slide {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .title-slide h1 {
+            font-size: 3.5em;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .subtitle {
+            font-size: 1.5em;
+            color: #7f8c8d;
+            margin-bottom: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <!-- Slide 1: Title -->
+        <div class="slide active title-slide">
+            <h1>Summary Statistics & Distribution Analysis</h1>
+            <p class="subtitle">Understanding Data Through Statistical Measures</p>
+            <div class="chart-placeholder">📊 Statistical Analysis Overview</div>
+        </div>
+
+        <!-- Slide 2: Introduction -->
+        <div class="slide">
+            <h2>What is Statistical Analysis?</h2>
+            <p>Statistical analysis is the process of collecting, exploring, and presenting large amounts of data to discover underlying patterns and trends.</p>
+            
+            <div class="highlight">
+                <h3>Key Components:</h3>
+                <ul>
+                    <li><strong>Summary Statistics:</strong> Numerical measures that describe the main features of a dataset</li>
+                    <li><strong>Distribution Analysis:</strong> Understanding how data values are spread or distributed</li>
+                    <li><strong>Pattern Recognition:</strong> Identifying trends, relationships, and outliers</li>
+                </ul>
+            </div>
+
+            <p>These tools help us transform raw data into meaningful insights for decision-making.</p>
+        </div>
+
+        <!-- Slide 3: Measures of Central Tendency -->
+        <div class="slide">
+            <h2>Measures of Central Tendency</h2>
+            <p>These statistics describe the center or typical value of a dataset.</p>
+
+            <div class="two-column">
+                <div>
+                    <h3>Mean (Average)</h3>
+                    <div class="formula">
+                        μ = Σx / n
+                    </div>
+                    <p>Sum of all values divided by the number of values. Sensitive to outliers.</p>
+
+                    <h3>Median</h3>
+                    <p>The middle value when data is arranged in order. Robust against outliers.</p>
+                </div>
+                <div>
+                    <h3>Mode</h3>
+                    <p>The most frequently occurring value in the dataset.</p>
+
+                    <div class="highlight">
+                        <strong>When to use each:</strong>
+                        <ul>
+                            <li><strong>Mean:</strong> Normal distributions</li>
+                            <li><strong>Median:</strong> Skewed distributions</li>
+                            <li><strong>Mode:</strong> Categorical data</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Measures of Variability -->
+        <div class="slide">
+            <h2>Measures of Variability</h2>
+            <p>These statistics describe how spread out or dispersed the data values are.</p>
+
+            <div class="two-column">
+                <div>
+                    <h3>Range</h3>
+                    <div class="formula">
+                        Range = Max - Min
+                    </div>
+                    <p>Simple but sensitive to outliers.</p>
+
+                    <h3>Variance</h3>
+                    <div class="formula">
+                        σ² = Σ(x - μ)² / n
+                    </div>
+                    <p>Average squared deviation from the mean.</p>
+                </div>
+                <div>
+                    <h3>Standard Deviation</h3>
+                    <div class="formula">
+                        σ = √(σ²)
+                    </div>
+                    <p>Square root of variance. Same units as original data.</p>
+
+                    <h3>Interquartile Range (IQR)</h3>
+                    <div class="formula">
+                        IQR = Q3 - Q1
+                    </div>
+                    <p>Robust measure of spread.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Measures of Shape -->
+        <div class="slide">
+            <h2>Measures of Shape</h2>
+            <p>These statistics describe the shape characteristics of the distribution.</p>
+
+            <div class="two-column">
+                <div>
+                    <h3>Skewness</h3>
+                    <p>Measures the asymmetry of the distribution:</p>
+                    <ul>
+                        <li><strong>Positive skew:</strong> Tail extends to the right</li>
+                        <li><strong>Negative skew:</strong> Tail extends to the left</li>
+                        <li><strong>Zero skew:</strong> Symmetric distribution</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Kurtosis</h3>
+                    <p>Measures the "tailedness" of the distribution:</p>
+                    <ul>
+                        <li><strong>Leptokurtic:</strong> Heavy tails, sharp peak</li>
+                        <li><strong>Platykurtic:</strong> Light tails, flat peak</li>
+                        <li><strong>Mesokurtic:</strong> Normal distribution</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="chart-placeholder">Distribution Shape Visualization</div>
+        </div>
+
+        <!-- Slide 6: Five-Number Summary -->
+        <div class="slide">
+            <h2>Five-Number Summary</h2>
+            <p>A comprehensive overview of data distribution using five key statistics.</p>
+
+            <table class="stats-table">
+                <tr>
+                    <th>Statistic</th>
+                    <th>Description</th>
+                    <th>Purpose</th>
+                </tr>
+                <tr>
+                    <td>Minimum</td>
+                    <td>Smallest value</td>
+                    <td>Lower bound of data</td>
+                </tr>
+                <tr>
+                    <td>Q1 (25th percentile)</td>
+                    <td>First quartile</td>
+                    <td>Lower middle range</td>
+                </tr>
+                <tr>
+                    <td>Median (50th percentile)</td>
+                    <td>Middle value</td>
+                    <td>Central tendency</td>
+                </tr>
+                <tr>
+                    <td>Q3 (75th percentile)</td>
+                    <td>Third quartile</td>
+                    <td>Upper middle range</td>
+                </tr>
+                <tr>
+                    <td>Maximum</td>
+                    <td>Largest value</td>
+                    <td>Upper bound of data</td>
+                </tr>
+            </table>
+
+            <div class="highlight">
+                <strong>Box Plot:</strong> Visual representation of the five-number summary, excellent for identifying outliers and comparing distributions.
+            </div>
+        </div>
+
+        <!-- Slide 7: Common Distributions -->
+        <div class="slide">
+            <h2>Common Probability Distributions</h2>
+            
+            <div class="two-column">
+                <div>
+                    <h3>Normal Distribution</h3>
+                    <ul>
+                        <li>Bell-shaped, symmetric</li>
+                        <li>Mean = Median = Mode</li>
+                        <li>68-95-99.7 rule</li>
+                        <li>Many natural phenomena</li>
+                    </ul>
+
+                    <h3>Binomial Distribution</h3>
+                    <ul>
+                        <li>Discrete distribution</li>
+                        <li>Fixed number of trials</li>
+                        <li>Binary outcomes</li>
+                        <li>Constant probability</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Poisson Distribution</h3>
+                    <ul>
+                        <li>Rare events in fixed intervals</li>
+                        <li>Discrete distribution</li>
+                        <li>Rate parameter λ</li>
+                        <li>Queuing theory applications</li>
+                    </ul>
+
+                    <h3>Exponential Distribution</h3>
+                    <ul>
+                        <li>Time between events</li>
+                        <li>Continuous distribution</li>
+                        <li>Memoryless property</li>
+                        <li>Reliability analysis</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Distribution Analysis Techniques -->
+        <div class="slide">
+            <h2>Distribution Analysis Techniques</h2>
+            
+            <h3>Visual Methods</h3>
+            <ul>
+                <li><strong>Histograms:</strong> Show frequency distribution of continuous data</li>
+                <li><strong>Box Plots:</strong> Display five-number summary and outliers</li>
+                <li><strong>Q-Q Plots:</strong> Compare sample distribution to theoretical distribution</li>
+                <li><strong>Density Plots:</strong> Smooth estimate of probability density function</li>
+            </ul>
+
+            <h3>Statistical Tests</h3>
+            <ul>
+                <li><strong>Shapiro-Wilk Test:</strong> Test for normality</li>
+                <li><strong>Kolmogorov-Smirnov Test:</strong> Compare distributions</li>
+                <li><strong>Anderson-Darling Test:</strong> Goodness of fit test</li>
+                <li><strong>Chi-square Test:</strong> Test categorical data distributions</li>
+            </ul>
+
+            <div class="chart-placeholder">Distribution Analysis Workflow</div>
+        </div>
+
+        <!-- Slide 9: Practical Applications -->
+        <div class="slide">
+            <h2>Practical Applications</h2>
+            
+            <div class="two-column">
+                <div>
+                    <h3>Business Analytics</h3>
+                    <ul>
+                        <li>Customer behavior analysis</li>
+                        <li>Sales forecasting</li>
+                        <li>Quality control</li>
+                        <li>Risk assessment</li>
+                    </ul>
+
+                    <h3>Healthcare</h3>
+                    <ul>
+                        <li>Patient outcome analysis</li>
+                        <li>Drug efficacy studies</li>
+                        <li>Epidemiological research</li>
+                        <li>Biomarker analysis</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Finance</h3>
+                    <ul>
+                        <li>Portfolio optimization</li>
+                        <li>Risk modeling</li>
+                        <li>Fraud detection</li>
+                        <li>Credit scoring</li>
+                    </ul>
+
+                    <h3>Research</h3>
+                    <ul>
+                        <li>Experimental design</li>
+                        <li>Hypothesis testing</li>
+                        <li>Data validation</li>
+                        <li>Pattern recognition</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="highlight">
+                <strong>Key Insight:</strong> Understanding data distribution is crucial for choosing appropriate statistical methods and making valid inferences.
+            </div>
+        </div>
+
+        <!-- Slide 10: Best Practices -->
+        <div class="slide">
+            <h2>Best Practices & Recommendations</h2>
+            
+            <h3>Data Preparation</h3>
+            <ul>
+                <li>Clean and validate data before analysis</li>
+                <li>Handle missing values appropriately</li>
+                <li>Identify and treat outliers</li>
+                <li>Ensure data quality and consistency</li>
+            </ul>
+
+            <h3>Analysis Approach</h3>
+            <ul>
+                <li>Start with exploratory data analysis</li>
+                <li>Use multiple summary statistics</li>
+                <li>Combine visual and numerical methods</li>
+                <li>Consider the context of your data</li>
+            </ul>
+
+            <div class="highlight">
+                <h3>Common Pitfalls to Avoid</h3>
+                <ul>
+                    <li>Relying solely on mean when data is skewed</li>
+                    <li>Ignoring the influence of outliers</li>
+                    <li>Assuming normality without testing</li>
+                    <li>Misinterpreting correlation as causation</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 11: Conclusion -->
+        <div class="slide">
+            <h2>Key Takeaways</h2>
+            
+            <div class="highlight">
+                <h3>Summary Statistics provide:</h3>
+                <ul>
+                    <li>Quick insights into data characteristics</li>
+                    <li>Foundation for more advanced analysis</li>
+                    <li>Basis for comparison between datasets</li>
+                    <li>Detection of data quality issues</li>
+                </ul>
+            </div>
+
+            <div class="highlight">
+                <h3>Distribution Analysis enables:</h3>
+                <ul>
+                    <li>Understanding data patterns</li>
+                    <li>Appropriate statistical method selection</li>
+                    <li>Identification of outliers and anomalies</li>
+                    <li>Informed decision making</li>
+                </ul>
+            </div>
+
+            <div class="chart-placeholder">🎯 Master these fundamentals for effective data analysis!</div>
+
+            <p style="text-align: center; font-size: 1.3em; color: #2c3e50; font-weight: bold; margin-top: 30px;">
+                Thank you for your attention!
+            </p>
+        </div>
+
+        <div class="navigation">
+            <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">Previous</button>
+            <span class="slide-counter">
+                <span id="currentSlide">1</span> / <span id="totalSlides">11</span>
+            </span>
+            <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Next</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlideIndex = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function showSlide(index) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[index].classList.add('active');
+            
+            document.getElementById('currentSlide').textContent = index + 1;
+            
+            // Update navigation buttons
+            document.getElementById('prevBtn').disabled = index === 0;
+            document.getElementById('nextBtn').disabled = index === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            const newIndex = currentSlideIndex + direction;
+            if (newIndex >= 0 && newIndex < totalSlides) {
+                currentSlideIndex = newIndex;
+                showSlide(currentSlideIndex);
+            }
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowLeft') {
+                changeSlide(-1);
+            } else if (event.key === 'ArrowRight') {
+                changeSlide(1);
+            }
+        });
+
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+</html>

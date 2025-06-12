@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NumPy Fundamentals</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            width: 95%;
+            max-width: 1200px;
+            height: 90vh;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide {
+            display: none;
+            height: 100%;
+            padding: 60px;
+            position: relative;
+            animation: slideIn 0.5s ease-in-out;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .slide h1 {
+            color: #1e3c72;
+            font-size: 3em;
+            margin-bottom: 30px;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .slide h2 {
+            color: #2a5298;
+            font-size: 2.5em;
+            margin-bottom: 25px;
+            border-bottom: 3px solid #2a5298;
+            padding-bottom: 10px;
+        }
+
+        .slide h3 {
+            color: #1e3c72;
+            font-size: 1.8em;
+            margin: 20px 0 15px 0;
+        }
+
+        .slide p, .slide li {
+            font-size: 1.3em;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .slide ul {
+            margin-left: 30px;
+            margin-bottom: 20px;
+        }
+
+        .code-block {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+            line-height: 1.4;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .code-block::before {
+            content: 'Python';
+            position: absolute;
+            top: -10px;
+            right: 15px;
+            background: #2a5298;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8em;
+        }
+
+        .output-block {
+            background: #e8f5e8;
+            border: 2px solid #4caf50;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 1em;
+        }
+
+        .output-block::before {
+            content: 'Output';
+            position: absolute;
+            top: -10px;
+            right: 15px;
+            background: #4caf50;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8em;
+        }
+
+        .navigation {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav-btn {
+            background: #2a5298;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(42, 82, 152, 0.3);
+        }
+
+        .nav-btn:hover {
+            background: #1e3c72;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(42, 82, 152, 0.4);
+        }
+
+        .nav-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .slide-counter {
+            background: rgba(42, 82, 152, 0.1);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #2a5298;
+        }
+
+        .title-slide {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, rgba(30, 60, 114, 0.1) 0%, rgba(42, 82, 152, 0.1) 100%);
+        }
+
+        .title-slide h1 {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        .subtitle {
+            font-size: 1.5em;
+            color: #666;
+            margin-bottom: 40px;
+        }
+
+        .numpy-logo {
+            width: 150px;
+            height: 150px;
+            background: #013243;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3em;
+            color: white;
+            margin: 30px auto;
+            box-shadow: 0 10px 30px rgba(1, 50, 67, 0.3);
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #ffeaa7 0%, #fab1a0 100%);
+            padding: 2px 8px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            height: calc(100% - 180px);
+        }
+
+        .column {
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <!-- Slide 1: Title -->
+        <div class="slide active title-slide">
+            <div class="numpy-logo">NumPy</div>
+            <h1>NumPy Fundamentals</h1>
+            <p class="subtitle">Creating Arrays, Indexing, Slicing & Mathematical Operations</p>
+            <p style="font-size: 1.2em; color: #666; margin-top: 40px;">
+                Essential Python Library for Numerical Computing
+            </p>
+        </div>
+
+        <!-- Slide 2: What is NumPy? -->
+        <div class="slide">
+            <h2>What is NumPy?</h2>
+            <ul>
+                <li><span class="highlight">Numerical Python</span> - Fundamental package for scientific computing</li>
+                <li>Provides support for <strong>large, multi-dimensional arrays</strong> and matrices</li>
+                <li>Collection of <strong>mathematical functions</strong> to operate on these arrays</li>
+                <li>Foundation for other scientific libraries like <strong>Pandas, Matplotlib, Scikit-learn</strong></li>
+                <li>Written in C for <strong>high performance</strong></li>
+            </ul>
+            
+            <h3>Key Benefits:</h3>
+            <ul>
+                <li>🚀 <strong>Speed:</strong> 50-100x faster than pure Python</li>
+                <li>💾 <strong>Memory Efficient:</strong> Uses less memory than Python lists</li>
+                <li>🔧 <strong>Vectorized Operations:</strong> Apply operations to entire arrays</li>
+                <li>🌐 <strong>Broadcasting:</strong> Perform operations on arrays of different shapes</li>
+            </ul>
+
+            <div class="code-block">
+import numpy as np
+print("NumPy version:", np.__version__)
+            </div>
+        </div>
+
+        <!-- Slide 3: Creating Arrays - Basic Methods -->
+        <div class="slide">
+            <h2>Creating Arrays - Basic Methods</h2>
+            
+            <h3>1. From Python Lists</h3>
+            <div class="code-block">
+# 1D Array
+arr1d = np.array([1, 2, 3, 4, 5])
+print("1D Array:", arr1d)
+
+# 2D Array
+arr2d = np.array([[1, 2, 3], [4, 5, 6]])
+print("2D Array:\n", arr2d)
+
+# 3D Array
+arr3d = np.array([[[1, 2], [3, 4]], [[5, 6], [7, 8]]])
+print("3D Array shape:", arr3d.shape)
+            </div>
+
+            <h3>2. Using Built-in Functions</h3>
+            <div class="code-block">
+# Array of zeros
+zeros = np.zeros((3, 4))
+print("Zeros:\n", zeros)
+
+# Array of ones
+ones = np.ones((2, 3))
+print("Ones:\n", ones)
+
+# Empty array (uninitialized)
+empty = np.empty((2, 2))
+print("Empty:\n", empty)
+            </div>
+        </div>
+
+        <!-- Slide 4: Creating Arrays - Advanced Methods -->
+        <div class="slide">
+            <h2>Creating Arrays - Advanced Methods</h2>
+            
+            <div class="two-column">
+                <div class="column">
+                    <h3>Range Functions</h3>
+                    <div class="code-block">
+# Using arange
+arr_range = np.arange(0, 10, 2)
+# Output: [0 2 4 6 8]
+
+# Using linspace
+arr_linear = np.linspace(0, 1, 5)
+# Output: [0.   0.25 0.5  0.75 1.  ]
+
+# Using logspace
+arr_log = np.logspace(0, 2, 3)
+# Output: [  1.  10. 100.]
+                    </div>
+
+                    <h3>Special Arrays</h3>
+                    <div class="code-block">
+# Identity matrix
+identity = np.eye(3)
+
+# Array with specific value
+full_arr = np.full((2, 3), 7)
+
+# Random arrays
+random_arr = np.random.random((2, 3))
+random_int = np.random.randint(0, 10, (2, 3))
+                    </div>
+                </div>
+
+                <div class="column">
+                    <h3>Array Properties</h3>
+                    <div class="code-block">
+arr = np.array([[1, 2, 3], [4, 5, 6]])
+
+print("Shape:", arr.shape)      # (2, 3)
+print("Size:", arr.size)        # 6
+print("Dimensions:", arr.ndim)  # 2
+print("Data type:", arr.dtype)  # int64
+print("Item size:", arr.itemsize) # 8
+                    </div>
+
+                    <h3>Data Types</h3>
+                    <div class="code-block">
+# Specify data type
+int_arr = np.array([1, 2, 3], dtype=np.int32)
+float_arr = np.array([1, 2, 3], dtype=np.float64)
+bool_arr = np.array([True, False, True])
+
+# Convert data types
+converted = int_arr.astype(np.float32)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Array Indexing -->
+        <div class="slide">
+            <h2>Array Indexing</h2>
+            
+            <div class="two-column">
+                <div class="column">
+                    <h3>1D Array Indexing</h3>
+                    <div class="code-block">
+arr = np.array([10, 20, 30, 40, 50])
+
+# Positive indexing
+print(arr[0])    # 10 (first element)
+print(arr[2])    # 30 (third element)
+
+# Negative indexing
+print(arr[-1])   # 50 (last element)
+print(arr[-2])   # 40 (second last)
+
+# Multiple elements
+indices = [0, 2, 4]
+print(arr[indices])  # [10 30 50]
+                    </div>
+
+                    <h3>Boolean Indexing</h3>
+                    <div class="code-block">
+arr = np.array([1, 5, 3, 8, 2, 7])
+
+# Boolean condition
+condition = arr > 4
+print(condition)  # [False True False True False True]
+
+# Filter elements
+filtered = arr[condition]
+print(filtered)   # [5 8 7]
+
+# Direct filtering
+result = arr[arr > 4]
+print(result)     # [5 8 7]
+                    </div>
+                </div>
+
+                <div class="column">
+                    <h3>2D Array Indexing</h3>
+                    <div class="code-block">
+arr2d = np.array([[1, 2, 3],
+                  [4, 5, 6],
+                  [7, 8, 9]])
+
+# Single element
+print(arr2d[0, 1])    # 2
+print(arr2d[1][2])    # 6 (alternative syntax)
+
+# Entire row
+print(arr2d[1])       # [4 5 6]
+
+# Entire column
+print(arr2d[:, 1])    # [2 5 8]
+
+# Multiple rows/columns
+print(arr2d[[0, 2], [1, 2]])  # [2 9]
+                    </div>
+
+                    <h3>Fancy Indexing</h3>
+                    <div class="code-block">
+arr = np.arange(12).reshape(3, 4)
+
+# Row indices
+row_indices = [0, 2]
+print(arr[row_indices])
+
+# Column indices
+col_indices = [1, 3]
+print(arr[:, col_indices])
+
+# Combined fancy indexing
+print(arr[np.ix_(row_indices, col_indices)])
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Array Slicing -->
+        <div class="slide">
+            <h2>Array Slicing</h2>
+            
+            <h3>1D Array Slicing - Syntax: [start:stop:step]</h3>
+            <div class="code-block">
+arr = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+
+print(arr[2:7])      # [2 3 4 5 6] - elements from index 2 to 6
+print(arr[:5])       # [0 1 2 3 4] - first 5 elements
+print(arr[5:])       # [5 6 7 8 9] - from index 5 to end
+print(arr[::2])      # [0 2 4 6 8] - every 2nd element
+print(arr[::-1])     # [9 8 7 6 5 4 3 2 1 0] - reverse array
+print(arr[1:8:2])    # [1 3 5 7] - from index 1 to 7, step 2
+            </div>
+
+            <h3>2D Array Slicing</h3>
+            <div class="code-block">
+arr2d = np.array([[1,  2,  3,  4],
+                  [5,  6,  7,  8],
+                  [9, 10, 11, 12]])
+
+print("Original array:\n", arr2d)
+print("\nFirst 2 rows:", arr2d[:2])
+print("Last 2 columns:\n", arr2d[:, -2:])
+print("Every other row and column:\n", arr2d[::2, ::2])
+print("Subarray (rows 0-1, cols 1-2):\n", arr2d[0:2, 1:3])
+            </div>
+        </div>
+
+        <!-- Slide 7: Mathematical Operations - Basic -->
+        <div class="slide">
+            <h2>Mathematical Operations - Basic</h2>
+            
+            <div class="two-column">
+                <div class="column">
+                    <h3>Element-wise Operations</h3>
+                    <div class="code-block">
+a = np.array([1, 2, 3, 4])
+b = np.array([5, 6, 7, 8])
+
+# Arithmetic operations
+print("Addition:", a + b)        # [ 6  8 10 12]
+print("Subtraction:", a - b)     # [-4 -4 -4 -4]
+print("Multiplication:", a * b)  # [ 5 12 21 32]
+print("Division:", b / a)        # [5.  3.  2.33 2.]
+print("Power:", a ** 2)          # [ 1  4  9 16]
+print("Modulo:", b % a)          # [0 0 1 0]
+                    </div>
+
+                    <h3>Comparison Operations</h3>
+                    <div class="code-block">
+a = np.array([1, 2, 3, 4])
+b = np.array([2, 2, 2, 2])
+
+print("Equal:", a == b)          # [False True False False]
+print("Greater:", a > b)         # [False False True True]
+print("Less equal:", a <= b)     # [True True False False]
+                    </div>
+                </div>
+
+                <div class="column">
+                    <h3>Universal Functions (ufuncs)</h3>
+                    <div class="code-block">
+arr = np.array([1, 4, 9, 16])
+
+print("Square root:", np.sqrt(arr))      # [1. 2. 3. 4.]
+print("Exponential:", np.exp([1, 2]))    # [ 2.72  7.39]
+print("Logarithm:", np.log([1, 2.72]))   # [0.   1.]
+print("Sine:", np.sin([0, np.pi/2]))     # [0. 1.]
+print("Absolute:", np.abs([-1, -2, 3]))  # [1 2 3]
+                    </div>
+
+                    <h3>Scalar Operations</h3>
+                    <div class="code-block">
+arr = np.array([1, 2, 3, 4])
+
+print("Add scalar:", arr + 10)     # [11 12 13 14]
+print("Multiply:", arr * 3)        # [ 3  6  9 12]
+print("Power:", arr ** 2)          # [ 1  4  9 16]
+print("Divide:", arr / 2)          # [0.5 1.  1.5 2. ]
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Mathematical Operations - Advanced -->
+        <div class="slide">
+            <h2>Mathematical Operations - Advanced</h2>
+            
+            <div class="two-column">
+                <div class="column">
+                    <h3>Aggregation Functions</h3>
+                    <div class="code-block">
+arr = np.array([[1, 2, 3],
+                [4, 5, 6]])
+
+print("Sum all:", np.sum(arr))           # 21
+print("Sum axis 0:", np.sum(arr, axis=0)) # [5 7 9]
+print("Sum axis 1:", np.sum(arr, axis=1)) # [ 6 15]
+
+print("Mean:", np.mean(arr))             # 3.5
+print("Std dev:", np.std(arr))           # 1.71
+print("Min:", np.min(arr))               # 1
+print("Max:", np.max(arr))               # 6
+print("Median:", np.median(arr))         # 3.5
+                    </div>
+
+                    <h3>Linear Algebra</h3>
+                    <div class="code-block">
+A = np.array([[1, 2], [3, 4]])
+B = np.array([[5, 6], [7, 8]])
+
+# Matrix multiplication
+print("Dot product:\n", np.dot(A, B))
+
+# Transpose
+print("Transpose:\n", A.T)
+
+# Determinant
+print("Determinant:", np.linalg.det(A))
+
+# Inverse
+print("Inverse:\n", np.linalg.inv(A))
+                    </div>
+                </div>
+
+                <div class="column">
+                    <h3>Broadcasting</h3>
+                    <div class="code-block">
+# Different shaped arrays
+a = np.array([[1, 2, 3],
+              [4, 5, 6]])  # Shape: (2, 3)
+b = np.array([10, 20, 30])  # Shape: (3,)
+
+# Broadcasting allows element-wise operations
+result = a + b
+print("Broadcasting result:\n", result)
+# [[11 22 33]
+#  [14 25 36]]
+
+# Scalar broadcasting
+scalar_result = a * 2
+print("Scalar broadcasting:\n", scalar_result)
+                    </div>
+
+                    <h3>Reshaping & Manipulation</h3>
+                    <div class="code-block">
+arr = np.arange(12)
+
+# Reshape
+reshaped = arr.reshape(3, 4)
+print("Reshaped:\n", reshaped)
+
+# Flatten
+flattened = reshaped.flatten()
+print("Flattened:", flattened)
+
+# Transpose
+transposed = reshaped.T
+print("Transposed:\n", transposed)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Practical Examples -->
+        <div class="slide">
+            <h2>Practical Examples</h2>
+            
+            <h3>Example 1: Image Processing Simulation</h3>
+            <div class="code-block">
+# Simulate a grayscale image (2D array)
+image = np.random.randint(0, 256, (5, 5), dtype=np.uint8)
+print("Original image:\n", image)
+
+# Brighten the image
+brightened = np.clip(image + 50, 0, 255)
+print("Brightened image:\n", brightened)
+
+# Apply threshold
+threshold = image > 128
+binary_image = threshold.astype(np.uint8) * 255
+print("Binary image:\n", binary_image)
+            </div>
+
+            <h3>Example 2: Statistical Analysis</h3>
+            <div class="code-block">
+# Student grades data
+grades = np.array([[85, 92, 78, 96],    # Student 1
+                   [89, 85, 91, 87],    # Student 2
+                   [92, 88, 85, 93],    # Student 3
+                   [78, 82, 80, 85]])   # Student 4
+
+# Calculate statistics
+print("Average per student:", np.mean(grades, axis=1))
+print("Average per subject:", np.mean(grades, axis=0))
+print("Highest grade:", np.max(grades))
+print("Students above 90:", np.sum(grades > 90, axis=1))
+            </div>
+        </div>
+
+        <!-- Slide 10: Best Practices & Summary -->
+        <div class="slide">
+            <h2>Best Practices & Summary</h2>
+            
+            <div class="two-column">
+                <div class="column">
+                    <h3>Best Practices</h3>
+                    <ul>
+                        <li>🎯 <strong>Use vectorized operations</strong> instead of loops</li>
+                        <li>📊 <strong>Specify data types</strong> explicitly when needed</li>
+                        <li>🔄 <strong>Leverage broadcasting</strong> for efficient computations</li>
+                        <li>💾 <strong>Use views vs copies</strong> appropriately</li>
+                        <li>⚡ <strong>Preallocate arrays</strong> when size is known</li>
+                        <li>🧹 <strong>Use meaningful variable names</strong></li>
+                    </ul>
+
+                    <h3>Performance Tips</h3>
+                    <div class="code-block">
+# Good: Vectorized operation
+result = np.sum(arr * 2)
+
+# Avoid: Python loops
+# result = 0
+# for i in arr:
+#     result += i * 2
+                    </div>
+                </div>
+
+                <div class="column">
+                    <h3>Key Takeaways</h3>
+                    <ul>
+                        <li>🏗️ <strong>Array Creation:</strong> Multiple methods for different use cases</li>
+                        <li>🎯 <strong>Indexing:</strong> Powerful ways to access elements</li>
+                        <li>✂️ <strong>Slicing:</strong> Extract subarrays efficiently</li>
+                        <li>🧮 <strong>Math Operations:</strong> Element-wise and matrix operations</li>
+                        <li>📡 <strong>Broadcasting:</strong> Operations on different shaped arrays</li>
+                    </ul>
+
+                    <h3>Next Steps</h3>
+                    <ul>
+                        <li>Explore advanced NumPy functions</li>
+                        <li>Learn about structured arrays</li>
+                        <li>Practice with real datasets</li>
+                        <li>Integrate with other libraries (Pandas, Matplotlib)</li>
+                        <li>Optimize performance for large datasets</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="navigation">
+            <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">← Previous</button>
+            <span class="slide-counter">
+                <span id="currentSlide">1</span> / <span id="totalSlides">10</span>
+            </span>
+            <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Next →</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlideIndex = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function showSlide(index) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[index].classList.add('active');
+            
+            document.getElementById('currentSlide').textContent = index + 1;
+            document.getElementById('prevBtn').disabled = index === 0;
+            document.getElementById('nextBtn').disabled = index === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            const newIndex = currentSlideIndex + direction;
+            if (newIndex >= 0 && newIndex < totalSlides) {
+                currentSlideIndex = newIndex;
+                showSlide(currentSlideIndex);
+            }
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowLeft') {
+                changeSlide(-1);
+            } else if (event.key === 'ArrowRight') {
+                changeSlide(1);
+            }
+        });
+
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+</html>

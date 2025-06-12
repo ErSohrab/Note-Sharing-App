@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Data Structures</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            overflow: hidden;
+        }
+
+        .slideshow-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .slide {
+            display: none;
+            padding: 60px;
+            text-align: center;
+            max-width: 1000px;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: 3.5em;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h2 {
+            font-size: 2.8em;
+            margin-bottom: 25px;
+            color: #ffd93d;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+        }
+
+        h3 {
+            font-size: 2.2em;
+            margin-bottom: 20px;
+            color: #ff9ff3;
+        }
+
+        p, li {
+            font-size: 1.3em;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .code-block {
+            background: rgba(0,0,0,0.7);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+            text-align: left;
+            border-left: 4px solid #4ecdc4;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .highlight {
+            color: #ffd93d;
+            font-weight: bold;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .feature-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        .use-case {
+            background: rgba(255,107,107,0.2);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid #ff6b6b;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            border: none;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .nav-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(0,0,0,0.5);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 1.1em;
+        }
+
+        ul {
+            text-align: left;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .comparison-table {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .comparison-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .comparison-table th, .comparison-table td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .comparison-table th {
+            background: rgba(255,255,255,0.2);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="slideshow-container">
+        <div class="slide-counter">
+            <span id="slide-number">1</span> / <span id="total-slides">12</span>
+        </div>
+
+        <!-- Slide 1: Title -->
+        <div class="slide active">
+            <h1>Python Data Structures</h1>
+            <h3>Lists, Tuples, Sets, Dictionaries</h3>
+            <p style="font-size: 1.5em; margin-top: 40px;">Understanding Core Data Types and Their Use Cases</p>
+            <div style="margin-top: 60px; font-size: 1.1em; opacity: 0.8;">
+                <p>Comprehensive Guide with Practical Examples</p>
+            </div>
+        </div>
+
+        <!-- Slide 2: Overview -->
+        <div class="slide">
+            <h2>Overview of Python Data Structures</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3 style="color: #ff6b6b;">Lists</h3>
+                    <p>Ordered, mutable collections</p>
+                </div>
+                <div class="feature-card">
+                    <h3 style="color: #4ecdc4;">Tuples</h3>
+                    <p>Ordered, immutable collections</p>
+                </div>
+                <div class="feature-card">
+                    <h3 style="color: #ffd93d;">Sets</h3>
+                    <p>Unordered, unique elements</p>
+                </div>
+                <div class="feature-card">
+                    <h3 style="color: #ff9ff3;">Dictionaries</h3>
+                    <p>Key-value pairs, mutable</p>
+                </div>
+            </div>
+            <p style="margin-top: 30px;">Each data structure serves specific purposes and offers unique advantages for different programming scenarios.</p>
+        </div>
+
+        <!-- Slide 3: Lists -->
+        <div class="slide">
+            <h2>Lists</h2>
+            <p><span class="highlight">Ordered, mutable collections</span> that can store duplicate elements</p>
+            
+            <div class="code-block">
+# Creating and manipulating lists
+fruits = ['apple', 'banana', 'orange']
+numbers = [1, 2, 3, 4, 5]
+
+# Adding elements
+fruits.append('grape')        # Add to end
+fruits.insert(1, 'mango')    # Insert at index
+
+# Accessing elements
+first_fruit = fruits[0]       # 'apple'
+last_fruit = fruits[-1]      # 'grape'
+
+# Modifying elements
+fruits[0] = 'pineapple'      # Change first element
+            </div>
+
+            <div class="use-case">
+                <h3>Key Features:</h3>
+                <ul>
+                    <li>Maintain insertion order</li>
+                    <li>Allow duplicate values</li>
+                    <li>Support indexing and slicing</li>
+                    <li>Dynamic sizing</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 4: List Use Cases -->
+        <div class="slide">
+            <h2>List Use Cases</h2>
+            
+            <div class="use-case">
+                <h3>1. Shopping Cart System</h3>
+                <div class="code-block">
+shopping_cart = []
+shopping_cart.append({'item': 'laptop', 'price': 999.99})
+shopping_cart.append({'item': 'mouse', 'price': 25.50})
+
+total = sum(item['price'] for item in shopping_cart)
+                </div>
+            </div>
+
+            <div class="use-case">
+                <h3>2. Task Management</h3>
+                <div class="code-block">
+todo_list = ['Buy groceries', 'Walk the dog', 'Finish report']
+todo_list.insert(1, 'Call dentist')  # Priority insertion
+completed = todo_list.pop(0)         # Mark first task done
+                </div>
+            </div>
+
+            <div class="use-case">
+                <h3>3. Data Processing Pipeline</h3>
+                <div class="code-block">
+data_pipeline = [raw_data, clean_data, transform_data, analyze_data]
+for step in data_pipeline:
+    result = step(input_data)
+    input_data = result
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Tuples -->
+        <div class="slide">
+            <h2>Tuples</h2>
+            <p><span class="highlight">Ordered, immutable collections</span> perfect for fixed data</p>
+            
+            <div class="code-block">
+# Creating tuples
+coordinates = (10, 20)
+rgb_color = (255, 128, 0)
+person = ('John', 'Doe', 30, 'Engineer')
+
+# Accessing elements
+x, y = coordinates           # Tuple unpacking
+name = person[0]            # Index access
+age = person[2]
+
+# Tuples are immutable
+# coordinates[0] = 15        # This would cause an error!
+
+# But you can create new tuples
+new_coordinates = (15, 25)
+            </div>
+
+            <div class="use-case">
+                <h3>Key Features:</h3>
+                <ul>
+                    <li>Immutable (cannot be changed)</li>
+                    <li>Ordered and indexed</li>
+                    <li>Can be used as dictionary keys</li>
+                    <li>Memory efficient</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 6: Tuple Use Cases -->
+        <div class="slide">
+            <h2>Tuple Use Cases</h2>
+            
+            <div class="use-case">
+                <h3>1. Geographic Coordinates</h3>
+                <div class="code-block">
+locations = {
+    'New York': (40.7128, -74.0060),
+    'London': (51.5074, -0.1278),
+    'Tokyo': (35.6762, 139.6503)
+}
+
+def calculate_distance(coord1, coord2):
+    lat1, lon1 = coord1
+    lat2, lon2 = coord2
+    # Distance calculation logic
+                </div>
+            </div>
+
+            <div class="use-case">
+                <h3>2. Database Records</h3>
+                <div class="code-block">
+employee_record = ('E001', 'Alice Johnson', 'Developer', 75000)
+student_grades = ('S123', 'Math', 95, 'Physics', 88, 'Chemistry', 92)
+
+# Unpacking for clarity
+emp_id, name, position, salary = employee_record
+                </div>
+            </div>
+
+            <div class="use-case">
+                <h3>3. Function Return Values</h3>
+                <div class="code-block">
+def get_name_age():
+    return 'Bob', 25  # Returns a tuple
+
+def analyze_data(data):
+    return mean, median, mode  # Multiple return values
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Sets -->
+        <div class="slide">
+            <h2>Sets</h2>
+            <p><span class="highlight">Unordered collections of unique elements</span> for mathematical operations</p>
+            
+            <div class="code-block">
+# Creating sets
+fruits = {'apple', 'banana', 'orange'}
+numbers = {1, 2, 3, 4, 5}
+empty_set = set()  # Note: {} creates an empty dict, not set
+
+# Adding and removing elements
+fruits.add('grape')
+fruits.discard('banana')      # Safe removal
+fruits.remove('apple')        # Raises error if not found
+
+# Set operations
+set1 = {1, 2, 3, 4}
+set2 = {3, 4, 5, 6}
+
+union = set1 | set2           # {1, 2, 3, 4, 5, 6}
+intersection = set1 & set2    # {3, 4}
+difference = set1 - set2      # {1, 2}
+            </div>
+
+            <div class="use-case">
+                <h3>Key Features:</h3>
+                <ul>
+                    <li>Automatically eliminates duplicates</li>
+                    <li>Fast membership testing</li>
+                    <li>Mathematical set operations</li>
+                    <li>Unordered (no indexing)</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 8: Set Use Cases -->
+        <div class="slide">
+            <h2>Set Use Cases</h2>
+            
+            <div class="use-case">
+                <h3>1. Removing Duplicates</h3>
+                <div class="code-block">
+email_list = ['user1@email.com', 'user2@email.com', 'user1@email.com']
+unique_emails = set(email_list)
+# Result: {'user1@email.com', 'user2@email.com'}
+
+# Convert back to list if needed
+unique_list = list(unique_emails)
+                </div>
+            </div>
+
+            <div class="use-case">
+                <h3>2. User Permissions & Roles</h3>
+                <div class="code-block">
+admin_permissions = {'read', 'write', 'delete', 'modify'}
+user_permissions = {'read', 'write'}
+
+# Check if user can delete
+can_delete = 'delete' in user_permissions  # False
+
+# Grant additional permissions
+user_permissions |= {'modify'}  # Add modify permission
+                </div>
+            </div>
+
+            <div class="use-case">
+                <h3>3. Data Analysis - Common Elements</h3>
+                <div class="code-block">
+customers_2023 = {'Alice', 'Bob', 'Charlie', 'Diana'}
+customers_2024 = {'Bob', 'Diana', 'Eve', 'Frank'}
+
+# Find returning customers
+returning = customers_2023 & customers_2024  # {'Bob', 'Diana'}
+new_customers = customers_2024 - customers_2023  # {'Eve', 'Frank'}
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Dictionaries -->
+        <div class="slide">
+            <h2>Dictionaries</h2>
+            <p><span class="highlight">Key-value pairs</span> for fast lookups and structured data</p>
+            
+            <div class="code-block">
+# Creating dictionaries
+student = {
+    'name': 'Alice',
+    'age': 20,
+    'grades': [85, 92, 78],
+    'active': True
+}
+
+# Accessing values
+name = student['name']           # Direct access
+age = student.get('age', 0)     # Safe access with default
+
+# Adding/updating values
+student['email'] = 'alice@email.com'  # Add new key
+student['age'] = 21                   # Update existing
+
+# Dictionary methods
+keys = student.keys()           # All keys
+values = student.values()       # All values
+items = student.items()         # Key-value pairs
+            </div>
+
+            <div class="use-case">
+                <h3>Key Features:</h3>
+                <ul>
+                    <li>Fast O(1) average lookup time</li>
+                    <li>Mutable and dynamic</li>
+                    <li>Keys must be immutable types</li>
+                    <li>Maintain insertion order (Python 3.7+)</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 10: Dictionary Use Cases -->
+        <div class="slide">
+            <h2>Dictionary Use Cases</h2>
+            
+            <div class="use-case">
+                <h3>1. Configuration Settings</h3>
+                <div class="code-block">
+app_config = {
+    'database_url': 'localhost:5432',
+    'debug_mode': True,
+    'max_connections': 100,
+    'timeout': 30,
+    'features': ['auth', 'logging', 'caching']
+}
+
+# Easy access and modification
+if app_config.get('debug_mode', False):
+    print("Debug mode enabled")
+                </div>
+            </div>
+
+            <div class="use-case">
+                <h3>2. Caching/Memoization</h3>
+                <div class="code-block">
+fibonacci_cache = {}
+
+def fibonacci(n):
+    if n in fibonacci_cache:
+        return fibonacci_cache[n]
+    
+    if n <= 1:
+        result = n
+    else:
+        result = fibonacci(n-1) + fibonacci(n-2)
+    
+    fibonacci_cache[n] = result
+    return result
+                </div>
+            </div>
+
+            <div class="use-case">
+                <h3>3. Data Aggregation</h3>
+                <div class="code-block">
+sales_data = [
+    {'product': 'laptop', 'amount': 1200},
+    {'product': 'mouse', 'amount': 25},
+    {'product': 'laptop', 'amount': 1300}
+]
+
+# Group by product
+product_totals = {}
+for sale in sales_data:
+    product = sale['product']
+    product_totals[product] = product_totals.get(product, 0) + sale['amount']
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: Comparison Table -->
+        <div class="slide">
+            <h2>Data Structure Comparison</h2>
+            
+            <div class="comparison-table">
+                <table>
+                    <tr>
+                        <th>Feature</th>
+                        <th>List</th>
+                        <th>Tuple</th>
+                        <th>Set</th>
+                        <th>Dictionary</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Ordered</strong></td>
+                        <td>✅ Yes</td>
+                        <td>✅ Yes</td>
+                        <td>❌ No</td>
+                        <td>✅ Yes (3.7+)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Mutable</strong></td>
+                        <td>✅ Yes</td>
+                        <td>❌ No</td>
+                        <td>✅ Yes</td>
+                        <td>✅ Yes</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Duplicates</strong></td>
+                        <td>✅ Allowed</td>
+                        <td>✅ Allowed</td>
+                        <td>❌ Not Allowed</td>
+                        <td>🔑 Keys: No, Values: Yes</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Indexing</strong></td>
+                        <td>✅ Yes</td>
+                        <td>✅ Yes</td>
+                        <td>❌ No</td>
+                        <td>🔑 By Key</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Use Case</strong></td>
+                        <td>Dynamic collections</td>
+                        <td>Fixed data</td>
+                        <td>Unique items</td>
+                        <td>Key-value mapping</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- Slide 12: Best Practices -->
+        <div class="slide">
+            <h2>Best Practices & Summary</h2>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>Choose Lists When:</h3>
+                    <ul style="text-align: left;">
+                        <li>Order matters</li>
+                        <li>Need to modify elements</li>
+                        <li>Allow duplicates</li>
+                        <li>Sequential processing</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-card">
+                    <h3>Choose Tuples When:</h3>
+                    <ul style="text-align: left;">
+                        <li>Data shouldn't change</li>
+                        <li>Multiple return values</li>
+                        <li>Dictionary keys</li>
+                        <li>Coordinates/records</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-card">
+                    <h3>Choose Sets When:</h3>
+                    <ul style="text-align: left;">
+                        <li>Eliminating duplicates</li>
+                        <li>Membership testing</li>
+                        <li>Mathematical operations</li>
+                        <li>Unique collections</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-card">
+                    <h3>Choose Dictionaries When:</h3>
+                    <ul style="text-align: left;">
+                        <li>Key-value relationships</li>
+                        <li>Fast lookups needed</li>
+                        <li>Configuration data</li>
+                        <li>Caching/mapping</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <p style="margin-top: 30px; font-size: 1.4em;">
+                <span class="highlight">Remember:</span> The right data structure choice can significantly impact your code's performance and readability!
+            </p>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" onclick="previousSlide()">❮ Previous</button>
+        <button class="nav-btn" onclick="nextSlide()">Next ❯</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('total-slides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            document.getElementById('slide-number').textContent = currentSlide + 1;
+        }
+
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+
+        function previousSlide() {
+            showSlide(currentSlide - 1);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                previousSlide();
+            }
+        });
+
+        // Auto-advance option (uncomment to enable)
+        // setInterval(nextSlide, 10000); // Auto-advance every 10 seconds
+    </script>
+</body>
+</html>

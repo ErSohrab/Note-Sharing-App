@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Handling Categorical Variables</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .presentation-container {
+            width: 90%;
+            max-width: 1000px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .slide {
+            display: none;
+            padding: 60px;
+            min-height: 600px;
+            animation: slideIn 0.5s ease-in-out;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #34495e;
+            font-size: 2em;
+            margin-bottom: 25px;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            color: #2980b9;
+            font-size: 1.4em;
+            margin: 20px 0 15px 0;
+        }
+
+        p, li {
+            font-size: 1.1em;
+            line-height: 1.6;
+            color: #34495e;
+            margin-bottom: 15px;
+        }
+
+        ul {
+            margin-left: 30px;
+            margin-bottom: 20px;
+        }
+
+        .example-box {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .comparison-table th {
+            background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+            color: white;
+            padding: 15px;
+            font-weight: 600;
+        }
+
+        .comparison-table td {
+            padding: 15px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            margin: 20px 0;
+            overflow-x: auto;
+            border-left: 4px solid #4299e1;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 60px;
+            background: rgba(52, 73, 94, 0.1);
+        }
+
+        .nav-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .slide-counter {
+            background: rgba(52, 73, 94, 0.8);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .pros-cons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 25px 0;
+        }
+
+        .pros, .cons {
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .pros {
+            background: linear-gradient(135deg, #00b894, #00cec9);
+            color: white;
+        }
+
+        .cons {
+            background: linear-gradient(135deg, #e84393, #fd79a8);
+            color: white;
+        }
+
+        .highlight {
+            background: linear-gradient(135deg, #ffeaa7, #fdcb6e);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #e17055;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <!-- Slide 1: Title -->
+        <div class="slide active">
+            <h1>Handling Categorical Variables</h1>
+            <div style="text-align: center; margin-top: 50px;">
+                <h2 style="border: none; color: #667eea;">Label Encoding & One-Hot Encoding</h2>
+                <p style="font-size: 1.3em; margin-top: 30px; color: #74b9ff;">
+                    Essential techniques for preparing categorical data in machine learning
+                </p>
+                <div style="margin-top: 60px; padding: 30px; background: rgba(116, 185, 255, 0.1); border-radius: 15px;">
+                    <h3>What We'll Cover:</h3>
+                    <ul style="text-align: left; display: inline-block;">
+                        <li>Understanding categorical variables</li>
+                        <li>Label encoding technique</li>
+                        <li>One-hot encoding technique</li>
+                        <li>When to use each method</li>
+                        <li>Practical examples and code</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: What are Categorical Variables -->
+        <div class="slide">
+            <h2>What are Categorical Variables?</h2>
+            <p>Categorical variables represent data that can be divided into groups or categories. Unlike numerical variables, they don't have inherent mathematical meaning.</p>
+            
+            <h3>Types of Categorical Variables:</h3>
+            <div class="pros-cons">
+                <div class="pros">
+                    <h3 style="color: white; margin-top: 0;">Nominal</h3>
+                    <ul>
+                        <li>No natural order</li>
+                        <li>Examples: Colors, Gender, Country</li>
+                        <li>Categories are just labels</li>
+                    </ul>
+                </div>
+                <div class="cons">
+                    <h3 style="color: white; margin-top: 0;">Ordinal</h3>
+                    <ul>
+                        <li>Natural ordering exists</li>
+                        <li>Examples: Education level, Ratings</li>
+                        <li>Order matters but gaps aren't uniform</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="example-box">
+                <h3 style="color: white; margin-top: 0;">Examples in Real Data:</h3>
+                <ul>
+                    <li><strong>Nominal:</strong> Red, Blue, Green | Male, Female | USA, Canada, UK</li>
+                    <li><strong>Ordinal:</strong> High School, Bachelor's, Master's | Poor, Fair, Good, Excellent</li>
+                </ul>
+            </div>
+
+            <div class="highlight">
+                <strong>Why Convert?</strong> Most machine learning algorithms work with numerical data only, so we need to convert categorical variables into numerical format.
+            </div>
+        </div>
+
+        <!-- Slide 3: Label Encoding -->
+        <div class="slide">
+            <h2>Label Encoding</h2>
+            <p>Label encoding assigns a unique integer to each category. It's the simplest form of encoding categorical variables.</p>
+
+            <h3>How It Works:</h3>
+            <ul>
+                <li>Each unique category gets assigned a number (0, 1, 2, ...)</li>
+                <li>Assignment is typically alphabetical or based on order of appearance</li>
+                <li>Creates a single new numerical column</li>
+            </ul>
+
+            <div class="example-box">
+                <h3 style="color: white; margin-top: 0;">Example: Color Categories</h3>
+                <table style="width: 100%; color: white; margin-top: 15px;">
+                    <tr style="background: rgba(255, 255, 255, 0.2);">
+                        <th style="padding: 10px;">Original</th>
+                        <th style="padding: 10px;">Label Encoded</th>
+                    </tr>
+                    <tr><td style="padding: 8px;">Red</td><td style="padding: 8px;">0</td></tr>
+                    <tr><td style="padding: 8px;">Blue</td><td style="padding: 8px;">1</td></tr>
+                    <tr><td style="padding: 8px;">Green</td><td style="padding: 8px;">2</td></tr>
+                    <tr><td style="padding: 8px;">Red</td><td style="padding: 8px;">0</td></tr>
+                </table>
+            </div>
+
+            <div class="code-block">
+from sklearn.preprocessing import LabelEncoder
+
+# Create sample data
+colors = ['Red', 'Blue', 'Green', 'Red', 'Blue']
+
+# Initialize and fit label encoder
+le = LabelEncoder()
+encoded_colors = le.fit_transform(colors)
+
+print(encoded_colors)  # [2 0 1 2 0]
+print(le.classes_)     # ['Blue' 'Green' 'Red']
+            </div>
+        </div>
+
+        <!-- Slide 4: Label Encoding Pros and Cons -->
+        <div class="slide">
+            <h2>Label Encoding: Pros & Cons</h2>
+            
+            <div class="pros-cons">
+                <div class="pros">
+                    <h3 style="color: white; margin-top: 0;">✓ Advantages</h3>
+                    <ul>
+                        <li>Simple and straightforward</li>
+                        <li>Memory efficient</li>
+                        <li>Fast computation</li>
+                        <li>Works well with tree-based algorithms</li>
+                        <li>Good for ordinal data</li>
+                    </ul>
+                </div>
+                <div class="cons">
+                    <h3 style="color: white; margin-top: 0;">✗ Disadvantages</h3>
+                    <ul>
+                        <li>Implies ordering for nominal data</li>
+                        <li>Can mislead distance-based algorithms</li>
+                        <li>May create bias in linear models</li>
+                        <li>Arbitrary numerical relationships</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="highlight">
+                <strong>Key Issue:</strong> Label encoding assigns numerical values that imply mathematical relationships. For example, if Red=0, Blue=1, Green=2, the algorithm might think Green is "twice as much" as Blue, which doesn't make sense for colors.
+            </div>
+
+            <h3>When to Use Label Encoding:</h3>
+            <ul>
+                <li><strong>Ordinal variables:</strong> Where natural ordering exists (Low, Medium, High)</li>
+                <li><strong>Tree-based algorithms:</strong> Decision trees, Random Forest, XGBoost</li>
+                <li><strong>Target variables:</strong> For classification problems</li>
+                <li><strong>High cardinality:</strong> When you have many categories and memory is a concern</li>
+            </ul>
+        </div>
+
+        <!-- Slide 5: One-Hot Encoding -->
+        <div class="slide">
+            <h2>One-Hot Encoding</h2>
+            <p>One-hot encoding creates separate binary columns for each category. Each row has exactly one "1" and the rest are "0"s.</p>
+
+            <h3>How It Works:</h3>
+            <ul>
+                <li>Each category becomes a new binary column</li>
+                <li>Original column is replaced by n binary columns (n = number of categories)</li>
+                <li>Each row has exactly one column with value 1, others are 0</li>
+            </ul>
+
+            <div class="example-box">
+                <h3 style="color: white; margin-top: 0;">Example: Color Categories</h3>
+                <table style="width: 100%; color: white; margin-top: 15px;">
+                    <tr style="background: rgba(255, 255, 255, 0.2);">
+                        <th style="padding: 10px;">Original</th>
+                        <th style="padding: 10px;">Red</th>
+                        <th style="padding: 10px;">Blue</th>
+                        <th style="padding: 10px;">Green</th>
+                    </tr>
+                    <tr><td style="padding: 8px;">Red</td><td style="padding: 8px;">1</td><td style="padding: 8px;">0</td><td style="padding: 8px;">0</td></tr>
+                    <tr><td style="padding: 8px;">Blue</td><td style="padding: 8px;">0</td><td style="padding: 8px;">1</td><td style="padding: 8px;">0</td></tr>
+                    <tr><td style="padding: 8px;">Green</td><td style="padding: 8px;">0</td><td style="padding: 8px;">0</td><td style="padding: 8px;">1</td></tr>
+                </table>
+            </div>
+
+            <div class="code-block">
+import pandas as pd
+from sklearn.preprocessing import OneHotEncoder
+
+# Create sample data
+df = pd.DataFrame({'Color': ['Red', 'Blue', 'Green', 'Red']})
+
+# Method 1: Using pandas
+one_hot = pd.get_dummies(df['Color'], prefix='Color')
+print(one_hot)
+
+# Method 2: Using sklearn
+encoder = OneHotEncoder()
+encoded = encoder.fit_transform(df[['Color']]).toarray()
+            </div>
+        </div>
+
+        <!-- Slide 6: One-Hot Encoding Pros and Cons -->
+        <div class="slide">
+            <h2>One-Hot Encoding: Pros & Cons</h2>
+            
+            <div class="pros-cons">
+                <div class="pros">
+                    <h3 style="color: white; margin-top: 0;">✓ Advantages</h3>
+                    <ul>
+                        <li>No artificial ordering</li>
+                        <li>Works well with linear models</li>
+                        <li>Each category is independent</li>
+                        <li>Preserves categorical nature</li>
+                        <li>Interpretable results</li>
+                    </ul>
+                </div>
+                <div class="cons">
+                    <h3 style="color: white; margin-top: 0;">✗ Disadvantages</h3>
+                    <ul>
+                        <li>Increases dimensionality</li>
+                        <li>Memory intensive</li>
+                        <li>Sparse matrices</li>
+                        <li>Curse of dimensionality</li>
+                        <li>Slower computation</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="highlight">
+                <strong>Dummy Variable Trap:</strong> When using all one-hot encoded columns, perfect multicollinearity can occur. Solution: Drop one column (n-1 encoding) or use algorithms that handle multicollinearity.
+            </div>
+
+            <h3>When to Use One-Hot Encoding:</h3>
+            <ul>
+                <li><strong>Nominal variables:</strong> No natural ordering (colors, countries, brands)</li>
+                <li><strong>Linear algorithms:</strong> Linear regression, logistic regression, SVM</li>
+                <li><strong>Neural networks:</strong> Deep learning models</li>
+                <li><strong>Low cardinality:</strong> When you have few categories (typically < 10-15)</li>
+            </ul>
+        </div>
+
+        <!-- Slide 7: Comparison Table -->
+        <div class="slide">
+            <h2>Label vs One-Hot Encoding Comparison</h2>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Aspect</th>
+                        <th>Label Encoding</th>
+                        <th>One-Hot Encoding</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Memory Usage</strong></td>
+                        <td>Low (single column)</td>
+                        <td>High (n columns)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Dimensionality</strong></td>
+                        <td>No increase</td>
+                        <td>Increases by n-1</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Best for Algorithms</strong></td>
+                        <td>Tree-based models</td>
+                        <td>Linear models, Neural networks</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Suitable Data Type</strong></td>
+                        <td>Ordinal preferred</td>
+                        <td>Nominal preferred</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Ordering Assumption</strong></td>
+                        <td>Creates artificial order</td>
+                        <td>No ordering implied</td>
+                    </tr>
+                    <tr>
+                        <td><strong>High Cardinality</strong></td>
+                        <td>Handles well</td>
+                        <td>Can cause issues</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Interpretability</strong></td>
+                        <td>Less interpretable</td>
+                        <td>More interpretable</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="example-box">
+                <h3 style="color: white; margin-top: 0;">Quick Decision Guide:</h3>
+                <ul>
+                    <li><strong>Use Label Encoding:</strong> Ordinal data, tree algorithms, high cardinality</li>
+                    <li><strong>Use One-Hot Encoding:</strong> Nominal data, linear algorithms, low cardinality</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 8: Practical Implementation -->
+        <div class="slide">
+            <h2>Practical Implementation</h2>
+            
+            <h3>Complete Example with Real Dataset:</h3>
+            <div class="code-block">
+import pandas as pd
+from sklearn.preprocessing import LabelEncoder, OneHotEncoder
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
+
+# Sample dataset
+data = {
+    'Size': ['Small', 'Medium', 'Large', 'Small', 'Large'],
+    'Color': ['Red', 'Blue', 'Green', 'Red', 'Blue'],
+    'Brand': ['A', 'B', 'C', 'A', 'B'],
+    'Price': [10, 20, 30, 15, 25]
+}
+df = pd.DataFrame(data)
+
+# Label Encoding for ordinal variable (Size)
+le_size = LabelEncoder()
+df['Size_Encoded'] = le_size.fit_transform(df['Size'])
+
+# One-Hot Encoding for nominal variables
+df_encoded = pd.get_dummies(df, columns=['Color', 'Brand'], 
+                           prefix=['Color', 'Brand'])
+
+print(df_encoded.head())
+            </div>
+
+            <h3>Best Practices:</h3>
+            <ul>
+                <li><strong>Handle unknown categories:</strong> Use <code>handle_unknown='ignore'</code> in OneHotEncoder</li>
+                <li><strong>Preserve feature names:</strong> Keep track of original categories for interpretability</li>
+                <li><strong>Consider feature scaling:</strong> One-hot encoded features might need scaling for some algorithms</li>
+                <li><strong>Test both methods:</strong> Sometimes the choice isn't obvious - try both and compare performance</li>
+            </ul>
+        </div>
+
+        <!-- Slide 9: Advanced Considerations -->
+        <div class="slide">
+            <h2>Advanced Considerations</h2>
+            
+            <h3>Alternative Encoding Methods:</h3>
+            <div class="pros-cons">
+                <div class="pros">
+                    <h3 style="color: white; margin-top: 0;">Target Encoding</h3>
+                    <ul>
+                        <li>Uses target variable statistics</li>
+                        <li>Good for high cardinality</li>
+                        <li>Risk of overfitting</li>
+                    </ul>
+                </div>
+                <div class="cons">
+                    <h3 style="color: white; margin-top: 0;">Binary Encoding</h3>
+                    <ul>
+                        <li>Compromise between label and one-hot</li>
+                        <li>Uses binary representation</li>
+                        <li>Reduces dimensionality</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>Handling High Cardinality:</h3>
+            <ul>
+                <li><strong>Feature Hashing:</strong> Map categories to fixed number of features</li>
+                <li><strong>Frequency Encoding:</strong> Replace categories with their frequency</li>
+                <li><strong>Grouping:</strong> Combine rare categories into 'Other'</li>
+                <li><strong>Embedding:</strong> Learn dense representations (useful in deep learning)</li>
+            </ul>
+
+            <div class="highlight">
+                <strong>Production Considerations:</strong>
+                <ul>
+                    <li>Save encoders for consistent transformation of new data</li>
+                    <li>Handle missing categories in test/production data</li>
+                    <li>Monitor for concept drift in categorical distributions</li>
+                </ul>
+            </div>
+
+            <div class="code-block">
+# Saving and loading encoders
+import joblib
+
+# Save encoder
+joblib.dump(le_size, 'size_encoder.pkl')
+
+# Load encoder for new data
+loaded_encoder = joblib.load('size_encoder.pkl')
+new_data_encoded = loaded_encoder.transform(['Medium', 'Large'])
+            </div>
+        </div>
+
+        <!-- Slide 10: Summary -->
+        <div class="slide">
+            <h2>Summary & Key Takeaways</h2>
+            
+            <div class="example-box">
+                <h3 style="color: white; margin-top: 0;">🎯 Key Points to Remember:</h3>
+                <ul>
+                    <li><strong>Categorical variables must be encoded</strong> for most ML algorithms</li>
+                    <li><strong>Label encoding</strong> is simple but implies ordering</li>
+                    <li><strong>One-hot encoding</strong> preserves independence but increases dimensionality</li>
+                    <li><strong>Choice depends</strong> on data type, algorithm, and cardinality</li>
+                </ul>
+            </div>
+
+            <h3>Decision Framework:</h3>
+            <div class="highlight">
+                <strong>Step 1:</strong> Identify if variable is nominal or ordinal<br>
+                <strong>Step 2:</strong> Consider the ML algorithm you'll use<br>
+                <strong>Step 3:</strong> Check cardinality (number of unique values)<br>
+                <strong>Step 4:</strong> Choose encoding method and test performance
+            </div>
+
+            <h3>Final Recommendations:</h3>
+            <ul>
+                <li>Start with appropriate encoding based on data type</li>
+                <li>Always validate your choice with cross-validation</li>
+                <li>Consider computational resources and interpretability needs</li>
+                <li>Keep encoders for consistent preprocessing in production</li>
+                <li>Monitor model performance and adjust encoding if needed</li>
+            </ul>
+
+            <div style="text-align: center; margin-top: 40px; padding: 30px; background: linear-gradient(135deg, #74b9ff, #0984e3); border-radius: 15px; color: white;">
+                <h3 style="color: white; margin-top: 0;">Thank You!</h3>
+                <p style="font-size: 1.2em;">Questions & Discussion</p>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="navigation">
+            <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">← Previous</button>
+            <div class="slide-counter">
+                <span id="slideNumber">1</span> / <span id="totalSlides">10</span>
+            </div>
+            <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Next →</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            
+            document.getElementById('slideNumber').textContent = currentSlide + 1;
+            
+            // Update navigation buttons
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            if (direction === 1 && currentSlide < totalSlides - 1) {
+                showSlide(currentSlide + 1);
+            } else if (direction === -1 && currentSlide > 0) {
+                showSlide(currentSlide - 1);
+            }
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowRight') {
+                changeSlide(1);
+            } else if (event.key === 'ArrowLeft') {
+                changeSlide(-1);
+            }
+        });
+
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+</html>

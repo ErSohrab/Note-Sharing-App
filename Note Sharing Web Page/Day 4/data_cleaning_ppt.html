@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practice: Cleaning a Sample Dataset</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            display: none;
+            padding: 60px;
+            background: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            position: absolute;
+            top: 0;
+            left: 0;
+            animation: slideIn 0.5s ease-in-out;
+        }
+
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .slide h1 {
+            font-size: 3.5em;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            text-align: center;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .slide h2 {
+            font-size: 2.8em;
+            color: #34495e;
+            margin-bottom: 40px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .slide h3 {
+            font-size: 2.2em;
+            color: #2980b9;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+
+        .slide p, .slide li {
+            font-size: 1.4em;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        .slide ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .slide li {
+            position: relative;
+            padding-left: 40px;
+            margin-bottom: 15px;
+        }
+
+        .slide li::before {
+            content: "▶";
+            position: absolute;
+            left: 0;
+            color: #3498db;
+            font-weight: bold;
+        }
+
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 25px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .example-box {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .problem-box {
+            background: linear-gradient(135deg, #fd79a8, #e84393);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .solution-box {
+            background: linear-gradient(135deg, #00b894, #00a085);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            padding: 15px 25px;
+            background: rgba(255,255,255,0.9);
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #2c3e50;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .nav-btn:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(255,255,255,0.9);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            color: #2c3e50;
+            z-index: 1000;
+        }
+
+        .title-slide {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .title-slide h1 {
+            color: white;
+            font-size: 4em;
+            margin-bottom: 40px;
+        }
+
+        .title-slide p {
+            font-size: 1.8em;
+            color: rgba(255,255,255,0.9);
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        .highlight {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+
+        .step-number {
+            display: inline-block;
+            background: #3498db;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 35px;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <div class="slide-counter">
+            <span id="current-slide">1</span> / <span id="total-slides">15</span>
+        </div>
+
+        <!-- Slide 1: Title -->
+        <div class="slide active title-slide">
+            <h1>Practice: Cleaning a Sample Dataset</h1>
+            <p>Essential Techniques for Data Preprocessing</p>
+            <p style="font-size: 1.2em; margin-top: 40px; opacity: 0.8;">Data Analysis & Machine Learning Fundamentals</p>
+        </div>
+
+        <!-- Slide 2: Overview -->
+        <div class="slide">
+            <h2>What is Data Cleaning?</h2>
+            <p>Data cleaning is the process of identifying and correcting errors, inconsistencies, and inaccuracies in datasets to improve data quality.</p>
+            
+            <div class="highlight">
+                <h3>Why is it Important?</h3>
+                <p>Clean data leads to more accurate analysis, better machine learning models, and reliable business insights. Poor data quality can result in misleading conclusions and costly mistakes.</p>
+            </div>
+
+            <p><strong>Key Stat:</strong> Data scientists spend 60-80% of their time cleaning and preparing data!</p>
+        </div>
+
+        <!-- Slide 3: Common Data Quality Issues -->
+        <div class="slide">
+            <h2>Common Data Quality Issues</h2>
+            <ul>
+                <li><strong>Missing Values:</strong> Null, NaN, or empty cells</li>
+                <li><strong>Duplicates:</strong> Identical or nearly identical records</li>
+                <li><strong>Inconsistent Formatting:</strong> Mixed date formats, case variations</li>
+                <li><strong>Invalid Data:</strong> Negative ages, future birth dates</li>
+                <li><strong>Outliers:</strong> Extreme values that may be errors</li>
+                <li><strong>Data Type Issues:</strong> Numbers stored as text</li>
+                <li><strong>Spelling Errors:</strong> Typos in categorical data</li>
+            </ul>
+        </div>
+
+        <!-- Slide 4: Sample Dataset Introduction -->
+        <div class="slide">
+            <h2>Our Sample Dataset</h2>
+            <div class="example-box">
+                <h3>Customer Database</h3>
+                <p>We'll work with a customer database containing:</p>
+                <ul style="color: white;">
+                    <li>Customer ID, Name, Email</li>
+                    <li>Age, Gender, Phone Number</li>
+                    <li>Registration Date, Last Purchase</li>
+                    <li>Total Spent, Status</li>
+                </ul>
+            </div>
+
+            <div class="code-block">
+customer_id | name        | email           | age | gender | phone      | reg_date   | last_purchase | total_spent | status
+1          | John Smith  | john@email.com  | 25  | M      | 1234567890 | 2023-01-15 | 2024-01-10   | 1250.50    | Active
+2          | jane doe    | JANE@EMAIL.COM  |     | F      | null       | 2023/02/20 | 2024-01-15   | 890.25     | active
+3          | John Smith  | john@email.com  | -5  | Male   | 123-456-7890| 2023-01-15 | 2024-01-10   | 1250.50    | Active
+            </div>
+        </div>
+
+        <!-- Slide 5: Step 1 - Initial Data Exploration -->
+        <div class="slide">
+            <h2><span class="step-number">1</span>Initial Data Exploration</h2>
+            
+            <div class="two-column">
+                <div>
+                    <h3>Examine the Data</h3>
+                    <ul>
+                        <li>Load the dataset</li>
+                        <li>Check data shape and structure</li>
+                        <li>Review data types</li>
+                        <li>Identify missing values</li>
+                        <li>Look for obvious issues</li>
+                    </ul>
+                </div>
+                <div>
+                    <div class="code-block">
+# Python Example
+import pandas as pd
+
+df = pd.read_csv('customers.csv')
+print(df.info())
+print(df.describe())
+print(df.isnull().sum())
+print(df.head())
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Step 2 - Handle Missing Values -->
+        <div class="slide">
+            <h2><span class="step-number">2</span>Handle Missing Values</h2>
+            
+            <div class="problem-box">
+                <h3>Problems Found:</h3>
+                <p>Missing ages, null phone numbers, empty emails</p>
+            </div>
+
+            <div class="solution-box">
+                <h3>Solutions:</h3>
+                <ul style="color: white;">
+                    <li><strong>Drop:</strong> Remove rows/columns with too many missing values</li>
+                    <li><strong>Fill:</strong> Replace with mean, median, mode, or custom values</li>
+                    <li><strong>Interpolate:</strong> Estimate based on other data points</li>
+                    <li><strong>Flag:</strong> Create indicator columns for missingness</li>
+                </ul>
+            </div>
+
+            <div class="code-block">
+# Fill missing ages with median
+df['age'].fillna(df['age'].median(), inplace=True)
+
+# Fill missing phone with 'Not Provided'
+df['phone'].fillna('Not Provided', inplace=True)
+            </div>
+        </div>
+
+        <!-- Slide 7: Step 3 - Remove Duplicates -->
+        <div class="slide">
+            <h2><span class="step-number">3</span>Remove Duplicates</h2>
+            
+            <div class="problem-box">
+                <h3>Problems Found:</h3>
+                <p>Multiple rows with identical customer_id, name, and email combinations</p>
+            </div>
+
+            <div class="solution-box">
+                <h3>Strategy:</h3>
+                <ul style="color: white;">
+                    <li>Identify duplicate criteria</li>
+                    <li>Decide which record to keep</li>
+                    <li>Remove or merge duplicates</li>
+                </ul>
+            </div>
+
+            <div class="code-block">
+# Check for duplicates
+print(f"Duplicates found: {df.duplicated().sum()}")
+
+# Remove exact duplicates
+df_clean = df.drop_duplicates()
+
+# Remove duplicates based on specific columns
+df_clean = df.drop_duplicates(subset=['customer_id', 'email'], keep='first')
+            </div>
+        </div>
+
+        <!-- Slide 8: Step 4 - Standardize Formats -->
+        <div class="slide">
+            <h2><span class="step-number">4</span>Standardize Formats</h2>
+            
+            <div class="two-column">
+                <div>
+                    <div class="problem-box">
+                        <h3>Problems:</h3>
+                        <ul style="color: white;">
+                            <li>Mixed case names</li>
+                            <li>Inconsistent email formats</li>
+                            <li>Various date formats</li>
+                            <li>Different phone formats</li>
+                        </ul>
+                    </div>
+                </div>
+                <div>
+                    <div class="code-block">
+# Standardize text case
+df['name'] = df['name'].str.title()
+df['email'] = df['email'].str.lower()
+
+# Standardize dates
+df['reg_date'] = pd.to_datetime(df['reg_date'])
+
+# Clean phone numbers
+df['phone'] = df['phone'].str.replace(r'[^\d]', '', regex=True)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Step 5 - Validate Data -->
+        <div class="slide">
+            <h2><span class="step-number">5</span>Validate Data</h2>
+            
+            <div class="problem-box">
+                <h3>Invalid Data Found:</h3>
+                <ul style="color: white;">
+                    <li>Negative ages (-5)</li>
+                    <li>Future registration dates</li>
+                    <li>Invalid email formats</li>
+                    <li>Unrealistic spending amounts</li>
+                </ul>
+            </div>
+
+            <div class="code-block">
+# Check for invalid ages
+invalid_ages = df[(df['age'] < 0) | (df['age'] > 120)]
+print(f"Invalid ages: {len(invalid_ages)}")
+
+# Validate email format
+import re
+email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+df['valid_email'] = df['email'].str.match(email_pattern)
+
+# Flag or fix invalid data
+df.loc[df['age'] < 0, 'age'] = None  # Set invalid ages to null
+            </div>
+        </div>
+
+        <!-- Slide 10: Step 6 - Handle Outliers -->
+        <div class="slide">
+            <h2><span class="step-number">6</span>Handle Outliers</h2>
+            
+            <div class="two-column">
+                <div>
+                    <h3>Detection Methods:</h3>
+                    <ul>
+                        <li>Statistical methods (IQR, Z-score)</li>
+                        <li>Visual inspection (box plots)</li>
+                        <li>Domain knowledge</li>
+                    </ul>
+                    
+                    <h3>Treatment Options:</h3>
+                    <ul>
+                        <li>Remove outliers</li>
+                        <li>Cap/floor values</li>
+                        <li>Transform data</li>
+                        <li>Keep if valid</li>
+                    </ul>
+                </div>
+                <div>
+                    <div class="code-block">
+# IQR method for outliers
+Q1 = df['total_spent'].quantile(0.25)
+Q3 = df['total_spent'].quantile(0.75)
+IQR = Q3 - Q1
+
+lower_bound = Q1 - 1.5 * IQR
+upper_bound = Q3 + 1.5 * IQR
+
+# Flag outliers
+outliers = df[(df['total_spent'] < lower_bound) | 
+              (df['total_spent'] > upper_bound)]
+
+# Cap outliers instead of removing
+df['total_spent'] = df['total_spent'].clip(lower_bound, upper_bound)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: Step 7 - Data Type Conversion -->
+        <div class="slide">
+            <h2><span class="step-number">7</span>Data Type Conversion</h2>
+            
+            <div class="example-box">
+                <h3>Common Conversions:</h3>
+                <ul style="color: white;">
+                    <li>Strings to numbers</li>
+                    <li>Strings to dates</li>
+                    <li>Categories to factors</li>
+                    <li>Boolean conversions</li>
+                </ul>
+            </div>
+
+            <div class="code-block">
+# Convert data types
+df['customer_id'] = df['customer_id'].astype('int64')
+df['age'] = df['age'].astype('float64')
+df['total_spent'] = pd.to_numeric(df['total_spent'], errors='coerce')
+
+# Convert categorical variables
+df['gender'] = df['gender'].astype('category')
+df['status'] = df['status'].str.lower().astype('category')
+
+# Convert dates
+df['reg_date'] = pd.to_datetime(df['reg_date'])
+df['last_purchase'] = pd.to_datetime(df['last_purchase'])
+            </div>
+        </div>
+
+        <!-- Slide 12: Step 8 - Final Validation -->
+        <div class="slide">
+            <h2><span class="step-number">8</span>Final Validation & Quality Check</h2>
+            
+            <div class="solution-box">
+                <h3>Quality Checklist:</h3>
+                <ul style="color: white;">
+                    <li>No missing values in critical columns</li>
+                    <li>No duplicate records</li>
+                    <li>Consistent formatting</li>
+                    <li>Valid data types</li>
+                    <li>Reasonable value ranges</li>
+                    <li>Proper constraints satisfied</li>
+                </ul>
+            </div>
+
+            <div class="code-block">
+# Final data quality report
+print("=== Data Quality Report ===")
+print(f"Total records: {len(df)}")
+print(f"Missing values: {df.isnull().sum().sum()}")
+print(f"Duplicates: {df.duplicated().sum()}")
+print(f"Data types:\n{df.dtypes}")
+print(f"Value ranges:\n{df.describe()}")
+            </div>
+        </div>
+
+        <!-- Slide 13: Documentation -->
+        <div class="slide">
+            <h2>Document Your Cleaning Process</h2>
+            
+            <div class="highlight">
+                <h3>Why Document?</h3>
+                <p>Reproducibility, transparency, and knowledge sharing are crucial for data science projects.</p>
+            </div>
+
+            <h3>What to Document:</h3>
+            <ul>
+                <li>Issues identified and their impact</li>
+                <li>Cleaning decisions and rationale</li>
+                <li>Code used for each step</li>
+                <li>Data quality before and after</li>
+                <li>Assumptions made</li>
+                <li>Potential limitations</li>
+            </ul>
+
+            <div class="example-box">
+                <p><strong>Example:</strong> "Removed 15 duplicate records based on customer_id. Filled 23 missing age values with median (32 years). Standardized phone numbers to digits only."</p>
+            </div>
+        </div>
+
+        <!-- Slide 14: Best Practices -->
+        <div class="slide">
+            <h2>Best Practices for Data Cleaning</h2>
+            
+            <div class="two-column">
+                <div>
+                    <h3>Do's:</h3>
+                    <ul>
+                        <li>Always backup original data</li>
+                        <li>Document every step</li>
+                        <li>Validate business rules</li>
+                        <li>Use domain knowledge</li>
+                        <li>Automate repetitive tasks</li>
+                        <li>Quality check continuously</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Don'ts:</h3>
+                    <ul>
+                        <li>Delete data without understanding</li>
+                        <li>Make assumptions without validation</li>
+                        <li>Ignore data relationships</li>
+                        <li>Over-clean the data</li>
+                        <li>Skip final validation</li>
+                        <li>Forget to version control</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 15: Summary -->
+        <div class="slide">
+            <h2>Summary</h2>
+            
+            <div class="highlight">
+                <h3>Data Cleaning Process:</h3>
+                <p><span class="step-number">1</span>Explore → <span class="step-number">2</span>Handle Missing → <span class="step-number">3</span>Remove Duplicates → <span class="step-number">4</span>Standardize → <span class="step-number">5</span>Validate → <span class="step-number">6</span>Handle Outliers → <span class="step-number">7</span>Convert Types → <span class="step-number">8</span>Final Check</p>
+            </div>
+
+            <h3>Key Takeaways:</h3>
+            <ul>
+                <li>Data cleaning is iterative and context-dependent</li>
+                <li>Understanding your data is crucial</li>
+                <li>Document decisions for reproducibility</li>
+                <li>Quality data leads to better insights</li>
+                <li>Automation helps with consistency</li>
+            </ul>
+
+            <div class="example-box">
+                <p><strong>Remember:</strong> Clean data is the foundation of all successful data science projects!</p>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button class="nav-btn" onclick="prevSlide()">Previous</button>
+            <button class="nav-btn" onclick="nextSlide()">Next</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('total-slides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            document.getElementById('current-slide').textContent = currentSlide + 1;
+        }
+
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+
+        function prevSlide() {
+            showSlide(currentSlide - 1);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                prevSlide();
+            }
+        });
+
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+</html>

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Day 8</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #e0e7ff; /* Light blue background */
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            margin: 0;
+        }
+
+        .container {
+            background-color: #ffffff;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); /* shadow-2xl */
+            border-radius: 16px; /* rounded-2xl */
+            padding: 32px; /* p-8 */
+            width: 100%;
+            max-width: 576px; /* max-w-lg */
+            text-align: center;
+            transition: all 0.3s ease-in-out; /* transition-all duration-300 ease-in-out */
+        }
+
+        .container:hover {
+            transform: scale(1.01); /* hover:scale-[1.01] */
+        }
+
+        h1 {
+            font-size: 36px; /* text-4xl */
+            font-weight: 700; /* font-bold */
+            color: #1f2937; /* text-gray-800 */
+            margin-bottom: 32px; /* mb-8 */
+            text-decoration: underline;
+            text-shadow: 2px -2px 2px rgba(10, 10, 179, 0.573);
+        }
+
+        .link-container {
+            display: flex;
+            flex-direction: column;
+            gap: 24px; /* space-y-6 */
+        }
+
+        .folder-link {
+            display: block;
+            width: 100%;
+            font-weight: 600; /* font-semibold */
+            padding: 16px 32px; /* py-4 px-8 */
+            border-radius: 12px; /* rounded-xl */
+            font-size: 20px; /* text-xl */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
+            transition: all 0.2s ease-in-out; /* transition duration-200 ease-in-out */
+            text-decoration: none; /* Remove underline from links */
+        }
+
+        .folder-link:hover {
+            transform: translateY(-4px); /* hover:-translate-y-1 */
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); /* hover:shadow-xl */
+        }
+
+        /* Specific button colors */
+        .blue-btn {
+            width: auto;
+            background-color: #2563eb; /* bg-blue-600 */
+            color: #ffffff;
+            border: 3px dotted black;
+            border-radius: 25px;
+        }
+        .blue-btn:hover {
+            background-color: #102c78; /* hover:bg-blue-700 */
+            border: 3px solid black;
+            box-shadow: 5px 5px 20px black;
+        }
+         /* Navigation Menu Container */
+        .navbar {
+            background-color: #334155; /* Dark slate gray background */
+            padding: 15px 25px; /* Padding inside the nav bar */
+            border-radius: 12px; /* Rounded corners */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Soft shadow */
+            width: 100%;
+            max-width: 800px; /* Max width for larger screens */
+            box-sizing: border-box; /* Include padding in width */
+        }
+
+        /* List Styling */
+        .navbar ul {
+            list-style: none; /* Remove bullet points */
+            margin: 0;
+            padding: 0;
+            display: flex; /* Arrange items horizontally */
+            justify-content: space-around; /* Distribute space evenly */
+            align-items: center;
+            flex-wrap: wrap; /* Allow items to wrap on smaller screens */
+        }
+
+        /* List Item Styling */
+        .navbar li {
+            margin: 0 15px; /* Spacing between menu items */
+        }
+
+        /* Link Styling */
+        .navbar a {
+            display: block; /* Make the entire area clickable */
+            color: #e2e8f0; /* Light text color */
+            text-decoration: none; /* Remove underline */
+            font-size: 18px;
+            font-weight: 500;
+            padding: 10px 15px; /* Padding for click area */
+            border-radius: 8px; /* Slightly rounded links */
+            transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease; /* Smooth transitions */
+        }
+
+        /* Link Hover/Focus Effects */
+        .navbar a:hover,
+        .navbar a:focus {
+            background-color: #475569; /* Slightly lighter background on hover */
+            color: #ffffff; /* White text on hover */
+            transform: translateY(-2px); /* Slight lift effect */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* Soft shadow on hover */
+        }
+
+        /* Active Link (Optional) */
+        .navbar a.active {
+            background-color: #2563eb; /* Blue background for active link */
+            color: #ffffff;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 600px) {
+            .navbar ul {
+                flex-direction: column; /* Stack items vertically on small screens */
+                gap: 10px; /* Space between stacked items */
+            }
+
+            .navbar li {
+                margin: 0; /* Remove horizontal margin */
+                width: 100%; /* Make list items take full width */
+                text-align: center; /* Center text in stacked items */
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+    <div class="container">
+        <h1>NOTES OF DAY 8</h1>
+        <div class="link-container">
+                <nav class="navbar">
+            <ul>
+                <li><a href="/Note Sharing Web Page/Day 7/day7.html">previse</a></li>
+                <li><a href="/Note Sharing Web Page/index.html" class="active">Home</a></li>
+                <li><a href="/Note Sharing Web Page/Day 9/day9.html">Forword</a></li>
+            </ul>
+        </nav>
+            <a href="/Note Sharing Web Page/Day 8/correlation_presentation (1).html" class="folder-link blue-btn">
+                Correlation
+            </a>
+            <a href="/Note Sharing Web Page/Day 8/eda_workflow_presentation.html" class="folder-link blue-btn">
+                EDA Workflow
+            </a>
+            <a href="/Note Sharing Web Page/Day 8/feature_engineering_presentation.html" class="folder-link blue-btn">
+                Feature Engineering
+            </a>
+            <a href="/Note Sharing Web Page/Day 8/stats_presentation.html" class="folder-link blue-btn">
+               Statistic
+            </a>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Functions: Definition and Calling</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .presentation-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            max-width: 1000px;
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .slide {
+            display: none;
+            padding: 40px;
+            min-height: 600px;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-align: center;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h2 {
+            color: #34495e;
+            font-size: 2em;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            color: #2c3e50;
+            font-size: 1.5em;
+            margin: 20px 0 10px 0;
+        }
+
+        p, li {
+            font-size: 1.1em;
+            line-height: 1.6;
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        ul {
+            margin-left: 20px;
+            margin-bottom: 20px;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 1em;
+            margin: 20px 0;
+            overflow-x: auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        .code-block::before {
+            content: "Code Example";
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            background: #667eea;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .keyword { color: #ff7979; }
+        .string { color: #00b894; }
+        .comment { color: #74b9ff; font-style: italic; }
+        .function { color: #fdcb6e; }
+
+        .navigation {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .slide-counter {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(102, 126, 234, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+
+        .example-box {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            box-shadow: 0 8px 16px rgba(240, 147, 251, 0.3);
+        }
+
+        .highlight {
+            background: linear-gradient(45deg, #ffeaa7, #fab1a0);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #e17055;
+            margin: 15px 0;
+        }
+
+        .interactive-demo {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #667eea;
+            margin: 20px 0;
+        }
+
+        .demo-input {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin: 5px;
+            font-size: 1em;
+        }
+
+        .demo-button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 1em;
+        }
+
+        .demo-output {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-family: monospace;
+            min-height: 50px;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <div class="slide-counter">
+            <span id="current-slide">1</span> / <span id="total-slides">8</span>
+        </div>
+
+        <!-- Slide 1: Title -->
+        <div class="slide active">
+            <h1>Functions in Programming</h1>
+            <div style="text-align: center; margin-top: 50px;">
+                <h2 style="border: none; color: #667eea;">Definition and Calling</h2>
+                <p style="font-size: 1.3em; margin-top: 30px; color: #2c3e50;">
+                    A comprehensive guide to understanding functions
+                </p>
+                <div class="highlight" style="margin-top: 40px; text-align: left;">
+                    <strong>What you'll learn:</strong>
+                    <ul style="margin-top: 10px;">
+                        <li>What functions are and why they're important</li>
+                        <li>How to define functions</li>
+                        <li>How to call functions</li>
+                        <li>Parameters and return values</li>
+                        <li>Practical examples and best practices</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: What is a Function? -->
+        <div class="slide">
+            <h2>What is a Function?</h2>
+            <p>A function is a reusable block of code that performs a specific task. Think of it as a mini-program within your program.</p>
+            
+            <div class="example-box">
+                <h3>Real-World Analogy</h3>
+                <p>A function is like a recipe:</p>
+                <ul>
+                    <li><strong>Ingredients</strong> = Parameters (inputs)</li>
+                    <li><strong>Cooking Process</strong> = Function body (logic)</li>
+                    <li><strong>Final Dish</strong> = Return value (output)</li>
+                </ul>
+            </div>
+
+            <div class="highlight">
+                <strong>Key Benefits:</strong>
+                <ul>
+                    <li><strong>Reusability:</strong> Write once, use many times</li>
+                    <li><strong>Organization:</strong> Break complex problems into smaller parts</li>
+                    <li><strong>Maintainability:</strong> Easier to debug and update</li>
+                    <li><strong>Readability:</strong> Code becomes more understandable</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 3: Function Syntax -->
+        <div class="slide">
+            <h2>Function Syntax</h2>
+            <p>Here's the basic structure of a function in different programming languages:</p>
+
+            <h3>Python</h3>
+            <div class="code-block">
+<span class="keyword">def</span> <span class="function">function_name</span>(parameters):
+    <span class="comment"># Function body</span>
+    <span class="comment"># Perform operations</span>
+    <span class="keyword">return</span> result
+            </div>
+
+            <h3>JavaScript</h3>
+            <div class="code-block">
+<span class="keyword">function</span> <span class="function">functionName</span>(parameters) {
+    <span class="comment">// Function body</span>
+    <span class="comment">// Perform operations</span>
+    <span class="keyword">return</span> result;
+}
+            </div>
+
+            <h3>Java</h3>
+            <div class="code-block">
+<span class="keyword">public static</span> returnType <span class="function">functionName</span>(parameters) {
+    <span class="comment">// Function body</span>
+    <span class="comment">// Perform operations</span>
+    <span class="keyword">return</span> result;
+}
+            </div>
+        </div>
+
+        <!-- Slide 4: Simple Function Example -->
+        <div class="slide">
+            <h2>Simple Function Example</h2>
+            <p>Let's start with a basic function that greets a person:</p>
+
+            <h3>Function Definition</h3>
+            <div class="code-block">
+<span class="comment"># Python Example</span>
+<span class="keyword">def</span> <span class="function">greet</span>(name):
+    <span class="keyword">return</span> <span class="string">f"Hello, {name}! Welcome!"</span>
+
+<span class="comment"># JavaScript Example</span>
+<span class="keyword">function</span> <span class="function">greet</span>(name) {
+    <span class="keyword">return</span> <span class="string">`Hello, ${name}! Welcome!`</span>;
+}
+            </div>
+
+            <h3>Function Call</h3>
+            <div class="code-block">
+<span class="comment"># Calling the function</span>
+message = <span class="function">greet</span>(<span class="string">"Alice"</span>)
+<span class="function">print</span>(message)  <span class="comment"># Output: Hello, Alice! Welcome!</span>
+
+<span class="comment">// JavaScript</span>
+<span class="keyword">let</span> message = <span class="function">greet</span>(<span class="string">"Alice"</span>);
+<span class="function">console.log</span>(message);  <span class="comment">// Output: Hello, Alice! Welcome!</span>
+            </div>
+
+            <div class="highlight">
+                <strong>Breakdown:</strong>
+                <ul>
+                    <li><code>greet</code> is the function name</li>
+                    <li><code>name</code> is the parameter</li>
+                    <li><code>"Alice"</code> is the argument passed when calling</li>
+                    <li>The function returns a formatted greeting string</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 5: Functions with Multiple Parameters -->
+        <div class="slide">
+            <h2>Functions with Multiple Parameters</h2>
+            <p>Functions can accept multiple inputs to perform more complex operations:</p>
+
+            <h3>Mathematical Function</h3>
+            <div class="code-block">
+<span class="comment"># Python - Calculate area of rectangle</span>
+<span class="keyword">def</span> <span class="function">calculate_area</span>(length, width):
+    area = length * width
+    <span class="keyword">return</span> area
+
+<span class="comment"># Calling the function</span>
+result = <span class="function">calculate_area</span>(5, 3)
+<span class="function">print</span>(<span class="string">f"Area: {result}"</span>)  <span class="comment"># Output: Area: 15</span>
+            </div>
+
+            <h3>Function with Default Parameters</h3>
+            <div class="code-block">
+<span class="comment"># Python - Greeting with default message</span>
+<span class="keyword">def</span> <span class="function">greet_with_title</span>(name, title=<span class="string">"Friend"</span>):
+    <span class="keyword">return</span> <span class="string">f"Hello, {title} {name}!"</span>
+
+<span class="comment"># Different ways to call</span>
+<span class="function">print</span>(<span class="function">greet_with_title</span>(<span class="string">"Alice"</span>))           <span class="comment"># Hello, Friend Alice!</span>
+<span class="function">print</span>(<span class="function">greet_with_title</span>(<span class="string">"Bob"</span>, <span class="string">"Dr."</span>))    <span class="comment"># Hello, Dr. Bob!</span>
+            </div>
+
+            <div class="example-box">
+                <h3>Key Points:</h3>
+                <ul>
+                    <li>Parameters are separated by commas</li>
+                    <li>Default parameters provide fallback values</li>
+                    <li>Arguments are passed in the same order as parameters</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 6: Return Values -->
+        <div class="slide">
+            <h2>Return Values</h2>
+            <p>Functions can return different types of values or perform actions without returning anything:</p>
+
+            <h3>Functions that Return Values</h3>
+            <div class="code-block">
+<span class="comment"># Return a number</span>
+<span class="keyword">def</span> <span class="function">add_numbers</span>(a, b):
+    <span class="keyword">return</span> a + b
+
+<span class="comment"># Return a list</span>
+<span class="keyword">def</span> <span class="function">get_even_numbers</span>(max_num):
+    evens = []
+    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="function">range</span>(2, max_num + 1, 2):
+        evens.append(i)
+    <span class="keyword">return</span> evens
+
+<span class="comment"># Return multiple values</span>
+<span class="keyword">def</span> <span class="function">get_name_parts</span>(full_name):
+    parts = full_name.split()
+    first_name = parts[0]
+    last_name = parts[-1]
+    <span class="keyword">return</span> first_name, last_name
+            </div>
+
+            <h3>Using Return Values</h3>
+            <div class="code-block">
+<span class="comment"># Using returned values</span>
+sum_result = <span class="function">add_numbers</span>(5, 3)
+<span class="function">print</span>(sum_result)  <span class="comment"># Output: 8</span>
+
+even_list = <span class="function">get_even_numbers</span>(10)
+<span class="function">print</span>(even_list)  <span class="comment"># Output: [2, 4, 6, 8, 10]</span>
+
+first, last = <span class="function">get_name_parts</span>(<span class="string">"John Doe"</span>)
+<span class="function">print</span>(<span class="string">f"First: {first}, Last: {last}"</span>)  <span class="comment"># First: John, Last: Doe</span>
+            </div>
+        </div>
+
+        <!-- Slide 7: Practical Examples -->
+        <div class="slide">
+            <h2>Practical Examples</h2>
+            
+            <h3>Example 1: Temperature Converter</h3>
+            <div class="code-block">
+<span class="keyword">def</span> <span class="function">celsius_to_fahrenheit</span>(celsius):
+    <span class="string">"""Convert Celsius to Fahrenheit"""</span>
+    fahrenheit = (celsius * 9/5) + 32
+    <span class="keyword">return</span> fahrenheit
+
+<span class="keyword">def</span> <span class="function">fahrenheit_to_celsius</span>(fahrenheit):
+    <span class="string">"""Convert Fahrenheit to Celsius"""</span>
+    celsius = (fahrenheit - 32) * 5/9
+    <span class="keyword">return</span> celsius
+
+<span class="comment"># Usage</span>
+temp_c = 25
+temp_f = <span class="function">celsius_to_fahrenheit</span>(temp_c)
+<span class="function">print</span>(<span class="string">f"{temp_c}°C = {temp_f}°F"</span>)  <span class="comment"># 25°C = 77.0°F</span>
+            </div>
+
+            <h3>Example 2: Student Grade Calculator</h3>
+            <div class="code-block">
+<span class="keyword">def</span> <span class="function">calculate_grade</span>(scores):
+    <span class="string">"""Calculate average and letter grade"""</span>
+    average = <span class="function">sum</span>(scores) / <span class="function">len</span>(scores)
+    
+    <span class="keyword">if</span> average >= 90:
+        letter = <span class="string">"A"</span>
+    <span class="keyword">elif</span> average >= 80:
+        letter = <span class="string">"B"</span>
+    <span class="keyword">elif</span> average >= 70:
+        letter = <span class="string">"C"</span>
+    <span class="keyword">elif</span> average >= 60:
+        letter = <span class="string">"D"</span>
+    <span class="keyword">else</span>:
+        letter = <span class="string">"F"</span>
+    
+    <span class="keyword">return</span> average, letter
+
+<span class="comment"># Usage</span>
+student_scores = [85, 92, 78, 96, 88]
+avg, grade = <span class="function">calculate_grade</span>(student_scores)
+<span class="function">print</span>(<span class="string">f"Average: {avg:.1f}, Grade: {grade}"</span>)
+            </div>
+        </div>
+
+        <!-- Slide 8: Interactive Demo -->
+        <div class="slide">
+            <h2>Interactive Demo</h2>
+            <p>Try calling functions with different inputs:</p>
+            
+            <div class="interactive-demo">
+                <h3>Calculator Functions</h3>
+                <div>
+                    <input type="number" id="num1" class="demo-input" placeholder="First number" value="10">
+                    <input type="number" id="num2" class="demo-input" placeholder="Second number" value="5">
+                </div>
+                <div>
+                    <button class="demo-button" onclick="callFunction('add')">Add</button>
+                    <button class="demo-button" onclick="callFunction('subtract')">Subtract</button>
+                    <button class="demo-button" onclick="callFunction('multiply')">Multiply</button>
+                    <button class="demo-button" onclick="callFunction('divide')">Divide</button>
+                </div>
+                <div class="demo-output" id="output">Click a button to see the function result...</div>
+            </div>
+
+            <div class="highlight">
+                <h3>Summary - Best Practices:</h3>
+                <ul>
+                    <li><strong>Use descriptive names:</strong> Function names should clearly indicate what they do</li>
+                    <li><strong>Keep functions focused:</strong> Each function should have one clear purpose</li>
+                    <li><strong>Document your functions:</strong> Use comments or docstrings</li>
+                    <li><strong>Test your functions:</strong> Verify they work with different inputs</li>
+                    <li><strong>Handle edge cases:</strong> Consider what happens with unexpected inputs</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="navigation">
+            <button class="nav-btn" id="prev-btn" onclick="changeSlide(-1)">← Previous</button>
+            <button class="nav-btn" id="next-btn" onclick="changeSlide(1)">Next →</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('total-slides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            
+            document.getElementById('current-slide').textContent = currentSlide + 1;
+            
+            // Update navigation buttons
+            document.getElementById('prev-btn').disabled = currentSlide === 0;
+            document.getElementById('next-btn').disabled = currentSlide === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            if (direction === 1 && currentSlide < totalSlides - 1) {
+                showSlide(currentSlide + 1);
+            } else if (direction === -1 && currentSlide > 0) {
+                showSlide(currentSlide - 1);
+            }
+        }
+
+        // Interactive demo functions
+        function add(a, b) { return a + b; }
+        function subtract(a, b) { return a - b; }
+        function multiply(a, b) { return a * b; }
+        function divide(a, b) { return b !== 0 ? a / b : "Cannot divide by zero!"; }
+
+        function callFunction(operation) {
+            const num1 = parseFloat(document.getElementById('num1').value) || 0;
+            const num2 = parseFloat(document.getElementById('num2').value) || 0;
+            let result;
+            let functionCall;
+
+            switch(operation) {
+                case 'add':
+                    result = add(num1, num2);
+                    functionCall = `add(${num1}, ${num2})`;
+                    break;
+                case 'subtract':
+                    result = subtract(num1, num2);
+                    functionCall = `subtract(${num1}, ${num2})`;
+                    break;
+                case 'multiply':
+                    result = multiply(num1, num2);
+                    functionCall = `multiply(${num1}, ${num2})`;
+                    break;
+                case 'divide':
+                    result = divide(num1, num2);
+                    functionCall = `divide(${num1}, ${num2})`;
+                    break;
+            }
+
+            document.getElementById('output').innerHTML = `
+                <strong>Function Call:</strong> ${functionCall}<br>
+                <strong>Result:</strong> ${result}
+            `;
+        }
+
+        // Initialize
+        showSlide(0);
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+        });
+    </script>
+</body>
+</html>

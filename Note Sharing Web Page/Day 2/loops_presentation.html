@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Loops - Comprehensive Presentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .slide {
+            width: 90%;
+            max-width: 1000px;
+            height: 85vh;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            padding: 40px;
+            display: none;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .slide.active {
+            display: block;
+            animation: slideIn 0.5s ease-in-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .slide-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .slide-number {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            background: #667eea;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        h3 {
+            color: #764ba2;
+            font-size: 1.5em;
+            margin: 20px 0 15px 0;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.2em;
+            font-style: italic;
+        }
+
+        .content {
+            line-height: 1.6;
+            color: #444;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            border-left: 5px solid #667eea;
+        }
+
+        .code-block .comment {
+            color: #68d391;
+        }
+
+        .code-block .keyword {
+            color: #f687b3;
+        }
+
+        .code-block .string {
+            color: #fbb6ce;
+        }
+
+        .code-block .number {
+            color: #90cdf4;
+        }
+
+        .example-box {
+            background: linear-gradient(135deg, #f7fafc, #edf2f7);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #48bb78;
+        }
+
+        .key-points {
+            background: linear-gradient(135deg, #fed7d7, #feb2b2);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .nav-btn:hover {
+            background: #764ba2;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(118, 75, 162, 0.4);
+        }
+
+        .nav-btn:disabled {
+            background: #a0aec0;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.3s ease;
+            z-index: 1001;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 20px 0;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        ul {
+            margin: 15px 0 15px 25px;
+        }
+
+        li {
+            margin: 8px 0;
+            color: #555;
+        }
+
+        .flowchart {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .flowchart-box {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            margin: 10px;
+            font-weight: bold;
+        }
+
+        .arrow {
+            font-size: 24px;
+            color: #667eea;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    
+    <div class="presentation-container">
+        <!-- Slide 1: Title Slide -->
+        <div class="slide active">
+            <div class="slide-number">1/12</div>
+            <div class="slide-header">
+                <h1>Python Loops</h1>
+                <p class="subtitle">Mastering Iteration and Control Flow</p>
+            </div>
+            <div class="content" style="text-align: center; margin-top: 50px;">
+                <div style="font-size: 1.5em; color: #667eea; margin-bottom: 30px;">
+                    📔 Comprehensive Guide to:
+                </div>
+                <div style="font-size: 1.3em; line-height: 2;">
+                    🔄 <strong>For Loops</strong><br>
+                    🔁 <strong>While Loops</strong><br>
+                    🎛️ <strong>Loop Control Statements</strong><br>
+                    ⚡ <strong>Break, Continue, Pass</strong>
+                </div>
+                <div class="example-box" style="margin-top: 40px;">
+                    <strong>Learning Objectives:</strong><br>
+                    • Understand different types of loops in Python<br>
+                    • Master loop control mechanisms<br>
+                    • Apply best practices for efficient iteration<br>
+                    • Solve real-world problems using loops
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: What are Loops? -->
+        <div class="slide">
+            <div class="slide-number">2/12</div>
+            <div class="slide-header">
+                <h2>What are Loops? 🔄</h2>
+            </div>
+            <div class="content">
+                <p style="font-size: 1.2em; margin-bottom: 25px;">
+                    Loops are control structures that allow you to <span class="highlight">repeat a block of code</span> multiple times based on certain conditions.
+                </p>
+                
+                <div class="key-points">
+                    <h3>Why Use Loops?</h3>
+                    <ul>
+                        <li><strong>Efficiency:</strong> Avoid writing repetitive code</li>
+                        <li><strong>Automation:</strong> Process large datasets automatically</li>
+                        <li><strong>Dynamic Execution:</strong> Handle unknown quantities of data</li>
+                        <li><strong>Clean Code:</strong> Make programs more readable and maintainable</li>
+                    </ul>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>Without Loops (Repetitive):</h3>
+                        <div class="code-block">
+<span class="keyword">print</span>(<span class="string">"Hello"</span>)
+<span class="keyword">print</span>(<span class="string">"Hello"</span>)
+<span class="keyword">print</span>(<span class="string">"Hello"</span>)
+<span class="keyword">print</span>(<span class="string">"Hello"</span>)
+<span class="keyword">print</span>(<span class="string">"Hello"</span>)
+                        </div>
+                    </div>
+                    <div>
+                        <h3>With Loops (Efficient):</h3>
+                        <div class="code-block">
+<span class="keyword">for</span> i <span class="keyword">in</span> <span class="keyword">range</span>(<span class="number">5</span>):
+    <span class="keyword">print</span>(<span class="string">"Hello"</span>)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Types of Loops -->
+        <div class="slide">
+            <div class="slide-number">3/12</div>
+            <div class="slide-header">
+                <h2>Types of Loops in Python 🐍</h2>
+            </div>
+            <div class="content">
+                <div class="flowchart">
+                    <div class="flowchart-box">Python Loops</div>
+                    <div class="arrow">⬇️</div>
+                    <div style="display: flex; justify-content: space-around;">
+                        <div>
+                            <div class="flowchart-box" style="background: #48bb78;">For Loops</div>
+                            <p style="margin-top: 10px; font-size: 0.9em;">Definite Iteration</p>
+                        </div>
+                        <div>
+                            <div class="flowchart-box" style="background: #ed8936;">While Loops</div>
+                            <p style="margin-top: 10px; font-size: 0.9em;">Indefinite Iteration</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="two-column">
+                    <div class="example-box">
+                        <h3>🔄 For Loops</h3>
+                        <ul>
+                            <li>Used when you know the number of iterations</li>
+                            <li>Iterate over sequences (lists, strings, ranges)</li>
+                            <li>More Pythonic for definite iteration</li>
+                            <li>Automatic iteration variable management</li>
+                        </ul>
+                    </div>
+                    <div class="example-box">
+                        <h3>🔁 While Loops</h3>
+                        <ul>
+                            <li>Used when iterations depend on a condition</li>
+                            <li>Continue until condition becomes False</li>
+                            <li>Ideal for indefinite iteration</li>
+                            <li>Requires manual condition management</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="key-points">
+                    <strong>🎯 Key Concept:</strong> Choose the right loop type based on whether you know the number of iterations beforehand!
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: For Loops - Basics -->
+        <div class="slide">
+            <div class="slide-number">4/12</div>
+            <div class="slide-header">
+                <h2>For Loops - The Basics 🔄</h2>
+            </div>
+            <div class="content">
+                <h3>Syntax Structure:</h3>
+                <div class="code-block">
+<span class="keyword">for</span> variable <span class="keyword">in</span> iterable:
+    <span class="comment"># Code block to execute</span>
+    statement1
+    statement2
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>Example 1: Range Function</h3>
+                        <div class="code-block">
+<span class="comment"># Print numbers 0 to 4</span>
+<span class="keyword">for</span> i <span class="keyword">in</span> <span class="keyword">range</span>(<span class="number">5</span>):
+    <span class="keyword">print</span>(i)
+
+<span class="comment"># Output: 0, 1, 2, 3, 4</span>
+                        </div>
+                        
+                        <h3>Example 2: List Iteration</h3>
+                        <div class="code-block">
+fruits = [<span class="string">"apple"</span>, <span class="string">"banana"</span>, <span class="string">"orange"</span>]
+<span class="keyword">for</span> fruit <span class="keyword">in</span> fruits:
+    <span class="keyword">print</span>(<span class="string">f"I like {fruit}"</span>)
+                        </div>
+                    </div>
+                    <div>
+                        <h3>Example 3: String Iteration</h3>
+                        <div class="code-block">
+<span class="keyword">for</span> char <span class="keyword">in</span> <span class="string">"Python"</span>:
+    <span class="keyword">print</span>(char)
+
+<span class="comment"># Output: P, y, t, h, o, n</span>
+                        </div>
+
+                        <h3>Example 4: Dictionary Iteration</h3>
+                        <div class="code-block">
+student = {<span class="string">"name"</span>: <span class="string">"Alice"</span>, <span class="string">"age"</span>: <span class="number">20</span>}
+<span class="keyword">for</span> key, value <span class="keyword">in</span> student.items():
+    <span class="keyword">print</span>(<span class="string">f"{key}: {value}"</span>)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <strong>💡 Pro Tip:</strong> For loops in Python are more versatile than in many other languages - they can iterate over any iterable object!
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: For Loops - Advanced -->
+        <div class="slide">
+            <div class="slide-number">5/12</div>
+            <div class="slide-header">
+                <h2>For Loops - Advanced Techniques 🚀</h2>
+            </div>
+            <div class="content">
+                <div class="two-column">
+                    <div>
+                        <h3>enumerate() Function</h3>
+                        <div class="code-block">
+colors = [<span class="string">"red"</span>, <span class="string">"green"</span>, <span class="string">"blue"</span>]
+<span class="keyword">for</span> index, color <span class="keyword">in</span> <span class="keyword">enumerate</span>(colors):
+    <span class="keyword">print</span>(<span class="string">f"{index}: {color}"</span>)
+
+<span class="comment"># Output:
+# 0: red
+# 1: green  
+# 2: blue</span>
+                        </div>
+
+                        <h3>zip() Function</h3>
+                        <div class="code-block">
+names = [<span class="string">"Alice"</span>, <span class="string">"Bob"</span>, <span class="string">"Charlie"</span>]
+ages = [<span class="number">25</span>, <span class="number">30</span>, <span class="number">35</span>]
+<span class="keyword">for</span> name, age <span class="keyword">in</span> <span class="keyword">zip</span>(names, ages):
+    <span class="keyword">print</span>(<span class="string">f"{name} is {age} years old"</span>)
+                        </div>
+                    </div>
+                    <div>
+                        <h3>Range with Parameters</h3>
+                        <div class="code-block">
+<span class="comment"># range(start, stop, step)</span>
+<span class="keyword">for</span> i <span class="keyword">in</span> <span class="keyword">range</span>(<span class="number">2</span>, <span class="number">10</span>, <span class="number">2</span>):
+    <span class="keyword">print</span>(i)
+
+<span class="comment"># Output: 2, 4, 6, 8</span>
+
+<span class="comment"># Reverse iteration</span>
+<span class="keyword">for</span> i <span class="keyword">in</span> <span class="keyword">range</span>(<span class="number">5</span>, <span class="number">0</span>, <span class="number">-1</span>):
+    <span class="keyword">print</span>(i)
+
+<span class="comment"># Output: 5, 4, 3, 2, 1</span>
+                        </div>
+
+                        <h3>Nested For Loops</h3>
+                        <div class="code-block">
+<span class="keyword">for</span> i <span class="keyword">in</span> <span class="keyword">range</span>(<span class="number">3</span>):
+    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="keyword">range</span>(<span class="number">3</span>):
+        <span class="keyword">print</span>(<span class="string">f"({i}, {j})"</span>, end=<span class="string">" "</span>)
+    <span class="keyword">print</span>()  <span class="comment"># New line</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="key-points">
+                    <h3>🎯 Best Practices for For Loops:</h3>
+                    <ul>
+                        <li>Use descriptive variable names (not just 'i', 'j')</li>
+                        <li>Prefer enumerate() when you need both index and value</li>
+                        <li>Use zip() to iterate over multiple sequences simultaneously</li>
+                        <li>Avoid modifying the sequence you're iterating over</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: While Loops - Basics -->
+        <div class="slide">
+            <div class="slide-number">6/12</div>
+            <div class="slide-header">
+                <h2>While Loops - The Basics 🔁</h2>
+            </div>
+            <div class="content">
+                <h3>Syntax Structure:</h3>
+                <div class="code-block">
+<span class="keyword">while</span> condition:
+    <span class="comment"># Code block to execute</span>
+    statement1
+    statement2
+    <span class="comment"># Don't forget to update the condition!</span>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>Example 1: Basic Counter</h3>
+                        <div class="code-block">
+count = <span class="number">0</span>
+<span class="keyword">while</span> count < <span class="number">5</span>:
+    <span class="keyword">print</span>(<span class="string">f"Count: {count}"</span>)
+    count += <span class="number">1</span>
+
+<span class="comment"># Output: Count: 0, 1, 2, 3, 4</span>
+                        </div>
+
+                        <h3>Example 2: User Input</h3>
+                        <div class="code-block">
+password = <span class="string">""</span>
+<span class="keyword">while</span> password != <span class="string">"secret"</span>:
+    password = <span class="keyword">input</span>(<span class="string">"Enter password: "</span>)
+    <span class="keyword">if</span> password != <span class="string">"secret"</span>:
+        <span class="keyword">print</span>(<span class="string">"Wrong password!"</span>)
+
+<span class="keyword">print</span>(<span class="string">"Access granted!"</span>)
+                        </div>
+                    </div>
+                    <div>
+                        <h3>Example 3: List Processing</h3>
+                        <div class="code-block">
+numbers = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>]
+<span class="keyword">while</span> numbers:
+    num = numbers.pop()
+    <span class="keyword">print</span>(<span class="string">f"Processing: {num}"</span>)
+
+<span class="comment"># Processes in reverse order</span>
+                        </div>
+
+                        <h3>Example 4: Mathematical Calculation</h3>
+                        <div class="code-block">
+<span class="comment"># Calculate factorial</span>
+n = <span class="number">5</span>
+factorial = <span class="number">1</span>
+original_n = n
+
+<span class="keyword">while</span> n > <span class="number">0</span>:
+    factorial *= n
+    n -= <span class="number">1</span>
+
+<span class="keyword">print</span>(<span class="string">f"{original_n}! = {factorial}"</span>)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <strong>⚠️ Warning:</strong> Always ensure your while loop condition eventually becomes False to avoid infinite loops!
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: While vs For Loops -->
+        <div class="slide">
+            <div class="slide-number">7/12</div>
+            <div class="slide-header">
+                <h2>While vs For Loops - When to Use What? 🤔</h2>
+            </div>
+            <div class="content">
+                <div class="two-column">
+                    <div class="example-box" style="background: linear-gradient(135deg, #d6f5d6, #b8e6b8);">
+                        <h3>✅ Use FOR loops when:</h3>
+                        <ul>
+                            <li>You know the number of iterations</li>
+                            <li>Iterating over collections (lists, strings, dicts)</li>
+                            <li>Working with ranges of numbers</li>
+                            <li>Processing each item in a sequence</li>
+                        </ul>
+                        
+                        <h4>Perfect For Scenarios:</h4>
+                        <div class="code-block">
+<span class="comment"># Processing a list</span>
+<span class="keyword">for</span> item <span class="keyword">in</span> shopping_list:
+    <span class="keyword">print</span>(item)
+
+<span class="comment"># Repeating an action N times</span>
+<span class="keyword">for</span> i <span class="keyword">in</span> <span class="keyword">range</span>(<span class="number">10</span>):
+    <span class="keyword">print</span>(<span class="string">"Hello World"</span>)
+                        </div>
+                    </div>
+                    
+                    <div class="example-box" style="background: linear-gradient(135deg, #ffd6d6, #ffb8b8);">
+                        <h3>✅ Use WHILE loops when:</h3>
+                        <ul>
+                            <li>Condition-based iteration</li>
+                            <li>Unknown number of iterations</li>
+                            <li>User input validation</li>
+                            <li>Game loops or real-time processing</li>
+                        </ul>
+
+                        <h4>Perfect While Scenarios:</h4>
+                        <div class="code-block">
+<span class="comment"># User input until valid</span>
+<span class="keyword">while</span> <span class="keyword">not</span> valid_input:
+    user_input = <span class="keyword">input</span>(<span class="string">"Enter: "</span>)
+    valid_input = validate(user_input)
+
+<span class="comment"># Game loop</span>
+<span class="keyword">while</span> game_running:
+    handle_events()
+    update_game()
+    render()
+                        </div>
+                    </div>
+                </div>
+
+                <div class="key-points">
+                    <h3>🎯 Decision Matrix:</h3>
+                    <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+                        <tr style="background: #667eea; color: white;">
+                            <th style="padding: 12px; border: 1px solid #ddd;">Scenario</th>
+                            <th style="padding: 12px; border: 1px solid #ddd;">Recommended Loop</th>
+                            <th style="padding: 12px; border: 1px solid #ddd;">Reason</th>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Process each file in a folder</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;"><strong>FOR</strong></td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Known collection to iterate</td>
+                        </tr>
+                        <tr style="background: #f8f9fa;">
+                            <td style="padding: 10px; border: 1px solid #ddd;">Wait for user to guess correctly</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;"><strong>WHILE</strong></td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Unknown number of attempts</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Print multiplication table</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;"><strong>FOR</strong></td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Fixed range (1-10)</td>
+                        </tr>
+                        <tr style="background: #f8f9fa;">
+                            <td style="padding: 10px; border: 1px solid #ddd;">Read data until EOF</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;"><strong>WHILE</strong></td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Condition-based termination</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Loop Control - Break -->
+        <div class="slide">
+            <div class="slide-number">8/12</div>
+            <div class="slide-header">
+                <h2>Loop Control: Break Statement 🛑</h2>
+            </div>
+            <div class="content">
+                <p style="font-size: 1.2em; margin-bottom: 25px;">
+                    The <span class="highlight">break</span> statement immediately terminates the loop and transfers control to the statement after the loop.
+                </p>
+
+                <div class="two-column">
+                    <div>
+                        <h3>Break in For Loop</h3>
+                        <div class="code-block">
+<span class="comment"># Find first even number</span>
+numbers = [<span class="number">1</span>, <span class="number">3</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>]
+<span class="keyword">for</span> num <span class="keyword">in</span> numbers:
+    <span class="keyword">if</span> num % <span class="number">2</span> == <span class="number">0</span>:
+        <span class="keyword">print</span>(<span class="string">f"Found even number: {num}"</span>)
+        <span class="keyword">break</span>
+    <span class="keyword">print</span>(<span class="string">f"Checking: {num}"</span>)
+
+<span class="comment"># Output:
+# Checking: 1
+# Checking: 3  
+# Checking: 7
+# Found even number: 8</span>
+                        </div>
+
+                        <h3>Search Algorithm Example</h3>
+                        <div class="code-block">
+<span class="comment"># Linear search</span>
+target = <span class="string">"apple"</span>
+fruits = [<span class="string">"banana"</span>, <span class="string">"apple"</span>, <span class="string">"orange"</span>]
+found = <span class="keyword">False</span>
+
+<span class="keyword">for</span> i, fruit <span class="keyword">in</span> <span class="keyword">enumerate</span>(fruits):
+    <span class="keyword">if</span> fruit == target:
+        <span class="keyword">print</span>(<span class="string">f"Found {target} at index {i}"</span>)
+        found = <span class="keyword">True</span>
+        <span

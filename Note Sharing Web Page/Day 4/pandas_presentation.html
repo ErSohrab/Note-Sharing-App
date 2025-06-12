@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pandas: Series vs DataFrames & Data Handling</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .slide {
+            display: none;
+            width: 90%;
+            max-width: 1000px;
+            height: 80vh;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            overflow-y: auto;
+            animation: slideIn 0.6s ease-out;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: #4a5568;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            text-align: center;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h2 {
+            color: #2d3748;
+            font-size: 2rem;
+            margin-bottom: 25px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            color: #4a5568;
+            font-size: 1.5rem;
+            margin: 20px 0 15px 0;
+        }
+
+        p, li {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            color: #4a5568;
+        }
+
+        ul {
+            margin-left: 20px;
+            margin-bottom: 20px;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            margin: 20px 0;
+            overflow-x: auto;
+            border-left: 4px solid #667eea;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .comparison-table th {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .comparison-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background: #f7fafc;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #4a5568;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-btn:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 20px;
+            border-radius: 20px;
+            color: #4a5568;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-weight: 600;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 20px 0;
+        }
+
+        .feature-box {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 10px 0;
+        }
+
+        .feature-box h4 {
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .method-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .method-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .method-card h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <div class="slide-counter">
+            <span id="current-slide">1</span> / <span id="total-slides">12</span>
+        </div>
+
+        <!-- Slide 1: Title -->
+        <div class="slide active">
+            <h1>Pandas: Series vs DataFrames</h1>
+            <div style="text-align: center; margin: 40px 0;">
+                <h2 style="border: none; font-size: 1.8rem;">Data Import/Export & Missing Data Handling</h2>
+                <p style="font-size: 1.3rem; color: #667eea; margin-top: 30px;">
+                    Comprehensive Guide to Pandas Data Structures and Data Management
+                </p>
+            </div>
+            <div class="two-column" style="margin-top: 50px;">
+                <div class="feature-box">
+                    <h4>📊 Series vs DataFrames</h4>
+                    <p>Understanding the core data structures</p>
+                </div>
+                <div class="feature-box">
+                    <h4>📁 Data Import/Export</h4>
+                    <p>Working with various file formats</p>
+                </div>
+            </div>
+            <div class="two-column">
+                <div class="feature-box">
+                    <h4>🔧 Missing Data</h4>
+                    <p>Techniques for handling NaN values</p>
+                </div>
+                <div class="feature-box">
+                    <h4>💡 Best Practices</h4>
+                    <p>Real-world tips and examples</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: Pandas Series Overview -->
+        <div class="slide">
+            <h2>Pandas Series</h2>
+            <p>A <span class="highlight">Series</span> is a one-dimensional array-like object that can hold any data type with labeled axes (index).</p>
+            
+            <h3>Key Characteristics:</h3>
+            <ul>
+                <li>One-dimensional data structure</li>
+                <li>Homogeneous data (same data type)</li>
+                <li>Size immutable</li>
+                <li>Has both index and values</li>
+            </ul>
+
+            <div class="code-block">
+import pandas as pd
+import numpy as np
+
+# Creating a Series
+data = [10, 20, 30, 40, 50]
+series = pd.Series(data, index=['a', 'b', 'c', 'd', 'e'])
+print(series)
+
+# Output:
+# a    10
+# b    20
+# c    30
+# d    40
+# e    50
+# dtype: int64
+            </div>
+
+            <h3>Common Series Operations:</h3>
+            <div class="method-grid">
+                <div class="method-card">
+                    <h4>Indexing</h4>
+                    <p>Access elements by label or position</p>
+                </div>
+                <div class="method-card">
+                    <h4>Mathematical Operations</h4>
+                    <p>Vectorized operations across all elements</p>
+                </div>
+                <div class="method-card">
+                    <h4>Filtering</h4>
+                    <p>Boolean indexing for data selection</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Pandas DataFrame Overview -->
+        <div class="slide">
+            <h2>Pandas DataFrame</h2>
+            <p>A <span class="highlight">DataFrame</span> is a two-dimensional data structure with labeled axes (rows and columns).</p>
+            
+            <h3>Key Characteristics:</h3>
+            <ul>
+                <li>Two-dimensional data structure</li>
+                <li>Heterogeneous data (different data types in columns)</li>
+                <li>Size mutable</li>
+                <li>Can be thought of as a collection of Series</li>
+            </ul>
+
+            <div class="code-block">
+# Creating a DataFrame
+data = {
+    'Name': ['Alice', 'Bob', 'Charlie', 'Diana'],
+    'Age': [25, 30, 35, 28],
+    'City': ['New York', 'London', 'Tokyo', 'Paris'],
+    'Salary': [50000, 60000, 70000, 55000]
+}
+df = pd.DataFrame(data)
+print(df)
+
+#      Name  Age      City  Salary
+# 0   Alice   25  New York   50000
+# 1     Bob   30    London   60000
+# 2 Charlie   35     Tokyo   70000
+# 3   Diana   28     Paris   55000
+            </div>
+
+            <h3>DataFrame Components:</h3>
+            <div class="method-grid">
+                <div class="method-card">
+                    <h4>Index</h4>
+                    <p>Row labels (0, 1, 2, 3...)</p>
+                </div>
+                <div class="method-card">
+                    <h4>Columns</h4>
+                    <p>Column labels (Name, Age, City, Salary)</p>
+                </div>
+                <div class="method-card">
+                    <h4>Values</h4>
+                    <p>The actual data in a 2D NumPy array</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Series vs DataFrame Comparison -->
+        <div class="slide">
+            <h2>Series vs DataFrame: Key Differences</h2>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Aspect</th>
+                        <th>Series</th>
+                        <th>DataFrame</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Dimensions</strong></td>
+                        <td>1D (one-dimensional)</td>
+                        <td>2D (two-dimensional)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Data Types</strong></td>
+                        <td>Homogeneous (single type)</td>
+                        <td>Heterogeneous (multiple types)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Structure</strong></td>
+                        <td>Index + Values</td>
+                        <td>Index + Columns + Values</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Size</strong></td>
+                        <td>Immutable</td>
+                        <td>Mutable</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Memory Usage</strong></td>
+                        <td>Lower</td>
+                        <td>Higher</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Use Case</strong></td>
+                        <td>Single variable analysis</td>
+                        <td>Multi-variable analysis</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="code-block">
+# Converting between Series and DataFrame
+series = pd.Series([1, 2, 3, 4], name='numbers')
+df_from_series = series.to_frame()  # Series to DataFrame
+
+df = pd.DataFrame({'A': [1, 2, 3], 'B': [4, 5, 6]})
+series_from_df = df['A']  # DataFrame column to Series
+            </div>
+        </div>
+
+        <!-- Slide 5: Data Import - Reading Files -->
+        <div class="slide">
+            <h2>Data Import: Reading Files</h2>
+            <p>Pandas provides versatile functions to read data from various file formats.</p>
+
+            <h3>Common File Formats:</h3>
+            <div class="method-grid">
+                <div class="method-card">
+                    <h4>CSV Files</h4>
+                    <div class="code-block" style="font-size: 0.8rem;">
+df = pd.read_csv('data.csv')
+df = pd.read_csv('data.csv', sep=';', index_col=0)
+                    </div>
+                </div>
+                <div class="method-card">
+                    <h4>Excel Files</h4>
+                    <div class="code-block" style="font-size: 0.8rem;">
+df = pd.read_excel('data.xlsx', sheet_name='Sheet1')
+df = pd.read_excel('data.xlsx', sheet_name=0)
+                    </div>
+                </div>
+                <div class="method-card">
+                    <h4>JSON Files</h4>
+                    <div class="code-block" style="font-size: 0.8rem;">
+df = pd.read_json('data.json')
+df = pd.read_json('data.json', orient='records')
+                    </div>
+                </div>
+                <div class="method-card">
+                    <h4>SQL Databases</h4>
+                    <div class="code-block" style="font-size: 0.8rem;">
+import sqlite3
+conn = sqlite3.connect('database.db')
+df = pd.read_sql('SELECT * FROM table', conn)
+                    </div>
+                </div>
+            </div>
+
+            <h3>Important Parameters:</h3>
+            <ul>
+                <li><strong>header</strong>: Specify which row contains column names</li>
+                <li><strong>index_col</strong>: Set which column to use as index</li>
+                <li><strong>usecols</strong>: Select specific columns to read</li>
+                <li><strong>nrows</strong>: Limit number of rows to read</li>
+                <li><strong>dtype</strong>: Specify data types for columns</li>
+            </ul>
+        </div>
+
+        <!-- Slide 6: Data Export - Writing Files -->
+        <div class="slide">
+            <h2>Data Export: Writing Files</h2>
+            <p>Export your processed data to various formats for sharing and storage.</p>
+
+            <div class="method-grid">
+                <div class="method-card">
+                    <h4>Export to CSV</h4>
+                    <div class="code-block" style="font-size: 0.8rem;">
+df.to_csv('output.csv', index=False)
+df.to_csv('output.csv', sep=';', encoding='utf-8')
+                    </div>
+                </div>
+                <div class="method-card">
+                    <h4>Export to Excel</h4>
+                    <div class="code-block" style="font-size: 0.8rem;">
+df.to_excel('output.xlsx', sheet_name='Data')
+# Multiple sheets
+with pd.ExcelWriter('output.xlsx') as writer:
+    df1.to_excel(writer, sheet_name='Sheet1')
+    df2.to_excel(writer, sheet_name='Sheet2')
+                    </div>
+                </div>
+                <div class="method-card">
+                    <h4>Export to JSON</h4>
+                    <div class="code-block" style="font-size: 0.8rem;">
+df.to_json('output.json')
+df.to_json('output.json', orient='records')
+                    </div>
+                </div>
+                <div class="method-card">
+                    <h4>Export to HTML</h4>
+                    <div class="code-block" style="font-size: 0.8rem;">
+df.to_html('output.html')
+df.to_html('output.html', escape=False)
+                    </div>
+                </div>
+            </div>
+
+            <h3>Export Best Practices:</h3>
+            <ul>
+                <li>Use <code>index=False</code> to avoid writing row indices</li>
+                <li>Specify encoding (e.g., 'utf-8') for international characters</li>
+                <li>Choose appropriate separators for CSV files</li>
+                <li>Consider file size and compression options</li>
+            </ul>
+        </div>
+
+        <!-- Slide 7: Understanding Missing Data -->
+        <div class="slide">
+            <h2>Understanding Missing Data</h2>
+            <p>Missing data is a common challenge in real-world datasets. Pandas provides several ways to detect and handle it.</p>
+
+            <h3>Types of Missing Values:</h3>
+            <div class="two-column">
+                <div>
+                    <h4>In Pandas:</h4>
+                    <ul>
+                        <li><strong>NaN</strong> (Not a Number) - for numeric data</li>
+                        <li><strong>None</strong> - Python's null value</li>
+                        <li><strong>NaT</strong> (Not a Time) - for datetime data</li>
+                        <li><strong>pd.NA</strong> - Pandas' new nullable type</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>In Real Data:</h4>
+                    <ul>
+                        <li>Empty strings ('')</li>
+                        <li>Placeholder values (-999, 'N/A')</li>
+                        <li>Inconsistent formats</li>
+                        <li>Corrupted data</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="code-block">
+# Creating data with missing values
+data = {
+    'Name': ['Alice', 'Bob', None, 'Diana'],
+    'Age': [25, np.nan, 35, 28],
+    'City': ['New York', 'London', 'Tokyo', ''],
+    'Salary': [50000, 60000, np.nan, 55000]
+}
+df = pd.DataFrame(data)
+print(df)
+
+#      Name  Age      City   Salary
+# 0   Alice  25.0  New York  50000.0
+# 1     Bob   NaN    London  60000.0
+# 2    None  35.0     Tokyo      NaN
+# 3   Diana  28.0              55000.0
+            </div>
+        </div>
+
+        <!-- Slide 8: Detecting Missing Data -->
+        <div class="slide">
+            <h2>Detecting Missing Data</h2>
+            <p>Before handling missing data, you need to identify where it exists in your dataset.</p>
+
+            <div class="method-grid">
+                <div class="method-card">
+                    <h4>isnull() / isna()</h4>
+                    <div class="code-block" style="font-size: 0.8rem;">
+# Check for missing values
+print(df.isnull())
+print(df.isna())  # Same as isnull()
+
+# Count missing values per column
+print(df.isnull().sum())
+                    </div>
+                </div>
+                <div class="method-card">
+                    <h4>notnull() / notna()</h4>
+                    <div class="code-block" style="font-size: 0.8rem;">
+# Check for non-missing values
+print(df.notnull())
+
+# Count non-missing values
+print(df.notnull().sum())
+                    </div>
+                </div>
+                <div class="method-card">
+                    <h4>info() Method</h4>
+                    <div class="code-block" style="font-size: 0.8rem;">
+# Get overview of missing data
+df.info()
+
+# Shows:
+# - Data types
+# - Non-null counts
+# - Memory usage
+                    </div>
+                </div>
+                <div class="method-card">
+                    <h4>Missing Data Percentage</h4>
+                    <div class="code-block" style="font-size: 0.8rem;">
+# Calculate percentage of missing data
+missing_percent = (df.isnull().sum() / len(df)) * 100
+print(missing_percent)
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block">
+# Advanced missing data detection
+# Find rows with any missing values
+rows_with_missing = df[df.isnull().any(axis=1)]
+
+# Find rows with all missing values
+rows_all_missing = df[df.isnull().all(axis=1)]
+
+# Find columns with missing values
+cols_with_missing = df.columns[df.isnull().any()].tolist()
+            </div>
+        </div>
+
+        <!-- Slide 9: Handling Missing Data - Removal -->
+        <div class="slide">
+            <h2>Handling Missing Data: Removal</h2>
+            <p>Sometimes the best approach is to remove missing data, depending on the context and amount of missing data.</p>
+
+            <h3>Dropping Missing Values:</h3>
+            <div class="method-grid">
+                <div class="method-card">
+                    <h4>Drop Rows</h4>
+                    <div class="code-block" style="font-size: 0.8rem;">
+# Drop any row with missing values
+df_clean = df.dropna()
+
+# Drop rows where all values are missing
+df_clean = df.dropna(how='all')
+
+# Drop rows with missing values in specific columns
+df_clean = df.dropna(subset=['Age', 'Salary'])
+                    </div>
+                </div>
+                <div class="method-card">
+                    <h4>Drop Columns</h4>
+                    <div class="code-block" style="font-size: 0.8rem;">
+# Drop columns with any missing values
+df_clean = df.dropna(axis=1)
+
+# Drop columns where all values are missing
+df_clean = df.dropna(axis=1, how='all')
+
+# Drop columns with more than 50% missing
+threshold = len(df) * 0.5
+df_clean = df.dropna(axis=1, thresh=threshold)
+                    </div>
+                </div>
+            </div>
+
+            <h3>Parameters for dropna():</h3>
+            <ul>
+                <li><strong>how</strong>: 'any' (default) or 'all'</li>
+                <li><strong>axis</strong>: 0 for rows, 1 for columns</li>
+                <li><strong>subset</strong>: List of columns to consider</li>
+                <li><strong>thresh</strong>: Minimum number of non-NA values required</li>
+                <li><strong>inplace</strong>: Modify original DataFrame if True</li>
+            </ul>
+
+            <div class="code-block">
+# Example: Strategic dropping
+# Only drop rows where critical columns have missing values
+critical_columns = ['Name', 'Age']
+df_clean = df.dropna(subset=critical_columns)
+
+# Drop columns with more than 30% missing data
+missing_threshold = len(df) * 0.3
+df_clean = df.dropna(axis=1, thresh=missing_threshold)
+            </div>
+        </div>
+
+        <!-- Slide 10: Handling Missing Data - Filling -->
+        <div class="slide">
+            <h2>Handling Missing Data: Filling</h2>
+            <p>Fill missing values with appropriate substitutes based on data type and context.</p>
+
+            <div class="method-grid">
+                <div class="method-card">
+                    <h4>Fill with Constants</h4>
+                    <div class="code-block" style="font-size: 0.8rem;">
+# Fill all missing values with a constant
+df_filled = df.fillna(0)
+df_filled = df.fillna('Unknown')
+
+# Fill specific columns
+df['Age'].fillna(df['Age'].mean(), inplace=True)
+df['City'].fillna('Not Specified', inplace=True)
+                    </div>
+                </div>
+                <div class="method-card">
+                    <h4>Fill with Statistics</h4>
+                    <div class="code-block" style="font-size: 0.8rem;">
+# Fill with mean, median, or mode
+df['Age'].fillna(df['Age'].mean())
+df['Salary'].fillna(df['Salary'].median())
+df['City'].fillna(df['City'].mode()[0])
+
+# Fill with column-specific values
+fill_values = {
+    'Age': df['Age'].mean(),
+    'City': 'Unknown',
+    'Salary': df['Salary'].median()
+}
+df_filled = df.fillna(value=fill_values)
+                    </div>
+                </div>
+                <div class="method-card">
+                    <h4>Forward/Backward Fill</h4>
+                    <div class="code-block" style="font-size: 0.8rem;">
+# Forward fill (use previous value)
+df_filled = df.fillna(method='ffill')
+
+# Backward fill (use next value)
+df_filled = df.fillna(method='bfill')
+
+# Limit the number of consecutive fills
+df_filled = df.fillna(method='ffill', limit=2)
+                    </div>
+                </div>
+                <div class="method-card">
+                    <h4>Interpolation</h4>
+                    <div class="code-block" style="font-size: 0.8rem;">
+# Linear interpolation for numeric data
+df['Age'] = df['Age'].interpolate()
+
+# Different interpolation methods
+df['Salary'] = df['Salary'].interpolate(method='polynomial', order=2)
+df['Age'] = df['Age'].interpolate(method='spline', order=3)
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block">
+# Advanced filling strategies
+# Fill based on grouping
+df['Salary'] = df.groupby('City')['Salary'].transform(lambda x: x.fillna(x.mean()))
+
+# Conditional filling
+df.loc[df['Age'].isnull() & (df['City'] == 'New York'), 'Age'] = 30
+            </div>
+        </div>
+
+        <!-- Slide 11: Advanced Missing Data Techniques -->
+        <div class="slide">
+            <h2>Advanced Missing Data Techniques</h2>
+            <p>Sophisticated methods for handling complex missing data scenarios.</p>
+
+            <h3>Pattern-Based Approaches:</h3>
+            <div class="two-column">
+                <div class="method-card">
+                    <h4>Multiple Imputation</h4>
+                    <div class="code-block" style="font-size: 0.8rem;">
+from sklearn.impute import IterativeImputer
+
+# Use machine learning for imputation
+imputer = IterativeImputer(random_state=42)
+df_numeric = df.select_dtypes(include=[np.number])
+df_imputed = pd.DataFrame(
+    imputer.fit_transform(df_numeric),
+    columns=df_numeric.columns
+)
+                    </div>
+                </div>
+                <div class="method-card">
+                    <h4>KNN Imputation</h4>
+                    <div class="code-block" style="font-size: 0.8rem;">
+from sklearn.impute import KNNImputer
+
+# Use K-Nearest Neighbors
+knn_imputer = KNNImputer(n_neighbors=3)
+df_numeric = df.select_dtypes(include=[np.number])
+df_knn = pd.DataFrame(
+    knn_imputer.fit_transform(df_numeric),
+    columns=df_numeric.columns
+)
+                    </div>
+                </div>
+            </div>
+
+            <h3>Custom Imputation Strategies:</h3>
+            <div class="code-block">
+# Business logic-based imputation
+def smart_age_impute(row):
+    if pd.isna(row['Age']):
+        if 'Senior' in str(row['Name']):
+            return 65
+        elif 'Junior' in str(row['Name']):
+            return 25
+        else:
+            return df['Age'].median()
+    return row['Age']
+
+df['Age'] = df.apply(smart_age_impute, axis=1)
+
+# Time-based imputation for time series
+df['Value'] = df['Value'].interpolate(method='time')
+            </div>
+
+            <h3>Validation Techniques:</h3>
+            <ul>
+                <li>Cross-validation to test imputation quality</li>
+                <li

@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DataFrame Operations</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .slide {
+            width: 90%;
+            max-width: 1000px;
+            height: 85vh;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+            display: none;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .slide.active {
+            display: block;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .slide h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-align: center;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .slide h2 {
+            color: #34495e;
+            font-size: 2em;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        .slide h3 {
+            color: #2980b9;
+            font-size: 1.4em;
+            margin: 20px 0 10px 0;
+        }
+
+        .slide p, .slide li {
+            color: #555;
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .slide ul {
+            margin-left: 20px;
+            margin-bottom: 20px;
+        }
+
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            margin: 15px 0;
+            overflow-x: auto;
+            border-left: 4px solid #3498db;
+        }
+
+        .output-block {
+            background: #ecf0f1;
+            color: #2c3e50;
+            padding: 15px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            margin: 10px 0;
+            border-left: 4px solid #27ae60;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #2c3e50;
+            backdrop-filter: blur(10px);
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #e74c3c;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 20px 0;
+        }
+
+        .method-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 10px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .method-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .method-title {
+            color: #2980b9;
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <!-- Slide 1: Title -->
+        <div class="slide active">
+            <h1>DataFrame Operations</h1>
+            <div style="text-align: center; margin-top: 50px;">
+                <h2 style="border: none; color: #7f8c8d; font-size: 1.8em;">Mastering Data Manipulation</h2>
+                <div style="margin-top: 40px; font-size: 1.3em; color: #555;">
+                    <p>📊 Indexing & Selection</p>
+                    <p>🔍 Filtering & Querying</p>
+                    <p>🔗 Merging & Joining</p>
+                    <p>📈 Sorting & Organizing</p>
+                </div>
+            </div>
+            <div class="highlight" style="margin-top: 50px;">
+                <strong>Essential skills for data analysis with pandas DataFrames</strong>
+            </div>
+        </div>
+
+        <!-- Slide 2: Indexing Overview -->
+        <div class="slide">
+            <h2>DataFrame Indexing</h2>
+            <p>Indexing allows you to select specific rows, columns, or subsets of your DataFrame.</p>
+            
+            <h3>Types of Indexing:</h3>
+            <div class="two-column">
+                <div class="method-card">
+                    <div class="method-title">Label-based (.loc)</div>
+                    <p>Access by row/column labels</p>
+                </div>
+                <div class="method-card">
+                    <div class="method-title">Position-based (.iloc)</div>
+                    <p>Access by integer positions</p>
+                </div>
+            </div>
+
+            <div class="code-block">
+import pandas as pd
+
+# Sample DataFrame
+df = pd.DataFrame({
+    'Name': ['Alice', 'Bob', 'Charlie', 'Diana'],
+    'Age': [25, 30, 35, 28],
+    'City': ['NYC', 'LA', 'Chicago', 'Miami'],
+    'Salary': [50000, 60000, 70000, 55000]
+})
+            </div>
+        </div>
+
+        <!-- Slide 3: Column Selection -->
+        <div class="slide">
+            <h2>Column Selection</h2>
+            
+            <h3>Single Column Selection:</h3>
+            <div class="code-block">
+# Select single column
+df['Name']
+df.Name  # Alternative syntax
+            </div>
+            
+            <h3>Multiple Column Selection:</h3>
+            <div class="code-block">
+# Select multiple columns
+df[['Name', 'Age']]
+df[['Name', 'Age', 'Salary']]
+            </div>
+
+            <div class="output-block">
+     Name  Age  Salary
+0    Alice   25   50000
+1      Bob   30   60000
+2  Charlie   35   70000
+3    Diana   28   55000
+            </div>
+        </div>
+
+        <!-- Slide 4: Row Selection with .loc -->
+        <div class="slide">
+            <h2>Label-based Indexing (.loc)</h2>
+            
+            <h3>Row Selection:</h3>
+            <div class="code-block">
+# Select single row by index
+df.loc[0]
+
+# Select multiple rows
+df.loc[0:2]  # Includes end index
+
+# Select specific rows
+df.loc[[0, 2]]
+            </div>
+
+            <h3>Row and Column Selection:</h3>
+            <div class="code-block">
+# Select specific rows and columns
+df.loc[0:2, 'Name':'Age']
+
+# Select all rows, specific columns
+df.loc[:, ['Name', 'Salary']]
+
+# Select specific rows and columns
+df.loc[[0, 2], ['Name', 'City']]
+            </div>
+        </div>
+
+        <!-- Slide 5: Position-based Indexing (.iloc) -->
+        <div class="slide">
+            <h2>Position-based Indexing (.iloc)</h2>
+            
+            <h3>Row Selection by Position:</h3>
+            <div class="code-block">
+# Select single row by position
+df.iloc[0]
+
+# Select multiple rows (excludes end index)
+df.iloc[0:3]
+
+# Select specific rows
+df.iloc[[0, 2]]
+            </div>
+
+            <h3>Row and Column Selection:</h3>
+            <div class="code-block">
+# Select rows and columns by position
+df.iloc[0:2, 0:2]  # First 2 rows, first 2 columns
+
+# Select all rows, specific columns
+df.iloc[:, [0, 3]]  # All rows, 1st and 4th columns
+
+# Select last row, last column
+df.iloc[-1, -1]
+            </div>
+        </div>
+
+        <!-- Slide 6: Filtering Overview -->
+        <div class="slide">
+            <h2>DataFrame Filtering</h2>
+            <p>Filtering allows you to select rows based on specific conditions.</p>
+
+            <h3>Boolean Indexing:</h3>
+            <div class="code-block">
+# Simple condition
+df[df['Age'] > 30]
+
+# Multiple conditions with &, |
+df[(df['Age'] > 25) & (df['Salary'] < 60000)]
+
+# Using isin() method
+df[df['City'].isin(['NYC', 'LA'])]
+            </div>
+
+            <div class="highlight">
+                <strong>Remember:</strong> Use parentheses around each condition when combining with & (and) or | (or)
+            </div>
+        </div>
+
+        <!-- Slide 7: Advanced Filtering -->
+        <div class="slide">
+            <h2>Advanced Filtering Techniques</h2>
+
+            <h3>String Filtering:</h3>
+            <div class="code-block">
+# String contains
+df[df['Name'].str.contains('a', case=False)]
+
+# String starts with
+df[df['City'].str.startswith('C')]
+
+# String length
+df[df['Name'].str.len() > 4]
+            </div>
+
+            <h3>Query Method:</h3>
+            <div class="code-block">
+# Using query() for complex conditions
+df.query('Age > 25 and Salary < 65000')
+df.query('City in ["NYC", "Miami"]')
+df.query('Name.str.contains("li", case=False)', engine='python')
+            </div>
+        </div>
+
+        <!-- Slide 8: Merging DataFrames -->
+        <div class="slide">
+            <h2>Merging DataFrames</h2>
+            <p>Combine multiple DataFrames based on common columns or indices.</p>
+
+            <h3>Sample DataFrames:</h3>
+            <div class="code-block">
+# Employee data
+employees = pd.DataFrame({
+    'emp_id': [1, 2, 3, 4],
+    'name': ['Alice', 'Bob', 'Charlie', 'Diana'],
+    'dept_id': [10, 20, 10, 30]
+})
+
+# Department data
+departments = pd.DataFrame({
+    'dept_id': [10, 20, 30],
+    'dept_name': ['Engineering', 'Marketing', 'HR']
+})
+            </div>
+        </div>
+
+        <!-- Slide 9: Types of Merges -->
+        <div class="slide">
+            <h2>Types of Merges</h2>
+
+            <div class="two-column">
+                <div class="method-card">
+                    <div class="method-title">Inner Join</div>
+                    <p>Only matching records from both DataFrames</p>
+                </div>
+                <div class="method-card">
+                    <div class="method-title">Left Join</div>
+                    <p>All records from left DataFrame</p>
+                </div>
+                <div class="method-card">
+                    <div class="method-title">Right Join</div>
+                    <p>All records from right DataFrame</p>
+                </div>
+                <div class="method-card">
+                    <div class="method-title">Outer Join</div>
+                    <p>All records from both DataFrames</p>
+                </div>
+            </div>
+
+            <div class="code-block">
+# Inner join (default)
+merged = pd.merge(employees, departments, on='dept_id')
+
+# Left join
+merged_left = pd.merge(employees, departments, on='dept_id', how='left')
+
+# Outer join
+merged_outer = pd.merge(employees, departments, on='dept_id', how='outer')
+            </div>
+        </div>
+
+        <!-- Slide 10: Merge Examples -->
+        <div class="slide">
+            <h2>Merge Examples</h2>
+
+            <h3>Basic Merge:</h3>
+            <div class="code-block">
+# Merge on common column
+result = pd.merge(employees, departments, on='dept_id')
+            </div>
+
+            <div class="output-block">
+   emp_id     name  dept_id    dept_name
+0       1    Alice       10  Engineering
+1       3  Charlie       10  Engineering
+2       2      Bob       20    Marketing
+3       4    Diana       30           HR
+            </div>
+
+            <h3>Merge on Different Column Names:</h3>
+            <div class="code-block">
+# When column names differ
+pd.merge(df1, df2, left_on='emp_id', right_on='employee_id')
+
+# Merge on index
+pd.merge(df1, df2, left_index=True, right_index=True)
+            </div>
+        </div>
+
+        <!-- Slide 11: Concatenation -->
+        <div class="slide">
+            <h2>Concatenation</h2>
+            <p>Combine DataFrames by stacking them vertically or horizontally.</p>
+
+            <h3>Vertical Concatenation (Rows):</h3>
+            <div class="code-block">
+# Stack DataFrames vertically
+df1 = pd.DataFrame({'A': [1, 2], 'B': [3, 4]})
+df2 = pd.DataFrame({'A': [5, 6], 'B': [7, 8]})
+
+result = pd.concat([df1, df2], ignore_index=True)
+            </div>
+
+            <h3>Horizontal Concatenation (Columns):</h3>
+            <div class="code-block">
+# Stack DataFrames horizontally
+result = pd.concat([df1, df2], axis=1)
+
+# With keys for multi-level columns
+result = pd.concat([df1, df2], axis=1, keys=['First', 'Second'])
+            </div>
+        </div>
+
+        <!-- Slide 12: Sorting DataFrames -->
+        <div class="slide">
+            <h2>Sorting DataFrames</h2>
+            <p>Organize your data by sorting rows based on column values or index.</p>
+
+            <h3>Sort by Single Column:</h3>
+            <div class="code-block">
+# Sort by age (ascending)
+df.sort_values('Age')
+
+# Sort by age (descending)
+df.sort_values('Age', ascending=False)
+
+# Sort and reset index
+df.sort_values('Age').reset_index(drop=True)
+            </div>
+
+            <h3>Sort by Multiple Columns:</h3>
+            <div class="code-block">
+# Sort by multiple columns
+df.sort_values(['City', 'Age'])
+
+# Different sort orders for each column
+df.sort_values(['City', 'Age'], ascending=[True, False])
+            </div>
+        </div>
+
+        <!-- Slide 13: Advanced Sorting -->
+        <div class="slide">
+            <h2>Advanced Sorting</h2>
+
+            <h3>Sort by Index:</h3>
+            <div class="code-block">
+# Sort by index
+df.sort_index()
+
+# Sort by column names
+df.sort_index(axis=1)  # Sort columns alphabetically
+            </div>
+
+            <h3>Custom Sorting:</h3>
+            <div class="code-block">
+# Custom sort order
+city_order = ['Miami', 'NYC', 'LA', 'Chicago']
+df['City'] = pd.Categorical(df['City'], categories=city_order, ordered=True)
+df.sort_values('City')
+
+# Sort with na_position
+df.sort_values('Age', na_position='first')  # NaN values first
+            </div>
+
+            <div class="highlight">
+                <strong>Tip:</strong> Use inplace=True to modify the DataFrame directly instead of returning a copy
+            </div>
+        </div>
+
+        <!-- Slide 14: Practical Examples -->
+        <div class="slide">
+            <h2>Practical Examples</h2>
+
+            <h3>Complex Data Analysis Pipeline:</h3>
+            <div class="code-block">
+# Load and process data
+df = pd.read_csv('sales_data.csv')
+
+# Filter for recent sales
+recent_sales = df[df['date'] > '2024-01-01']
+
+# Merge with customer data
+customer_df = pd.read_csv('customers.csv')
+merged_data = pd.merge(recent_sales, customer_df, on='customer_id')
+
+# Sort by sales amount and customer rating
+result = merged_data.sort_values(['sales_amount', 'customer_rating'], 
+                                ascending=[False, False])
+
+# Select top customers
+top_customers = result.head(10)[['customer_name', 'sales_amount']]
+            </div>
+        </div>
+
+        <!-- Slide 15: Best Practices -->
+        <div class="slide">
+            <h2>Best Practices & Tips</h2>
+
+            <div class="method-card">
+                <div class="method-title">Performance Tips</div>
+                <ul>
+                    <li>Use .iloc for position-based access when possible</li>
+                    <li>Avoid chained indexing (df[col][row]) - use .loc instead</li>
+                    <li>Use query() for complex filtering conditions</li>
+                </ul>
+            </div>
+
+            <div class="method-card">
+                <div class="method-title">Memory Efficiency</div>
+                <ul>
+                    <li>Use appropriate data types (category for strings with few unique values)</li>
+                    <li>Filter early to reduce DataFrame size</li>
+                    <li>Use inplace=True when modifying DataFrames</li>
+                </ul>
+            </div>
+
+            <div class="method-card">
+                <div class="method-title">Code Readability</div>
+                <ul>
+                    <li>Use meaningful variable names</li>
+                    <li>Break complex operations into smaller steps</li>
+                    <li>Add comments for complex filtering conditions</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 16: Summary -->
+        <div class="slide">
+            <h2>Summary</h2>
+            
+            <div class="two-column">
+                <div>
+                    <h3>🎯 Indexing</h3>
+                    <ul>
+                        <li>.loc for label-based selection</li>
+                        <li>.iloc for position-based selection</li>
+                        <li>Column selection with [] brackets</li>
+                    </ul>
+
+                    <h3>🔍 Filtering</h3>
+                    <ul>
+                        <li>Boolean indexing with conditions</li>
+                        <li>query() method for complex filters</li>
+                        <li>String methods for text filtering</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>🔗 Merging</h3>
+                    <ul>
+                        <li>pd.merge() for joining DataFrames</li>
+                        <li>Different join types (inner, left, right, outer)</li>
+                        <li>pd.concat() for stacking DataFrames</li>
+                    </ul>
+
+                    <h3>📊 Sorting</h3>
+                    <ul>
+                        <li>sort_values() for column-based sorting</li>
+                        <li>sort_index() for index-based sorting</li>
+                        <li>Multiple column and custom sorting</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="highlight">
+                <strong>Master these operations to become proficient in pandas data manipulation!</strong>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide-counter">
+        <span id="current-slide">1</span> / <span id="total-slides">16</span>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" onclick="previousSlide()">← Previous</button>
+        <button class="nav-btn" onclick="nextSlide()">Next →</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('total-slides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            document.getElementById('current-slide').textContent = currentSlide + 1;
+        }
+
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+
+        function previousSlide() {
+            showSlide(currentSlide - 1);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                previousSlide();
+            }
+        });
+
+        // Touch/swipe support for mobile
+        let startX = 0;
+        let endX = 0;
+
+        document.addEventListener('touchstart', function(e) {
+            startX = e.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', function(e) {
+            endX = e.changedTouches[0].screenX;
+            if (startX - endX > 50) {
+                nextSlide(); // Swipe left
+            } else if (endX - startX > 50) {
+                previousSlide(); // Swipe right
+            }
+        });
+    </script>
+</body>
+</html>

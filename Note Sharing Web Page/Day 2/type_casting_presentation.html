@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Type Casting and User Input</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .presentation-container {
+            width: 95%;
+            max-width: 1200px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .slide {
+            display: none;
+            padding: 60px;
+            min-height: 700px;
+            animation: slideIn 0.5s ease-in-out;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .slide h1 {
+            font-size: 3rem;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            text-align: center;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .slide h2 {
+            font-size: 2.5rem;
+            color: #34495e;
+            margin-bottom: 25px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .slide h3 {
+            font-size: 2rem;
+            color: #2980b9;
+            margin: 25px 0 15px 0;
+        }
+
+        .slide h4 {
+            font-size: 1.5rem;
+            color: #8e44ad;
+            margin: 20px 0 10px 0;
+        }
+
+        .slide p, .slide li {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .slide ul {
+            margin-left: 30px;
+            margin-bottom: 20px;
+        }
+
+        .slide li {
+            margin-bottom: 10px;
+        }
+
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            margin: 20px 0;
+            border-left: 5px solid #3498db;
+            overflow-x: auto;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #e74c3c;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin: 20px 0;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            padding: 12px 25px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(255,255,255,0.9);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #2c3e50;
+            backdrop-filter: blur(10px);
+        }
+
+        .title-slide {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .title-slide h1 {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .title-slide .subtitle {
+            font-size: 1.8rem;
+            color: #7f8c8d;
+            margin-bottom: 40px;
+        }
+
+        .example-box {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border: 2px solid #ffeaa7;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #856404;
+        }
+
+        .success {
+            background: #d4edda;
+            border: 2px solid #c3e6cb;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #155724;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <div class="slide-counter">
+            <span id="current-slide">1</span> / <span id="total-slides">15</span>
+        </div>
+
+        <!-- Slide 1: Title -->
+        <div class="slide active title-slide">
+            <h1>Type Casting and User Input</h1>
+            <p class="subtitle">Understanding Data Type Conversion and Input Handling in Programming</p>
+            <div style="margin-top: 50px;">
+                <p style="font-size: 1.3rem; color: #7f8c8d;">A Comprehensive Guide</p>
+            </div>
+        </div>
+
+        <!-- Slide 2: Agenda -->
+        <div class="slide">
+            <h2>Agenda</h2>
+            <div style="font-size: 1.4rem; line-height: 2.2;">
+                <h3>Part 1: Type Casting</h3>
+                <ul>
+                    <li>What is Type Casting?</li>
+                    <li>Types of Type Casting</li>
+                    <li>Implicit vs Explicit Casting</li>
+                    <li>Examples and Best Practices</li>
+                </ul>
+                
+                <h3 style="margin-top: 40px;">Part 2: User Input</h3>
+                <ul>
+                    <li>Input Methods</li>
+                    <li>Input Validation</li>
+                    <li>Common Input Scenarios</li>
+                    <li>Error Handling</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 3: What is Type Casting? -->
+        <div class="slide">
+            <h2>What is Type Casting?</h2>
+            <div class="highlight">
+                <h3>Definition</h3>
+                <p><strong>Type Casting</strong> is the process of converting a variable from one data type to another data type.</p>
+            </div>
+            
+            <h3>Why is Type Casting Important?</h3>
+            <ul>
+                <li><strong>Data Compatibility:</strong> Ensures different data types can work together</li>
+                <li><strong>Memory Optimization:</strong> Converts to appropriate data types to save memory</li>
+                <li><strong>Mathematical Operations:</strong> Enables calculations between different numeric types</li>
+                <li><strong>User Input Processing:</strong> Converts string input to required data types</li>
+            </ul>
+
+            <div class="example-box">
+                <h4>Simple Example:</h4>
+                <div class="code-block">
+int number = 10;
+double decimal = (double)number;  // Casting int to double
+// Result: decimal = 10.0
+</div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Types of Type Casting -->
+        <div class="slide">
+            <h2>Types of Type Casting</h2>
+            
+            <div class="two-column">
+                <div>
+                    <h3>1. Implicit Casting (Automatic)</h3>
+                    <ul>
+                        <li>Performed automatically by the compiler</li>
+                        <li>No data loss occurs</li>
+                        <li>Smaller to larger data types</li>
+                        <li>Also called "Widening Conversion"</li>
+                    </ul>
+                    
+                    <div class="code-block">
+int a = 10;
+double b = a;  // Implicit casting
+// int → double
+</div>
+                </div>
+                
+                <div>
+                    <h3>2. Explicit Casting (Manual)</h3>
+                    <ul>
+                        <li>Performed manually by programmer</li>
+                        <li>May result in data loss</li>
+                        <li>Larger to smaller data types</li>
+                        <li>Also called "Narrowing Conversion"</li>
+                    </ul>
+                    
+                    <div class="code-block">
+double x = 10.75;
+int y = (int)x;  // Explicit casting
+// Result: y = 10 (decimal lost)
+</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Implicit Type Casting -->
+        <div class="slide">
+            <h2>Implicit Type Casting</h2>
+            
+            <h3>Hierarchy of Data Types (Small to Large):</h3>
+            <div class="code-block">
+byte → short → int → long → float → double
+char → int
+</div>
+            
+            <h3>Examples:</h3>
+            <div class="example-box">
+                <div class="code-block">
+// C# Examples
+byte b = 10;
+short s = b;    // byte to short
+int i = s;      // short to int
+long l = i;     // int to long
+float f = l;    // long to float
+double d = f;   // float to double
+
+// Character to integer
+char c = 'A';
+int ascii = c;  // Result: ascii = 65
+</div>
+            </div>
+
+            <div class="success">
+                <strong>Note:</strong> Implicit casting is safe because no data is lost in the conversion process.
+            </div>
+        </div>
+
+        <!-- Slide 6: Explicit Type Casting -->
+        <div class="slide">
+            <h2>Explicit Type Casting</h2>
+            
+            <h3>Syntax: (target_type) variable</h3>
+            
+            <div class="example-box">
+                <h4>Basic Examples:</h4>
+                <div class="code-block">
+// C# Examples
+double price = 99.99;
+int roundedPrice = (int)price;  // Result: 99
+
+float temperature = 36.7f;
+int temp = (int)temperature;    // Result: 36
+
+long bigNumber = 1000000L;
+int smallNumber = (int)bigNumber;  // Potential data loss!
+</div>
+            </div>
+
+            <div class="warning">
+                <strong>Warning:</strong> Explicit casting can result in data loss or overflow. Always ensure the target variable can hold the converted value.
+            </div>
+
+            <h3>String to Numeric Conversions:</h3>
+            <div class="code-block">
+string numberStr = "123";
+int number = int.Parse(numberStr);           // Method 1
+int number2 = Convert.ToInt32(numberStr);    // Method 2
+</div>
+        </div>
+
+        <!-- Slide 7: Type Casting Methods -->
+        <div class="slide">
+            <h2>Type Casting Methods</h2>
+            
+            <div class="two-column">
+                <div>
+                    <h3>Parse Methods</h3>
+                    <div class="code-block">
+int.Parse("123")
+double.Parse("45.67")
+bool.Parse("true")
+DateTime.Parse("2024-01-01")
+</div>
+                    
+                    <h3>Convert Class</h3>
+                    <div class="code-block">
+Convert.ToInt32("123")
+Convert.ToDouble("45.67")
+Convert.ToBoolean("true")
+Convert.ToString(123)
+</div>
+                </div>
+                
+                <div>
+                    <h3>TryParse Methods (Safe)</h3>
+                    <div class="code-block">
+string input = "123";
+int result;
+if (int.TryParse(input, out result))
+{
+    // Conversion successful
+    Console.WriteLine(result);
+}
+else
+{
+    // Conversion failed
+    Console.WriteLine("Invalid input");
+}
+</div>
+                </div>
+            </div>
+
+            <div class="highlight">
+                <strong>Best Practice:</strong> Use TryParse methods when dealing with user input to avoid exceptions.
+            </div>
+        </div>
+
+        <!-- Slide 8: User Input Introduction -->
+        <div class="slide">
+            <h2>User Input in Programming</h2>
+            
+            <div class="highlight">
+                <h3>What is User Input?</h3>
+                <p>User input refers to data that a user provides to a program during its execution. This can include text, numbers, file selections, mouse clicks, or keyboard interactions.</p>
+            </div>
+            
+            <h3>Common Input Sources:</h3>
+            <ul>
+                <li><strong>Console Input:</strong> Command-line text input</li>
+                <li><strong>GUI Input:</strong> Text boxes, buttons, forms</li>
+                <li><strong>File Input:</strong> Reading from files</li>
+                <li><strong>Network Input:</strong> Data from web requests or APIs</li>
+                <li><strong>Device Input:</strong> Sensors, cameras, microphones</li>
+            </ul>
+
+            <div class="example-box">
+                <h4>Basic Console Input (C#):</h4>
+                <div class="code-block">
+Console.WriteLine("Enter your name:");
+string name = Console.ReadLine();
+Console.WriteLine($"Hello, {name}!");
+</div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Console Input Methods -->
+        <div class="slide">
+            <h2>Console Input Methods</h2>
+            
+            <div class="two-column">
+                <div>
+                    <h3>C# Console Methods</h3>
+                    <div class="code-block">
+// Read a line of text
+string line = Console.ReadLine();
+
+// Read a single character
+int ch = Console.Read();
+
+// Read a key press
+ConsoleKeyInfo key = Console.ReadKey();
+</div>
+                </div>
+                
+                <div>
+                    <h3>Python Input Methods</h3>
+                    <div class="code-block">
+# Read a line of text
+name = input("Enter name: ")
+
+# Read and convert to int
+age = int(input("Enter age: "))
+
+# Read and convert to float
+salary = float(input("Salary: "))
+</div>
+                </div>
+            </div>
+
+            <h3>Complete Example - Getting User Information:</h3>
+            <div class="example-box">
+                <div class="code-block">
+// C# Example
+Console.Write("Enter your name: ");
+string name = Console.ReadLine();
+
+Console.Write("Enter your age: ");
+string ageInput = Console.ReadLine();
+int age = int.Parse(ageInput);
+
+Console.Write("Enter your salary: ");
+string salaryInput = Console.ReadLine();
+double salary = double.Parse(salaryInput);
+
+Console.WriteLine($"Name: {name}, Age: {age}, Salary: ${salary:F2}");
+</div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Input Validation -->
+        <div class="slide">
+            <h2>Input Validation</h2>
+            
+            <div class="highlight">
+                <h3>Why Validate Input?</h3>
+                <ul>
+                    <li>Prevent program crashes from invalid data</li>
+                    <li>Ensure data integrity and correctness</li>
+                    <li>Provide better user experience</li>
+                    <li>Security - prevent malicious input</li>
+                </ul>
+            </div>
+
+            <h3>Validation Example with TryParse:</h3>
+            <div class="example-box">
+                <div class="code-block">
+// Safe integer input with validation
+Console.Write("Enter your age: ");
+string input = Console.ReadLine();
+int age;
+
+while (!int.TryParse(input, out age) || age < 0 || age > 150)
+{
+    Console.WriteLine("Please enter a valid age (0-150):");
+    input = Console.ReadLine();
+}
+
+Console.WriteLine($"Your age is: {age}");
+</div>
+            </div>
+
+            <div class="success">
+                <strong>Best Practice:</strong> Always validate user input before using it in your program logic.
+            </div>
+        </div>
+
+        <!-- Slide 11: Advanced Input Validation -->
+        <div class="slide">
+            <h2>Advanced Input Validation</h2>
+            
+            <h3>Comprehensive Validation Function:</h3>
+            <div class="code-block">
+public static int GetValidInteger(string prompt, int min, int max)
+{
+    int result;
+    string input;
+    
+    do
+    {
+        Console.Write(prompt);
+        input = Console.ReadLine();
+        
+        if (!int.TryParse(input, out result))
+        {
+            Console.WriteLine("Error: Please enter a valid integer.");
+        }
+        else if (result < min || result > max)
+        {
+            Console.WriteLine($"Error: Please enter a number between {min} and {max}.");
+        }
+        else
+        {
+            return result; // Valid input
+        }
+    } 
+    while (true);
+}
+
+// Usage
+int age = GetValidInteger("Enter your age (1-120): ", 1, 120);
+</div>
+        </div>
+
+        <!-- Slide 12: Error Handling -->
+        <div class="slide">
+            <h2>Error Handling with User Input</h2>
+            
+            <h3>Try-Catch Approach:</h3>
+            <div class="example-box">
+                <div class="code-block">
+try
+{
+    Console.Write("Enter a number: ");
+    string input = Console.ReadLine();
+    int number = int.Parse(input);
+    
+    Console.WriteLine($"You entered: {number}");
+    Console.WriteLine($"Double the number: {number * 2}");
+}
+catch (FormatException)
+{
+    Console.WriteLine("Error: Invalid number format!");
+}
+catch (OverflowException)
+{
+    Console.WriteLine("Error: Number is too large!");
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"Unexpected error: {ex.Message}");
+}
+</div>
+            </div>
+
+            <div class="warning">
+                <strong>Note:</strong> While try-catch works, TryParse methods are generally preferred for input validation as they don't throw exceptions.
+            </div>
+        </div>
+
+        <!-- Slide 13: Practical Examples -->
+        <div class="slide">
+            <h2>Practical Examples</h2>
+            
+            <h3>Example 1: Calculator with Input Validation</h3>
+            <div class="code-block">
+public static void SimpleCalculator()
+{
+    Console.WriteLine("=== Simple Calculator ===");
+    
+    // Get first number
+    double num1 = GetValidDouble("Enter first number: ");
+    
+    // Get operation
+    Console.Write("Enter operation (+, -, *, /): ");
+    char operation = Console.ReadKey().KeyChar;
+    Console.WriteLine();
+    
+    // Get second number
+    double num2 = GetValidDouble("Enter second number: ");
+    
+    // Perform calculation
+    double result = 0;
+    switch (operation)
+    {
+        case '+': result = num1 + num2; break;
+        case '-': result = num1 - num2; break;
+        case '*': result = num1 * num2; break;
+        case '/': 
+            if (num2 != 0) result = num1 / num2;
+            else { Console.WriteLine("Error: Division by zero!"); return; }
+            break;
+        default: Console.WriteLine("Invalid operation!"); return;
+    }
+    
+    Console.WriteLine($"Result: {num1} {operation} {num2} = {result}");
+}
+</div>
+        </div>
+
+        <!-- Slide 14: Best Practices -->
+        <div class="slide">
+            <h2>Best Practices</h2>
+            
+            <div class="two-column">
+                <div>
+                    <h3>Type Casting Best Practices</h3>
+                    <ul>
+                        <li>Use TryParse for safe conversions</li>
+                        <li>Check for data loss in explicit casting</li>
+                        <li>Use appropriate data types for your needs</li>
+                        <li>Handle overflow and underflow conditions</li>
+                        <li>Document any potential data loss</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3>User Input Best Practices</h3>
+                    <ul>
+                        <li>Always validate user input</li>
+                        <li>Provide clear error messages</li>
+                        <li>Give users multiple chances to correct input</li>
+                        <li>Sanitize input to prevent security issues</li>
+                        <li>Use appropriate input methods for data types</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="highlight">
+                <h3>Golden Rules</h3>
+                <ul>
+                    <li><strong>Never trust user input</strong> - Always validate and sanitize</li>
+                    <li><strong>Fail gracefully</strong> - Provide meaningful error messages</li>
+                    <li><strong>Be consistent</strong> - Use the same validation patterns throughout your application</li>
+                    <li><strong>Plan for edge cases</strong> - Consider what could go wrong</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 15: Summary -->
+        <div class="slide">
+            <h2>Summary</h2>
+            
+            <div class="two-column">
+                <div>
+                    <h3>Type Casting Recap</h3>
+                    <ul>
+                        <li><strong>Implicit Casting:</strong> Automatic, safe, no data loss</li>
+                        <li><strong>Explicit Casting:</strong> Manual, potential data loss</li>
+                        <li><strong>Parse Methods:</strong> String to other types</li>
+                        <li><strong>TryParse:</strong> Safe parsing with error checking</li>
+                        <li><strong>Convert Class:</strong> Flexible conversion methods</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3>User Input Recap</h3>
+                    <ul>
+                        <li><strong>Input Methods:</strong> Console, GUI, file, network</li>
+                        <li><strong>Validation:</strong> Essential for robust programs</li>
+                        <li><strong>Error Handling:</strong> Graceful failure management</li>
+                        <li><strong>User Experience:</strong> Clear prompts and feedback</li>
+                        <li><strong>Security:</strong> Input sanitization</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="highlight" style="margin-top: 40px; text-align: center;">
+                <h3>Key Takeaway</h3>
+                <p style="font-size: 1.4rem;"><strong>Proper type casting and input handling are fundamental skills that make your programs robust, user-friendly, and secure.</strong></p>
+            </div>
+
+            <div style="text-align: center; margin-top: 40px; font-size: 2rem; color: #667eea;">
+                <strong>Thank You!</strong>
+            </div>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">Previous</button>
+        <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Next</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('total-slides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[n].classList.add('active');
+            
+            document.getElementById('current-slide').textContent = n + 1;
+            
+            // Update navigation buttons
+            document.getElementById('prevBtn').disabled = (n === 0);
+            document.getElementById('nextBtn').disabled = (n === totalSlides - 1);
+        }
+
+        function changeSlide(direction) {
+            const newSlide = currentSlide + direction;
+            if (newSlide >= 0 && newSlide < totalSlides) {
+                currentSlide = newSlide;
+                showSlide(currentSlide);
+            }
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowLeft') {
+                changeSlide(-1);
+            } else if (event.key === 'ArrowRight') {
+                changeSlide(1);
+            }
+        });
+
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+</html>

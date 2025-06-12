@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Reshaping: Melt and Stack/Unstack</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        .presentation {
+            width: 90%;
+            max-width: 1200px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .slide {
+            display: none;
+            padding: 40px;
+            min-height: 600px;
+            animation: slideIn 0.5s ease-in-out;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .slide-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        h3 {
+            color: #34495e;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+            padding-left: 15px;
+        }
+
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.2em;
+            font-style: italic;
+        }
+
+        .content {
+            font-size: 1.1em;
+            line-height: 1.6;
+            color: #2c3e50;
+        }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 20px 0;
+        }
+
+        .before-after {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .before-after:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .code-block::before {
+            content: "Python";
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            background: #667eea;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 0.8em;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin: 20px 0;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+            transition: background 0.3s ease;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .slide-counter {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            color: #2c3e50;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #667eea20, #764ba220);
+            border-left: 5px solid #667eea;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .highlight-box::before {
+            content: "💡";
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background: white;
+            padding: 5px;
+            border-radius: 50%;
+            font-size: 1.2em;
+        }
+
+        .operation-flow {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+        }
+
+        .flow-step {
+            text-align: center;
+            flex: 1;
+            position: relative;
+        }
+
+        .flow-step:not(:last-child)::after {
+            content: "→";
+            position: absolute;
+            right: -20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2em;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .step-box {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            margin: 0 10px;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        li {
+            margin: 10px 0;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            transition: all 0.3s ease;
+        }
+
+        li:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .method-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-top: 4px solid #667eea;
+            transition: transform 0.3s ease;
+        }
+
+        .method-card:hover {
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation">
+        <!-- Slide 1: Title -->
+        <div class="slide active">
+            <div class="slide-header">
+                <h1>Data Reshaping in Python</h1>
+                <p class="subtitle">Mastering Melt and Stack/Unstack Operations</p>
+            </div>
+            <div class="content">
+                <div class="highlight-box">
+                    <h3>What You'll Learn</h3>
+                    <ul>
+                        <li>Understanding wide vs long data formats</li>
+                        <li>Using melt() to transform wide to long format</li>
+                        <li>Using stack/unstack for hierarchical data</li>
+                        <li>Practical examples with real datasets</li>
+                        <li>Best practices and common pitfalls</li>
+                    </ul>
+                </div>
+                
+                <div class="operation-flow">
+                    <div class="flow-step">
+                        <div class="step-box">
+                            <strong>Wide Data</strong><br>
+                            Multiple columns
+                        </div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="step-box">
+                            <strong>Reshape</strong><br>
+                            Transform structure
+                        </div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="step-box">
+                            <strong>Long Data</strong><br>
+                            Key-value pairs
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: Wide vs Long Format -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>Wide vs Long Data Formats</h2>
+            </div>
+            <div class="content">
+                <div class="comparison">
+                    <div class="before-after">
+                        <h3>Wide Format</h3>
+                        <div class="table-container">
+                            <table>
+                                <tr><th>Student</th><th>Math</th><th>Science</th><th>English</th></tr>
+                                <tr><td>Alice</td><td>85</td><td>92</td><td>78</td></tr>
+                                <tr><td>Bob</td><td>78</td><td>85</td><td>82</td></tr>
+                                <tr><td>Charlie</td><td>92</td><td>88</td><td>90</td></tr>
+                            </table>
+                        </div>
+                        <p><strong>Characteristics:</strong></p>
+                        <ul>
+                            <li>Each variable has its own column</li>
+                            <li>Easier for human reading</li>
+                            <li>Common in spreadsheets</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="before-after">
+                        <h3>Long Format</h3>
+                        <div class="table-container">
+                            <table>
+                                <tr><th>Student</th><th>Subject</th><th>Score</th></tr>
+                                <tr><td>Alice</td><td>Math</td><td>85</td></tr>
+                                <tr><td>Alice</td><td>Science</td><td>92</td></tr>
+                                <tr><td>Alice</td><td>English</td><td>78</td></tr>
+                                <tr><td>Bob</td><td>Math</td><td>78</td></tr>
+                                <tr><td>Bob</td><td>Science</td><td>85</td></tr>
+                                <tr><td>Bob</td><td>English</td><td>82</td></tr>
+                            </table>
+                        </div>
+                        <p><strong>Characteristics:</strong></p>
+                        <ul>
+                            <li>Variables stored as key-value pairs</li>
+                            <li>Better for analysis and visualization</li>
+                            <li>Required for many statistical operations</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Melt Function -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>The melt() Function</h2>
+            </div>
+            <div class="content">
+                <div class="method-card">
+                    <h3>Purpose: Convert Wide to Long Format</h3>
+                    <p>The melt() function "unpivots" a DataFrame from wide format into long format, transforming columns into rows.</p>
+                </div>
+
+                <h3>Basic Syntax</h3>
+                <div class="code-block">
+pd.melt(df, 
+        id_vars=None,        # Columns to keep as identifiers
+        value_vars=None,     # Columns to melt (default: all others)
+        var_name='variable', # Name for variable column
+        value_name='value')  # Name for value column
+                </div>
+
+                <h3>Example: Student Grades</h3>
+                <div class="code-block">
+import pandas as pd
+
+# Create sample data
+data = {
+    'Student': ['Alice', 'Bob', 'Charlie'],
+    'Math': [85, 78, 92],
+    'Science': [92, 85, 88],
+    'English': [78, 82, 90]
+}
+df = pd.DataFrame(data)
+
+# Melt the DataFrame
+melted_df = pd.melt(df, 
+                    id_vars=['Student'], 
+                    var_name='Subject', 
+                    value_name='Score')
+print(melted_df)
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Stack/Unstack Operations -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>Stack and Unstack Operations</h2>
+            </div>
+            <div class="content">
+                <div class="comparison">
+                    <div class="before-after">
+                        <h3>Stack Operation</h3>
+                        <p><strong>Purpose:</strong> Move column level to row level (wide → long)</p>
+                        <div class="code-block">
+# Stack columns to rows
+stacked = df.set_index('Student').stack()
+print(stacked)
+
+# Output: MultiIndex Series
+# Student  Subject
+# Alice    Math       85
+#          Science    92
+#          English    78
+# Bob      Math       78
+#          Science    85
+#          English    82
+                        </div>
+                        <ul>
+                            <li>Creates MultiIndex Series</li>
+                            <li>Compresses data vertically</li>
+                            <li>Useful for hierarchical analysis</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="before-after">
+                        <h3>Unstack Operation</h3>
+                        <p><strong>Purpose:</strong> Move row level to column level (long → wide)</p>
+                        <div class="code-block">
+# Unstack rows to columns
+unstacked = stacked.unstack()
+print(unstacked)
+
+# Output: DataFrame with columns
+#          Math  Science  English
+# Student                      
+# Alice      85       92       78
+# Bob        78       85       82
+# Charlie    92       88       90
+                        </div>
+                        <ul>
+                            <li>Expands data horizontally</li>
+                            <li>Creates pivot-like structure</li>
+                            <li>Inverse of stack operation</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Practical Example -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>Practical Example: Sales Data Analysis</h2>
+            </div>
+            <div class="content">
+                <h3>Scenario: Quarterly Sales Data</h3>
+                <div class="code-block">
+# Sample sales data (wide format)
+sales_data = {
+    'Product': ['Laptop', 'Phone', 'Tablet'],
+    'Q1_2023': [1200, 800, 450],
+    'Q2_2023': [1350, 920, 520],
+    'Q3_2023': [1180, 750, 480],
+    'Q4_2023': [1420, 980, 600]
+}
+sales_df = pd.DataFrame(sales_data)
+print("Original Data:")
+print(sales_df)
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <tr><th>Product</th><th>Q1_2023</th><th>Q2_2023</th><th>Q3_2023</th><th>Q4_2023</th></tr>
+                        <tr><td>Laptop</td><td>1200</td><td>1350</td><td>1180</td><td>1420</td></tr>
+                        <tr><td>Phone</td><td>800</td><td>920</td><td>750</td><td>980</td></tr>
+                        <tr><td>Tablet</td><td>450</td><td>520</td><td>480</td><td>600</td></tr>
+                    </table>
+                </div>
+
+                <h3>Method 1: Using Melt</h3>
+                <div class="code-block">
+# Melt for analysis
+melted_sales = pd.melt(sales_df, 
+                       id_vars=['Product'],
+                       var_name='Quarter', 
+                       value_name='Sales')
+
+# Clean up quarter names
+melted_sales['Quarter'] = melted_sales['Quarter'].str.replace('_2023', '')
+print(melted_sales.head())
+                </div>
+
+                <h3>Method 2: Using Stack</h3>
+                <div class="code-block">
+# Set Product as index and stack
+stacked_sales = sales_df.set_index('Product').stack()
+stacked_sales.name = 'Sales'
+stacked_sales.index.names = ['Product', 'Quarter']
+
+# Convert to DataFrame
+stacked_df = stacked_sales.reset_index()
+print(stacked_df.head())
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Advanced Operations -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>Advanced Reshaping Techniques</h2>
+            </div>
+            <div class="content">
+                <div class="method-card">
+                    <h3>1. Selective Melting</h3>
+                    <div class="code-block">
+# Melt only specific columns
+partial_melt = pd.melt(sales_df, 
+                       id_vars=['Product'],
+                       value_vars=['Q1_2023', 'Q3_2023'],  # Only Q1 and Q3
+                       var_name='Quarter', 
+                       value_name='Sales')
+                    </div>
+                </div>
+
+                <div class="method-card">
+                    <h3>2. Multi-level Unstack</h3>
+                    <div class="code-block">
+# Create multi-level data
+multi_data = melted_sales.set_index(['Product', 'Quarter'])['Sales']
+
+# Unstack specific level
+by_quarter = multi_data.unstack('Quarter')
+by_product = multi_data.unstack('Product')
+
+print("By Quarter:")
+print(by_quarter)
+                    </div>
+                </div>
+
+                <div class="method-card">
+                    <h3>3. Handling Missing Values</h3>
+                    <div class="code-block">
+# Stack with missing values
+incomplete_data = sales_df.copy()
+incomplete_data.loc[0, 'Q2_2023'] = None
+
+# Stack drops NaN by default
+stacked_clean = incomplete_data.set_index('Product').stack()
+
+# Keep NaN values
+stacked_all = incomplete_data.set_index('Product').stack(dropna=False)
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <h3>Pro Tip</h3>
+                    <p>Use <code>fill_value</code> parameter in unstack() to replace NaN values with a specific value, making your data analysis more robust.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: When to Use Each Method -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>When to Use Each Method</h2>
+            </div>
+            <div class="content">
+                <div class="comparison">
+                    <div class="before-after">
+                        <h3>Use Melt When:</h3>
+                        <ul>
+                            <li>Converting wide data to long format</li>
+                            <li>Preparing data for visualization (especially with Seaborn/Plotly)</li>
+                            <li>Need to analyze multiple variables together</li>
+                            <li>Working with repeated measures data</li>
+                            <li>Creating tidy data for statistical analysis</li>
+                        </ul>
+                        
+                        <div class="highlight-box">
+                            <strong>Best for:</strong> Data analysis, machine learning preprocessing, and statistical modeling
+                        </div>
+                    </div>
+                    
+                    <div class="before-after">
+                        <h3>Use Stack/Unstack When:</h3>
+                        <ul>
+                            <li>Working with MultiIndex DataFrames</li>
+                            <li>Need to reshape hierarchical data</li>
+                            <li>Creating pivot-like transformations</li>
+                            <li>Temporary reshaping for calculations</li>
+                            <li>Need precise control over index levels</li>
+                        </ul>
+                        
+                        <div class="highlight-box">
+                            <strong>Best for:</strong> Complex data structures, time series analysis, and hierarchical data manipulation
+                        </div>
+                    </div>
+                </div>
+
+                <div class="method-card">
+                    <h3>Performance Considerations</h3>
+                    <div class="code-block">
+# For large datasets, consider:
+# 1. Memory usage - long format uses more rows
+# 2. Processing speed - melt is generally faster
+# 3. Index complexity - stack/unstack with MultiIndex can be slower
+
+# Example timing comparison
+import time
+
+# Time melt operation
+start = time.time()
+melted = pd.melt(large_df, id_vars=['id'])
+melt_time = time.time() - start
+
+# Time stack operation  
+start = time.time()
+stacked = large_df.set_index('id').stack()
+stack_time = time.time() - start
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Common Pitfalls and Solutions -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>Common Pitfalls and Solutions</h2>
+            </div>
+            <div class="content">
+                <div class="method-card">
+                    <h3>❌ Pitfall 1: Forgetting to Reset Index</h3>
+                    <div class="code-block">
+# Wrong - MultiIndex remains
+stacked = df.set_index('ID').stack()
+# Result: Series with MultiIndex
+
+# Correct - Convert back to DataFrame
+stacked_df = df.set_index('ID').stack().reset_index()
+stacked_df.columns = ['ID', 'Variable', 'Value']
+                    </div>
+                </div>
+
+                <div class="method-card">
+                    <h3>❌ Pitfall 2: Not Handling Missing Values</h3>
+                    <div class="code-block">
+# Wrong - May lose data
+unstacked = stacked.unstack()  # NaN values appear
+
+# Correct - Handle missing values explicitly
+unstacked = stacked.unstack(fill_value=0)  # Fill with 0
+# or
+unstacked = stacked.unstack().fillna(method='forward')  # Forward fill
+                    </div>
+                </div>
+
+                <div class="method-card">
+                    <h3>❌ Pitfall 3: Incorrect Column Selection in Melt</h3>
+                    <div class="code-block">
+# Wrong - Melting identifier columns
+melted = pd.melt(df)  # Melts ALL columns
+
+# Correct - Specify id_vars
+melted = pd.melt(df, id_vars=['Name', 'ID'], 
+                 value_vars=['Score1', 'Score2'])
+                    </div>
+                </div>
+
+                <div class="method-card">
+                    <h3>❌ Pitfall 4: Memory Issues with Large Datasets</h3>
+                    <div class="code-block">
+# Wrong - Loading entire dataset into memory
+large_melted = pd.melt(huge_df)
+
+# Better - Process in chunks
+def melt_chunks(df, chunk_size=10000):
+    chunks = []
+    for i in range(0, len(df), chunk_size):
+        chunk = df.iloc[i:i+chunk_size]
+        melted_chunk = pd.melt(chunk, id_vars=['id'])
+        chunks.append(melted_chunk)
+    return pd.concat(chunks, ignore_index=True)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Summary -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>Summary and Best Practices</h2>
+            </div>
+            <div class="content">
+                <div class="operation-flow">
+                    <div class="flow-step">
+                        <div class="step-box">
+                            <strong>Analyze</strong><br>
+                            Understand your data structure
+                        </div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="step-box">
+                            <strong>Choose</strong><br>
+                            Select appropriate method
+                        </div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="step-box">
+                            <strong>Transform</strong><br>
+                            Apply reshaping operation
+                        </div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="step-box">
+                            <strong>Validate</strong><br>
+                            Check results and handle edge cases
+                        </div>
+                    </div>
+                </div>
+
+                <div class="comparison">
+                    <div class="before-after">
+                        <h3>Key Takeaways</h3>
+                        <ul>
+                            <li><strong>Melt:</strong> Wide → Long, great for analysis</li>
+                            <li><strong>Stack:</strong> Columns → Rows, creates MultiIndex</li>
+                            <li><strong>Unstack:</strong> Rows → Columns, pivot-like behavior</li>
+                            <li><strong>Choose based on:</strong> Data structure and end goal</li>
+                            <li><strong>Always validate:</strong> Check for data loss or errors</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="before-after">
+                        <h3>Best Practices</h3>
+                        <ul>
+                            <li>Plan your data structure before reshaping</li>
+                            <li>Handle missing values explicitly</li>
+                            <li>Use meaningful column names</li>
+                            <li>Consider memory usage for large datasets</li>
+                            <li>Test with small samples first</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <h3>Next Steps</h3>
+                    <p>Practice with your own datasets, experiment with different parameters, and remember that data reshaping is often an iterative process. The key is understanding your data's structure and your analysis goals.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide-counter">
+        <span id="current-slide">1</span> / <span id="total-slides">9</span>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" id="prev-btn" onclick="previousSlide()">← Previous</button>
+        <button class="nav-btn" id="next-btn" onclick="nextSlide()">Next →</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('total-slides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            
+            document.getElementById('current-slide').textContent = currentSlide + 1;
+            
+            // Update navigation buttons
+            document.getElementById('prev-btn').disabled = currentSlide === 0;
+            document.getElementById('next-btn').disabled = currentSlide === totalSlides - 1;
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                showSlide(currentSlide + 1);
+            }
+        }
+
+        function previousSlide() {
+            if (currentSlide > 0) {
+                showSlide(currentSlide - 1);
+            }
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                previousSlide();
+            }
+        });
+
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+</html>

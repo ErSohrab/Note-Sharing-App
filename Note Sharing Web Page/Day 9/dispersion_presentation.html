@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Measures of Dispersion</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .presentation-container {
+            width: 95%;
+            max-width: 1000px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .slide {
+            display: none;
+            padding: 60px 50px;
+            min-height: 600px;
+            position: relative;
+            animation: slideIn 0.5s ease-in-out;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #34495e;
+            font-size: 2em;
+            margin-bottom: 25px;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            color: #2980b9;
+            font-size: 1.4em;
+            margin: 20px 0 15px 0;
+        }
+
+        p, li {
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+
+        ul {
+            padding-left: 30px;
+        }
+
+        .formula {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border: 2px solid #3498db;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 1.2em;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .example {
+            background: linear-gradient(135deg, #e8f5e8, #d4edda);
+            border: 2px solid #28a745;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .comparison-table th {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            font-weight: bold;
+        }
+
+        .comparison-table tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(135deg, #2980b9, #1f618d);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .slide-counter {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            background: rgba(52, 73, 94, 0.8);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #f39c12, #e67e22);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .key-points {
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+            border: 2px solid #f39c12;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .pros-cons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .pros, .cons {
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .pros {
+            background: linear-gradient(135deg, #d1ecf1, #bee5eb);
+            border: 2px solid #17a2b8;
+        }
+
+        .cons {
+            background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+            border: 2px solid #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <div class="slide-counter">
+            <span id="currentSlide">1</span> / <span id="totalSlides">8</span>
+        </div>
+
+        <!-- Slide 1: Title -->
+        <div class="slide active">
+            <h1>📊 Measures of Dispersion</h1>
+            <div style="text-align: center; margin: 50px 0;">
+                <h2 style="border: none; color: #3498db;">Understanding Data Spread</h2>
+                <p style="font-size: 1.3em; color: #7f8c8d; margin-top: 30px;">
+                    Range • Variance • Standard Deviation • Interquartile Range (IQR)
+                </p>
+            </div>
+            <div class="key-points">
+                <h3>What We'll Cover:</h3>
+                <ul>
+                    <li>Why dispersion matters in statistics</li>
+                    <li>Four key measures of spread</li>
+                    <li>Formulas and calculations</li>
+                    <li>Real-world applications</li>
+                    <li>When to use each measure</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 2: Introduction -->
+        <div class="slide">
+            <h2>🎯 What is Dispersion?</h2>
+            <p><span class="highlight">Dispersion</span> measures how spread out data points are from the center (mean or median).</p>
+            
+            <div class="key-points">
+                <h3>Why is Dispersion Important?</h3>
+                <ul>
+                    <li><strong>Risk Assessment:</strong> Higher dispersion = higher variability/risk</li>
+                    <li><strong>Quality Control:</strong> Low dispersion indicates consistent processes</li>
+                    <li><strong>Decision Making:</strong> Understanding uncertainty in data</li>
+                    <li><strong>Comparison:</strong> Comparing variability between different datasets</li>
+                </ul>
+            </div>
+
+            <div class="example">
+                <h3>📈 Example Scenario</h3>
+                <p><strong>Two investment portfolios with same average return (10%):</strong></p>
+                <ul>
+                    <li>Portfolio A: Returns vary from 8% to 12% (low dispersion)</li>
+                    <li>Portfolio B: Returns vary from 0% to 20% (high dispersion)</li>
+                </ul>
+                <p>Which is riskier? <em>Portfolio B has higher risk due to greater dispersion!</em></p>
+            </div>
+        </div>
+
+        <!-- Slide 3: Range -->
+        <div class="slide">
+            <h2>📏 Range</h2>
+            <p>The <span class="highlight">simplest</span> measure of dispersion - the difference between maximum and minimum values.</p>
+            
+            <div class="formula">
+                <strong>Range = Maximum Value - Minimum Value</strong>
+            </div>
+
+            <div class="example">
+                <h3>📊 Example Calculation</h3>
+                <p><strong>Test Scores:</strong> 65, 78, 82, 90, 95</p>
+                <p><strong>Range = 95 - 65 = 30 points</strong></p>
+            </div>
+
+            <div class="pros-cons">
+                <div class="pros">
+                    <h3>✅ Advantages</h3>
+                    <ul>
+                        <li>Easy to calculate</li>
+                        <li>Intuitive to understand</li>
+                        <li>Quick comparison tool</li>
+                    </ul>
+                </div>
+                <div class="cons">
+                    <h3>❌ Disadvantages</h3>
+                    <ul>
+                        <li>Affected by outliers</li>
+                        <li>Ignores data distribution</li>
+                        <li>Limited statistical value</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Variance -->
+        <div class="slide">
+            <h2>📐 Variance</h2>
+            <p>Measures the <span class="highlight">average squared deviation</span> from the mean.</p>
+            
+            <div class="formula">
+                <strong>Population Variance (σ²):</strong><br>
+                σ² = Σ(x - μ)² / N<br><br>
+                <strong>Sample Variance (s²):</strong><br>
+                s² = Σ(x - x̄)² / (n-1)
+            </div>
+
+            <div class="example">
+                <h3>🔢 Step-by-Step Calculation</h3>
+                <p><strong>Data:</strong> 2, 4, 6, 8, 10</p>
+                <ol>
+                    <li><strong>Mean (x̄):</strong> (2+4+6+8+10)/5 = 6</li>
+                    <li><strong>Deviations:</strong> -4, -2, 0, 2, 4</li>
+                    <li><strong>Squared deviations:</strong> 16, 4, 0, 4, 16</li>
+                    <li><strong>Sum:</strong> 40</li>
+                    <li><strong>Variance:</strong> 40/4 = 10</li>
+                </ol>
+            </div>
+
+            <div class="key-points">
+                <h3>Key Points:</h3>
+                <ul>
+                    <li>Units are squared (e.g., dollars²)</li>
+                    <li>Always positive</li>
+                    <li>Sensitive to outliers</li>
+                    <li>Foundation for standard deviation</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 5: Standard Deviation -->
+        <div class="slide">
+            <h2>📊 Standard Deviation</h2>
+            <p>The <span class="highlight">square root of variance</span> - brings units back to original scale.</p>
+            
+            <div class="formula">
+                <strong>Population Standard Deviation (σ):</strong><br>
+                σ = √σ² = √[Σ(x - μ)² / N]<br><br>
+                <strong>Sample Standard Deviation (s):</strong><br>
+                s = √s² = √[Σ(x - x̄)² / (n-1)]
+            </div>
+
+            <div class="example">
+                <h3>📈 Using Previous Example</h3>
+                <p><strong>Data:</strong> 2, 4, 6, 8, 10</p>
+                <p><strong>Variance:</strong> 10</p>
+                <p><strong>Standard Deviation:</strong> √10 ≈ 3.16</p>
+            </div>
+
+            <div class="key-points">
+                <h3>🎯 68-95-99.7 Rule (Normal Distribution)</h3>
+                <ul>
+                    <li><strong>68%</strong> of data within 1 standard deviation</li>
+                    <li><strong>95%</strong> of data within 2 standard deviations</li>
+                    <li><strong>99.7%</strong> of data within 3 standard deviations</li>
+                </ul>
+            </div>
+
+            <div class="pros-cons">
+                <div class="pros">
+                    <h3>✅ Advantages</h3>
+                    <ul>
+                        <li>Same units as original data</li>
+                        <li>Most commonly used</li>
+                        <li>Works well with normal distributions</li>
+                    </ul>
+                </div>
+                <div class="cons">
+                    <h3>❌ Disadvantages</h3>
+                    <ul>
+                        <li>Affected by outliers</li>
+                        <li>May not suit skewed data</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Interquartile Range (IQR) -->
+        <div class="slide">
+            <h2>📦 Interquartile Range (IQR)</h2>
+            <p>The range of the <span class="highlight">middle 50%</span> of the data - difference between 75th and 25th percentiles.</p>
+            
+            <div class="formula">
+                <strong>IQR = Q3 - Q1</strong><br>
+                Where Q1 = 25th percentile, Q3 = 75th percentile
+            </div>
+
+            <div class="example">
+                <h3>📋 Step-by-Step Calculation</h3>
+                <p><strong>Data (sorted):</strong> 12, 15, 18, 22, 25, 28, 30, 35, 40</p>
+                <ol>
+                    <li><strong>Position of Q1:</strong> (9+1)/4 = 2.5 → Q1 = 16.5</li>
+                    <li><strong>Position of Q3:</strong> 3(9+1)/4 = 7.5 → Q3 = 32.5</li>
+                    <li><strong>IQR = 32.5 - 16.5 = 16</strong></li>
+                </ol>
+            </div>
+
+            <div class="key-points">
+                <h3>🔍 Outlier Detection</h3>
+                <p><strong>Outliers are values:</strong></p>
+                <ul>
+                    <li>Below Q1 - 1.5 × IQR</li>
+                    <li>Above Q3 + 1.5 × IQR</li>
+                </ul>
+            </div>
+
+            <div class="pros-cons">
+                <div class="pros">
+                    <h3>✅ Advantages</h3>
+                    <ul>
+                        <li>Resistant to outliers</li>
+                        <li>Good for skewed data</li>
+                        <li>Used in box plots</li>
+                    </ul>
+                </div>
+                <div class="cons">
+                    <h3>❌ Disadvantages</h3>
+                    <ul>
+                        <li>Ignores 50% of data</li>
+                        <li>Less precise than standard deviation</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Comparison -->
+        <div class="slide">
+            <h2>⚖️ Comparison of Measures</h2>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Measure</th>
+                        <th>Formula</th>
+                        <th>Best Used When</th>
+                        <th>Outlier Sensitivity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Range</strong></td>
+                        <td>Max - Min</td>
+                        <td>Quick overview, small datasets</td>
+                        <td>Very High</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Variance</strong></td>
+                        <td>Σ(x-μ)²/N</td>
+                        <td>Theoretical calculations</td>
+                        <td>High</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Standard Deviation</strong></td>
+                        <td>√Variance</td>
+                        <td>Normal distributions, reporting</td>
+                        <td>High</td>
+                    </tr>
+                    <tr>
+                        <td><strong>IQR</strong></td>
+                        <td>Q3 - Q1</td>
+                        <td>Skewed data, outliers present</td>
+                        <td>Low</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="key-points">
+                <h3>🎯 Choosing the Right Measure</h3>
+                <ul>
+                    <li><strong>Normal Data:</strong> Use Standard Deviation</li>
+                    <li><strong>Skewed Data:</strong> Use IQR</li>
+                    <li><strong>Outliers Present:</strong> Use IQR</li>
+                    <li><strong>Quick Assessment:</strong> Use Range</li>
+                    <li><strong>Theoretical Work:</strong> Use Variance</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 8: Summary -->
+        <div class="slide">
+            <h2>📝 Summary & Key Takeaways</h2>
+            
+            <div class="key-points">
+                <h3>🎯 Essential Points to Remember</h3>
+                <ul>
+                    <li><strong>Dispersion complements central tendency</strong> - tells the full story of your data</li>
+                    <li><strong>Standard deviation is most common</strong> for normally distributed data</li>
+                    <li><strong>IQR is robust</strong> against outliers and skewed distributions</li>
+                    <li><strong>Context matters</strong> - choose the measure that fits your data and purpose</li>
+                </ul>
+            </div>
+
+            <div class="example">
+                <h3>🚀 Real-World Applications</h3>
+                <ul>
+                    <li><strong>Finance:</strong> Portfolio risk assessment (standard deviation)</li>
+                    <li><strong>Quality Control:</strong> Manufacturing consistency (range, standard deviation)</li>
+                    <li><strong>Healthcare:</strong> Treatment effectiveness variability (IQR for skewed data)</li>
+                    <li><strong>Education:</strong> Student performance analysis (all measures)</li>
+                    <li><strong>Marketing:</strong> Customer behavior patterns (IQR for outlier-prone data)</li>
+                </ul>
+            </div>
+
+            <div style="text-align: center; margin-top: 40px; padding: 30px; background: linear-gradient(135deg, #74b9ff, #0984e3); color: white; border-radius: 15px;">
+                <h2 style="border: none; color: white; margin-bottom: 20px;">Thank You! 🎉</h2>
+                <p style="font-size: 1.2em;">Questions & Discussion</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">← Previous</button>
+        <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Next →</button>
+    </div>
+
+    <script>
+        let currentSlideIndex = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function showSlide(index) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[index].classList.add('active');
+            
+            document.getElementById('currentSlide').textContent = index + 1;
+            
+            // Update navigation buttons
+            document.getElementById('prevBtn').disabled = index === 0;
+            document.getElementById('nextBtn').disabled = index === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            const newIndex = currentSlideIndex + direction;
+            if (newIndex >= 0 && newIndex < totalSlides) {
+                currentSlideIndex = newIndex;
+                showSlide(currentSlideIndex);
+            }
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowLeft') {
+                changeSlide(-1);
+            } else if (event.key === 'ArrowRight') {
+                changeSlide(1);
+            }
+        });
+
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+</html>
